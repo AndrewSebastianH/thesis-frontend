@@ -3,6 +3,7 @@ import 'package:lottie/lottie.dart';
 import 'package:thesis_frontend/screens/signin.dart';
 import 'package:thesis_frontend/screens/signup.dart';
 import 'package:thesis_frontend/screens/loading.dart';
+import 'package:thesis_frontend/screens/home_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -17,10 +18,11 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(primarySwatch: Colors.deepOrange),
       routes: {
-        '/': (context) => const Loading(),
+        // '/': (context) => const Loading(),
+        '/': (context) => const SignUp(),
         '/signup': (context) => const SignUp(),
         '/signin': (context) => const SignIn(),
-        '/home': (context) => const LandingPage(),
+        '/home': (context) => const HomePage(),
       },
     );
   }
