@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:thesis_frontend/controllers/signup_controller.dart';
+import 'package:go_router/go_router.dart';
+import 'package:thesis_frontend/providers/auth_provider.dart';
+import 'package:provider/provider.dart';
 
 class SignUp extends StatelessWidget {
   const SignUp({Key? key}) : super(key: key);
@@ -12,9 +14,8 @@ class SignUp extends StatelessWidget {
       appBar: AppBar(
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
+          onPressed: () => context.pop(),
+          tooltip: 'Back',
         ),
         title: Text(
           'Signup for a new account',
@@ -52,16 +53,11 @@ class _FormContent extends StatefulWidget {
 
 class __FormContentState extends State<_FormContent> {
   final _formKey = GlobalKey<FormState>();
-  final SignUpController _controller = SignUpController();
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
+    final controller = Provider.of<AuthProvider>(context, listen: false);
+
     return Container(
       constraints: const BoxConstraints(maxWidth: 300),
       child: Form(
@@ -81,10 +77,10 @@ class __FormContentState extends State<_FormContent> {
             ),
             _gap(height: 40),
             TextFormField(
-              controller: _controller.emailController,
+              controller: controller.emailController,
               validator:
                   (value) =>
-                      _controller.validateEmail(value)
+                      controller.validateEmail(value)
                           ? null
                           : 'Please enter a valid email',
 
@@ -97,13 +93,13 @@ class __FormContentState extends State<_FormContent> {
             ),
             _gap(),
             TextFormField(
-              controller: _controller.passwordController,
+              controller: controller.passwordController,
               validator:
                   (value) =>
-                      _controller.validatePassword(value)
+                      controller.validatePassword(value)
                           ? null
                           : 'Password must be at least 6 characters',
-              obscureText: !_controller.isPasswordVisible,
+              obscureText: !controller.isPasswordVisible,
               decoration: InputDecoration(
                 labelText: 'Password',
                 hintText: 'Enter your password',
@@ -111,14 +107,14 @@ class __FormContentState extends State<_FormContent> {
                 border: const OutlineInputBorder(),
                 suffixIcon: IconButton(
                   icon: Icon(
-                    _controller.isPasswordVisible
+                    controller.isPasswordVisible
                         ? Icons.visibility_off
                         : Icons.visibility,
                   ),
                   onPressed: () {
                     setState(() {
-                      _controller.isPasswordVisible =
-                          !_controller.isPasswordVisible;
+                      controller.isPasswordVisible =
+                          !controller.isPasswordVisible;
                     });
                   },
                 ),
@@ -126,17 +122,17 @@ class __FormContentState extends State<_FormContent> {
             ),
             _gap(),
             TextFormField(
-              controller: _controller.confirmPasswordController,
+              controller: controller.confirmPasswordController,
               validator: (value) {
-                if (!_controller.isPasswordMatching()) {
+                if (!controller.isPasswordMatching()) {
                   return 'Passwords do not match';
                 }
-                if (_controller.validatePassword(value)) {
+                if (controller.validatePassword(value)) {
                   return 'Password must be at least 6 characters';
                 }
                 return null;
               },
-              obscureText: !_controller.isConfirmPasswordVisible,
+              obscureText: !controller.isConfirmPasswordVisible,
               decoration: InputDecoration(
                 labelText: 'Confirm Password',
                 hintText: 'Enter your password again',
@@ -144,14 +140,14 @@ class __FormContentState extends State<_FormContent> {
                 border: const OutlineInputBorder(),
                 suffixIcon: IconButton(
                   icon: Icon(
-                    _controller.isConfirmPasswordVisible
+                    controller.isConfirmPasswordVisible
                         ? Icons.visibility_off
                         : Icons.visibility,
                   ),
                   onPressed: () {
                     setState(() {
-                      _controller.isConfirmPasswordVisible =
-                          !_controller.isConfirmPasswordVisible;
+                      controller.isConfirmPasswordVisible =
+                          !controller.isConfirmPasswordVisible;
                     });
                   },
                 ),

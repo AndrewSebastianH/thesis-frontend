@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
+import 'package:thesis_frontend/providers/auth_provider.dart';
 
 class SignIn extends StatelessWidget {
   const SignIn({Key? key}) : super(key: key);
@@ -67,13 +70,14 @@ class _FormContent extends StatefulWidget {
 }
 
 class __FormContentState extends State<_FormContent> {
-  bool _isPasswordVisible = false;
-  bool _rememberMe = false;
-
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  bool _rememberMe = false;
 
   @override
   Widget build(BuildContext context) {
+    final controller = Provider.of<AuthProvider>(context, listen: false);
+
     return Container(
       constraints: const BoxConstraints(maxWidth: 300),
       child: Form(
@@ -83,21 +87,12 @@ class __FormContentState extends State<_FormContent> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             TextFormField(
-              validator: (value) {
-                // add email validation
-                if (value == null || value.isEmpty) {
-                  return 'Please enter your email';
-                }
-
-                bool emailValid = RegExp(
-                  r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+",
-                ).hasMatch(value);
-                if (!emailValid) {
-                  return 'Please enter a valid email';
-                }
-
-                return null;
-              },
+              controller: controller.emailController,
+              validator:
+                  (value) =>
+                      controller.validateEmail(value)
+                          ? null
+                          : 'Enter a valid email',
               decoration: const InputDecoration(
                 labelText: 'Email',
                 hintText: 'Enter your email',
@@ -117,7 +112,7 @@ class __FormContentState extends State<_FormContent> {
                 }
                 return null;
               },
-              obscureText: !_isPasswordVisible,
+              obscureText: !controller.isPasswordVisible,
               decoration: InputDecoration(
                 labelText: 'Password',
                 hintText: 'Enter your password',
@@ -125,13 +120,14 @@ class __FormContentState extends State<_FormContent> {
                 border: const OutlineInputBorder(),
                 suffixIcon: IconButton(
                   icon: Icon(
-                    _isPasswordVisible
+                    controller.isPasswordVisible
                         ? Icons.visibility_off
                         : Icons.visibility,
                   ),
                   onPressed: () {
                     setState(() {
-                      _isPasswordVisible = !_isPasswordVisible;
+                      controller.isPasswordVisible =
+                          !controller.isPasswordVisible;
                     });
                   },
                 ),
@@ -155,7 +151,13 @@ class __FormContentState extends State<_FormContent> {
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
+                onPressed: () {
+                  if (_formKey.currentState?.validate() ?? false) {
+                    context.go('/home');
+                  }
+                },
                 style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.deepOrange,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(4),
                   ),
@@ -164,22 +166,39 @@ class __FormContentState extends State<_FormContent> {
                   padding: EdgeInsets.all(10.0),
                   child: Text(
                     'Sign in',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
                   ),
                 ),
-                onPressed: () {
-                  if (_formKey.currentState?.validate() ?? false) {
-                    /// do something
-                  }
-                },
               ),
             ),
             _gap(),
             TextButton(
               onPressed: () {
-                // navigate to forgot password screen
+                context.push('/forgot-password');
               },
-              child: const Text('Forgot password?'),
+              child: const Text(
+                'Forgot password',
+                style: TextStyle(color: Colors.deepOrange),
+              ),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Text("Don't have an account? "),
+                GestureDetector(
+                  onTap: () {
+                    context.push('/signup');
+                  },
+                  child: const Text(
+                    'Register',
+                    style: TextStyle(color: Colors.deepOrange),
+                  ),
+                ),
+              ],
             ),
           ],
         ),
@@ -187,5 +206,5 @@ class __FormContentState extends State<_FormContent> {
     );
   }
 
-  Widget _gap() => const SizedBox(height: 16);
+  Widget _gap({double height = 16}) => SizedBox(height: height);
 }
