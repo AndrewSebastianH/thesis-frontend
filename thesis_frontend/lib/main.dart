@@ -6,9 +6,13 @@ import 'package:thesis_frontend/screens/signin.dart';
 import 'package:thesis_frontend/screens/signup.dart';
 import 'package:thesis_frontend/screens/loading.dart';
 import 'package:thesis_frontend/screens/home_page.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:thesis_frontend/widgets/navigation_shell.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  await dotenv.load(fileName: ".env");
 
   runApp(
     // const MyApp(),
@@ -43,10 +47,28 @@ class MyApp extends StatelessWidget {
         return null;
       },
       routes: [
-        GoRoute(path: '/', builder: (context, state) => const Loading()),
         GoRoute(path: '/signup', builder: (context, state) => const SignUp()),
         GoRoute(path: '/signin', builder: (context, state) => const SignIn()),
-        GoRoute(path: '/home', builder: (context, state) => const HomePage()),
+        ShellRoute(
+          builder: (context, state, child) {
+            return NavigationShell(child: child);
+          },
+          routes: [
+            GoRoute(path: '/', builder: (context, state) => const Loading()),
+            GoRoute(
+              path: '/home',
+              builder: (context, state) => const HomePage(),
+            ),
+            GoRoute(
+              path: '/profile',
+              builder: (context, state) => const Loading(),
+            ),
+            GoRoute(
+              path: '/mail',
+              builder: (context, state) => const Loading(),
+            ),
+          ],
+        ),
       ],
     );
 

@@ -2,11 +2,12 @@
 // import 'package:flutter/material.dart';
 // import 'package:http/http.dart' as http;
 // import 'package:shared_preferences/shared_preferences.dart';
-// import 'package:thesis_frontend/constants/constants.dart';
+// import 'package:thesis_frontend/config/apiConfig.dart';
 
 // class AuthProvider extends ChangeNotifier {
 //   bool _isLoggedIn = false;
 //   String? _token;
+//   final String baseUrl = ApiConfig.baseUrl;
 
 //   bool get isLoggedIn => _isLoggedIn;
 //   String? get token => _token;
@@ -15,7 +16,7 @@
 //     try {
 //       final response = await http.post(
 //         Uri.parse(
-//           '${ApiConstants.baseUrl}/auth/login',
+//           '/auth/login',
 //         ),
 //         headers: {'Content-Type': 'application/json'},
 //         body: jsonEncode({'email': email, 'password': password}),
