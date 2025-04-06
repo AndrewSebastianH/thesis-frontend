@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:thesis_frontend/providers/auth_provider.dart';
+import 'package:thesis_frontend/screens/connection_code.dart';
 import 'package:thesis_frontend/screens/signin.dart';
 import 'package:thesis_frontend/screens/signup.dart';
 import 'package:thesis_frontend/screens/loading.dart';
@@ -49,6 +51,13 @@ class MyApp extends StatelessWidget {
       routes: [
         GoRoute(path: '/signup', builder: (context, state) => const SignUp()),
         GoRoute(path: '/signin', builder: (context, state) => const SignIn()),
+        GoRoute(
+          path: '/see-connectioncode',
+          builder: (context, state) {
+            final code = state.extra as String;
+            return ConnectionCodeScreen(code: code);
+          },
+        ),
         ShellRoute(
           builder: (context, state, child) {
             return NavigationShell(child: child);
@@ -75,6 +84,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp.router(
       title: 'Closer',
       theme: ThemeData(
+        textTheme: GoogleFonts.poppinsTextTheme(),
         primarySwatch: Colors.deepOrange,
         scaffoldBackgroundColor: Colors.white,
         appBarTheme: const AppBarTheme(

@@ -127,9 +127,6 @@ class __FormContentState extends State<_FormContent> {
                 if (!controller.isPasswordMatching()) {
                   return 'Passwords do not match';
                 }
-                if (controller.validatePassword(value)) {
-                  return 'Password must be at least 6 characters';
-                }
                 return null;
               },
               obscureText: !controller.isConfirmPasswordVisible,
@@ -176,7 +173,20 @@ class __FormContentState extends State<_FormContent> {
                 ),
                 onPressed: () {
                   if (_formKey.currentState?.validate() ?? false) {
-                    /// do something
+                    final connectionCode = 'XXXXXXX';
+                    if (connectionCode.isNotEmpty) {
+                      context.go('/see-connectioncode', extra: connectionCode);
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Signup failed. Please try again.'),
+                        ),
+                      );
+                    }
+                    // final result = await controller.signup();
+                    // if (result) {
+                    //   final connectionCode = result['connectionCode'];
+                    // }
                   }
                 },
               ),
