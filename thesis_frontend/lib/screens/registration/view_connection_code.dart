@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:thesis_frontend/widgets/custom_button.dart';
 
 class ConnectionCodeScreen extends StatelessWidget {
@@ -45,38 +46,20 @@ class ConnectionCodeScreen extends StatelessWidget {
               ),
               const SizedBox(height: 16),
 
-              /// Outlined Button (Full Width)
               SizedBox(
                 width: double.infinity,
                 height: 50,
                 child: CustomButton(
                   text: "Enter Connection Code",
                   onPressed: () {
-                    // Show enter code input or navigate
+                    context.push("/link-account");
                   },
                   isOutlined: true,
                 ),
-                // OutlinedButton(
-                //   style: OutlinedButton.styleFrom(
-                //     foregroundColor: Color(0xFFFF7F50),
-                //     side: const BorderSide(color: Color(0xFFFF7F50)),
-                //     shape: RoundedRectangleBorder(
-                //       borderRadius: BorderRadius.circular(8),
-                //     ),
-                //   ),
-                //   onPressed: () {
-                //     // Show enter code input or navigate
-                //   },
-                //   child: const Text(
-                //     "Enter Connection Code",
-                //     style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-                //   ),
-                // ),
               ),
 
-              const SizedBox(height: 12),
+              const SizedBox(height: 20),
 
-              /// Elevated Button (Full Width)
               SizedBox(
                 width: double.infinity,
                 height: 50,
@@ -86,21 +69,6 @@ class ConnectionCodeScreen extends StatelessWidget {
                     // Go to next screen (maybe homepage?)
                   },
                 ),
-                // ElevatedButton(
-                //   style: ElevatedButton.styleFrom(
-                //     backgroundColor: Color(0xFFFF7F50),
-                //     shape: RoundedRectangleBorder(
-                //       borderRadius: BorderRadius.circular(8),
-                //     ),
-                //   ),
-                //   onPressed: () {
-                //     // Go to next screen (maybe homepage?)
-                //   },
-                //   child: const Text(
-                //     "Continue",
-                //     style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-                //   ),
-                // ),
               ),
             ],
           ),

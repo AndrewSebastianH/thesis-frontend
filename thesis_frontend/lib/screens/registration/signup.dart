@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:provider/provider.dart';
 import 'package:thesis_frontend/providers/auth_provider.dart';
-import 'package:thesis_frontend/widgets/custom_button.dart';
+import 'package:provider/provider.dart';
+import 'package:thesis_frontend/widgets/custom_button.dart%20';
 
-class SignIn extends StatelessWidget {
-  const SignIn({Key? key}) : super(key: key);
+class SignUp extends StatelessWidget {
+  const SignUp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -17,48 +17,18 @@ class SignIn extends StatelessWidget {
             isSmallScreen
                 ? Column(
                   mainAxisSize: MainAxisSize.min,
-                  children: const [_Logo(), _FormContent()],
+                  children: const [_FormContent()],
                 )
                 : Container(
                   padding: const EdgeInsets.all(32.0),
                   constraints: const BoxConstraints(maxWidth: 800),
                   child: Row(
                     children: const [
-                      Expanded(child: _Logo()),
                       Expanded(child: Center(child: _FormContent())),
                     ],
                   ),
                 ),
       ),
-    );
-  }
-}
-
-class _Logo extends StatelessWidget {
-  const _Logo({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    final bool isSmallScreen = MediaQuery.of(context).size.width < 600;
-
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        FlutterLogo(size: isSmallScreen ? 100 : 200),
-        Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Text(
-            "Welcome to Closer!",
-            textAlign: TextAlign.center,
-            style:
-                isSmallScreen
-                    ? Theme.of(context).textTheme.headlineSmall
-                    : Theme.of(
-                      context,
-                    ).textTheme.headlineMedium?.copyWith(color: Colors.black),
-          ),
-        ),
-      ],
     );
   }
 }
@@ -71,9 +41,7 @@ class _FormContent extends StatefulWidget {
 }
 
 class __FormContentState extends State<_FormContent> {
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-
-  bool _rememberMe = false;
+  final _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
@@ -87,13 +55,24 @@ class __FormContentState extends State<_FormContent> {
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            Text(
+              "Let's get you started",
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Colors.black87,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            _gap(height: 40),
             TextFormField(
               controller: controller.emailController,
               validator:
                   (value) =>
                       controller.validateEmail(value)
                           ? null
-                          : 'Enter a valid email',
+                          : 'Please enter a valid email',
+
               decoration: const InputDecoration(
                 labelText: 'Email',
                 hintText: 'Enter your email',
@@ -103,16 +82,12 @@ class __FormContentState extends State<_FormContent> {
             ),
             _gap(),
             TextFormField(
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter your password';
-                }
-
-                if (value.length < 6) {
-                  return 'Password must be at least 6 characters';
-                }
-                return null;
-              },
+              controller: controller.passwordController,
+              validator:
+                  (value) =>
+                      controller.validatePassword(value)
+                          ? null
+                          : 'Password must be at least 6 characters',
               obscureText: !controller.isPasswordVisible,
               decoration: InputDecoration(
                 labelText: 'Password',
@@ -135,56 +110,60 @@ class __FormContentState extends State<_FormContent> {
               ),
             ),
             _gap(),
-            CheckboxListTile(
-              value: _rememberMe,
-              onChanged: (value) {
-                if (value == null) return;
-                setState(() {
-                  _rememberMe = value;
-                });
+            TextFormField(
+              controller: controller.confirmPasswordController,
+              validator: (value) {
+                if (!controller.isPasswordMatching()) {
+                  return 'Passwords do not match';
+                }
+                return null;
               },
-              title: const Text('Remember me'),
-              controlAffinity: ListTileControlAffinity.leading,
-              dense: true,
-              contentPadding: const EdgeInsets.all(0),
+              obscureText: !controller.isConfirmPasswordVisible,
+              decoration: InputDecoration(
+                labelText: 'Confirm Password',
+                hintText: 'Enter your password again',
+                prefixIcon: const Icon(Icons.lock_outline_rounded),
+                border: const OutlineInputBorder(),
+                suffixIcon: IconButton(
+                  icon: Icon(
+                    controller.isConfirmPasswordVisible
+                        ? Icons.visibility_off
+                        : Icons.visibility,
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      controller.isConfirmPasswordVisible =
+                          !controller.isConfirmPasswordVisible;
+                    });
+                  },
+                ),
+              ),
             ),
             _gap(),
             SizedBox(
               width: double.infinity,
               height: 50,
               child: CustomButton(
-                text: "Login",
+                text: "Signup",
                 onPressed: () {
-                  if (_formKey.currentState?.validate() ?? false) {
-                    context.go('/home');
+                  // if (_formKey.currentState?.validate() ?? false) {
+                  final connectionCode = 'XXXXXXX';
+                  if (connectionCode.isNotEmpty) {
+                    context.go('/see-connectioncode', extra: connectionCode);
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Signup failed. Please try again.'),
+                      ),
+                    );
                   }
+                  // final result = await controller.signup();
+                  // if (result) {
+                  //   final connectionCode = result['connectionCode'];
+                  // }
+                  // }
                 },
               ),
-            ),
-            _gap(),
-            TextButton(
-              onPressed: () {
-                context.push('/forgot-password');
-              },
-              child: const Text(
-                'Forgot password',
-                style: TextStyle(color: Colors.deepOrange),
-              ),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Text("Don't have an account? "),
-                GestureDetector(
-                  onTap: () {
-                    context.push('/signup');
-                  },
-                  child: const Text(
-                    'Register',
-                    style: TextStyle(color: Colors.deepOrange),
-                  ),
-                ),
-              ],
             ),
           ],
         ),

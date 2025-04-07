@@ -3,13 +3,15 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:thesis_frontend/providers/auth_provider.dart';
-import 'package:thesis_frontend/screens/connection_code.dart';
-import 'package:thesis_frontend/screens/signin.dart';
-import 'package:thesis_frontend/screens/signup.dart';
-import 'package:thesis_frontend/screens/loading.dart';
+import 'package:thesis_frontend/screens/registration/link_accounts_page.dart';
+import 'package:thesis_frontend/screens/registration/view_connection_code.dart';
+import 'package:thesis_frontend/screens/registration/signin.dart';
+import 'package:thesis_frontend/screens/registration/signup.dart';
+import 'package:thesis_frontend/screens/registration/loading.dart';
 import 'package:thesis_frontend/screens/home_page.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:thesis_frontend/widgets/navigation_shell.dart';
+import 'package:thesis_frontend/widgets/registration_shell.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -17,7 +19,6 @@ void main() async {
   await dotenv.load(fileName: ".env");
 
   runApp(
-    // const MyApp(),
     MultiProvider(
       providers: [ChangeNotifierProvider(create: (_) => AuthProvider())],
       child: const MyApp(),
@@ -49,14 +50,30 @@ class MyApp extends StatelessWidget {
         return null;
       },
       routes: [
-        GoRoute(path: '/signup', builder: (context, state) => const SignUp()),
         GoRoute(path: '/signin', builder: (context, state) => const SignIn()),
-        GoRoute(
-          path: '/see-connectioncode',
-          builder: (context, state) {
-            final code = state.extra as String;
-            return ConnectionCodeScreen(code: code);
+
+        ShellRoute(
+          builder: (context, state, child) {
+            final title = state.extra as String? ?? '';
+            return RegistrationShell(title: title, child: child);
           },
+          routes: [
+            GoRoute(
+              path: '/signup',
+              builder: (context, state) => const SignUp(),
+            ),
+            GoRoute(
+              path: '/see-connectioncode',
+              builder: (context, state) {
+                final code = state.extra as String;
+                return ConnectionCodeScreen(code: code);
+              },
+            ),
+            GoRoute(
+              path: '/link-account',
+              builder: (context, state) => const LinkAccountPage(),
+            ),
+          ],
         ),
         ShellRoute(
           builder: (context, state, child) {
