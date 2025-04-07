@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:thesis_frontend/providers/auth_provider.dart';
+import 'package:thesis_frontend/widgets/custom_button.dart';
 
 class SignIn extends StatelessWidget {
   const SignIn({Key? key}) : super(key: key);
@@ -150,29 +151,14 @@ class __FormContentState extends State<_FormContent> {
             _gap(),
             SizedBox(
               width: double.infinity,
-              child: ElevatedButton(
+              height: 50,
+              child: CustomButton(
+                text: "Login",
                 onPressed: () {
                   if (_formKey.currentState?.validate() ?? false) {
                     context.go('/home');
                   }
                 },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.deepOrange,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                ),
-                child: const Padding(
-                  padding: EdgeInsets.all(10.0),
-                  child: Text(
-                    'Sign in',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
               ),
             ),
             _gap(),
