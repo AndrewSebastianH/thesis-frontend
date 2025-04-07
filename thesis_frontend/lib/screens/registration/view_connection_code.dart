@@ -52,7 +52,7 @@ class ConnectionCodeScreen extends StatelessWidget {
                 child: CustomButton(
                   text: "Enter Connection Code",
                   onPressed: () {
-                    context.push("/link-account");
+                    context.push("/link-account", extra: "Link your account");
                   },
                   isOutlined: true,
                 ),

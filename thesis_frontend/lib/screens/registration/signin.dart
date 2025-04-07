@@ -177,7 +177,7 @@ class __FormContentState extends State<_FormContent> {
                 const Text("Don't have an account? "),
                 GestureDetector(
                   onTap: () {
-                    context.push('/signup');
+                    context.push('/signup', extra: 'Register your account');
                   },
                   child: const Text(
                     'Register',
