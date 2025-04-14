@@ -147,9 +147,10 @@ class __FormContentState extends State<_FormContent> {
                 text: "Signup",
                 onPressed: () {
                   // if (_formKey.currentState?.validate() ?? false) {
-                  final connectionCode = 'XXXXXXX';
+
+                  final connectionCode = 'ABCDEFG';
                   if (connectionCode.isNotEmpty) {
-                    context.go('/see-connectioncode', extra: connectionCode);
+                    context.go('/choose-role', extra: connectionCode);
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
