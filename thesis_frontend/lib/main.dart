@@ -11,7 +11,7 @@ import 'package:thesis_frontend/screens/registration/signin.dart';
 import 'package:thesis_frontend/screens/registration/signup.dart';
 import 'package:thesis_frontend/screens/registration/loading.dart';
 import 'package:thesis_frontend/screens/registration/choose_role.dart';
-import 'package:thesis_frontend/screens/home_page.dart';
+import 'package:thesis_frontend/screens/main/home_page.dart';
 // Widgets
 import 'package:thesis_frontend/widgets/navigation_shell.dart';
 import 'package:thesis_frontend/widgets/registration_shell.dart';

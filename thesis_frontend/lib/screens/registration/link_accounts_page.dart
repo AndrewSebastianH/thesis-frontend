@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_otp_text_field/flutter_otp_text_field.dart';
+import 'package:go_router/go_router.dart';
+import 'package:thesis_frontend/widgets/custom_button.dart';
 
 class LinkAccountPage extends StatelessWidget {
   const LinkAccountPage({Key? key}) : super(key: key);
@@ -28,7 +30,92 @@ class LinkAccountPage extends StatelessWidget {
                 borderWidth: 4.0,
                 onSubmit: (code) {
                   print("Entered code: $code");
+                  final result = {'name': 'John Doe', 'role': 'parent'};
+
                   // Handle logic
+                  if (result != null) {
+                    final name = result['name'];
+                    final role = result['role'];
+
+                    showDialog(
+                      context: context,
+                      builder:
+                          (BuildContext dialogContext) => AlertDialog(
+                            title: const Text("User Found"),
+                            content: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                if (role == "parent")
+                                  Image.asset(
+                                    "assets/images/parent.png",
+                                    width: 100,
+                                    height: 100,
+                                  )
+                                else
+                                  Image.asset(
+                                    "assets/images/child.png",
+                                    width: 100,
+                                    height: 100,
+                                  ),
+                                const SizedBox(height: 16),
+
+                                Text(
+                                  "$name",
+                                  style: const TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                const SizedBox(height: 10),
+                                Text(
+                                  "${role?[0].toUpperCase()}${role?.substring(1)}",
+                                ),
+                              ],
+                            ),
+                            actions: [
+                              TextButton(
+                                style: TextButton.styleFrom(
+                                  backgroundColor: Colors.white,
+                                  foregroundColor: const Color(0xFFFF7F50),
+                                ),
+                                onPressed:
+                                    () => Navigator.of(dialogContext).pop(),
+                                child: const Text("Cancel"),
+                              ),
+                              TextButton(
+                                style: TextButton.styleFrom(
+                                  backgroundColor: const Color(0xFFFF7F50),
+                                  foregroundColor: Colors.white,
+                                ),
+                                onPressed: () => context.go('/home'),
+                                child: const Text("Connect"),
+                              ),
+                            ],
+                          ),
+                    );
+                  } else {
+                    showDialog(
+                      context: context,
+                      builder:
+                          (BuildContext alertContext) => AlertDialog(
+                            title: Text("User not found"),
+                            content: Text(
+                              "The code is invalid or expired. Please try again",
+                            ),
+                            actions: [
+                              TextButton(
+                                style: TextButton.styleFrom(
+                                  backgroundColor: Colors.white,
+                                  foregroundColor: const Color(0xFFFF7F50),
+                                ),
+                                onPressed:
+                                    () => Navigator.of(alertContext).pop(),
+                                child: const Text("OK"),
+                              ),
+                            ],
+                          ),
+                    );
+                  }
                 },
               ),
 
@@ -44,21 +131,11 @@ class LinkAccountPage extends StatelessWidget {
               SizedBox(
                 width: double.infinity,
                 height: 50,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFFF7F50),
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
+                child: CustomButton(
+                  text: "Connect Account",
                   onPressed: () {
-                    // Validate & connect account
+                    // Handle continue action
                   },
-                  child: const Text(
-                    "Connect Account",
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-                  ),
                 ),
               ),
             ],
