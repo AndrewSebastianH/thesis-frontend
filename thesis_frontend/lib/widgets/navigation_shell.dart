@@ -22,7 +22,7 @@ class _NavigationShellState extends State<NavigationShell> {
         context.go('/home');
         break;
       case 1:
-        context.go('/profile');
+        context.go('/calendar');
         break;
       case 2:
         context.go('/mail');
@@ -39,7 +39,10 @@ class _NavigationShellState extends State<NavigationShell> {
         onDestinationSelected: _onDestinationSelected,
         destinations: const [
           NavigationDestination(icon: Icon(Icons.home), label: 'Home'),
-          NavigationDestination(icon: Icon(Icons.person), label: 'Profile'),
+          NavigationDestination(
+            icon: Icon(Icons.calendar_month),
+            label: 'Calendar',
+          ),
           NavigationDestination(icon: Icon(Icons.mail_rounded), label: 'Mail'),
         ],
       ),

@@ -38,7 +38,7 @@ class MyApp extends StatelessWidget {
     final authProvider = Provider.of<AuthProvider>(context);
 
     final router = GoRouter(
-      initialLocation: '/signin',
+      initialLocation: '/home',
       redirect: (context, state) {
         final isLoggedIn = authProvider.isLoggedIn;
         final isAuthRoute = state.path == '/signin' || state.path == '/signup';
@@ -98,6 +98,10 @@ class MyApp extends StatelessWidget {
             GoRoute(
               path: '/home',
               builder: (context, state) => const HomePage(),
+            ),
+            GoRoute(
+              path: '/calendar',
+              builder: (context, state) => const Loading(),
             ),
             GoRoute(
               path: '/profile',
