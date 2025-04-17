@@ -1,66 +1,39 @@
-// import 'dart:convert';
 // import 'package:flutter/material.dart';
-// import 'package:http/http.dart' as http;
 // import 'package:shared_preferences/shared_preferences.dart';
-// import 'package:thesis_frontend/config/apiConfig.dart';
+// import '../services/auth_service.dart';
 
 // class AuthProvider extends ChangeNotifier {
 //   bool _isLoggedIn = false;
 //   String? _token;
-//   final String baseUrl = ApiConfig.baseUrl;
 
 //   bool get isLoggedIn => _isLoggedIn;
 //   String? get token => _token;
 
 //   Future<void> login(String email, String password) async {
-//     try {
-//       final response = await http.post(
-//         Uri.parse(
-//           '${baseUrl}/auth/login',
-//         ),
-//         headers: {'Content-Type': 'application/json'},
-//         body: jsonEncode({'email': email, 'password': password}),
-//       );
+//     final token = await AuthService.login(email, password);
 
-//       if (response.statusCode == 200) {
-//         final data = jsonDecode(response.body);
-//         _token = data['token'];
-//         _isLoggedIn = true;
+//     if (token != null) {
+//       _token = token;
+//       _isLoggedIn = true;
 
-//         // Store token locally for persistence
-//         final prefs = await SharedPreferences.getInstance();
-//         await prefs.setString('auth_token', _token!);
+//       final prefs = await SharedPreferences.getInstance();
+//       await prefs.setString('auth_token', _token!);
 
-//         notifyListeners();
-//       } else {
-//         throw Exception('Failed to login');
-//       }
-//     } catch (e) {
-//       print('Login error: $e');
-//       throw Exception('Network error');
+//       notifyListeners();
+//     } else {
+//       throw Exception('Invalid login credentials');
 //     }
 //   }
 
-// Future<void> signup(String username, String email, String password) async {
-// try{
-//  final response = await http.post(
-//   Uri.parse('{$baseUrl}/auth/signup'),
-//    headers: {'Content-Type': 'application/json'},
-//         body: jsonEncode({'username': username, 'email': email, 'password': password}),
-// if (response.statusCode == 200) {
-//         final data = jsonDecode(response.body);
-//         return data;
-//       } else { return null; }
-// } catch(e){
-//   print('Signup error: $e');
-//   throw Exception('Network error');
-// }
+//   Future<void> signup(String username, String email, String password) async {
+//     final success = await AuthService.signup(username, email, password);
+//     if (!success) throw Exception("Signup failed");
+//   }
 
 //   Future<void> logout() async {
 //     _token = null;
 //     _isLoggedIn = false;
 
-//     // Remove token from storage
 //     final prefs = await SharedPreferences.getInstance();
 //     await prefs.remove('auth_token');
 
@@ -71,10 +44,7 @@
 //     final prefs = await SharedPreferences.getInstance();
 //     _token = prefs.getString('auth_token');
 
-//     if (_token != null) {
-//       _isLoggedIn = true;
-//     }
-
+//     _isLoggedIn = _token != null;
 //     notifyListeners();
 //   }
 // }
