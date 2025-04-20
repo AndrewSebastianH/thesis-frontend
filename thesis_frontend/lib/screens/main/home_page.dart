@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:http/http.dart' as http;
+// import 'package:http/http.dart' as http;
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -24,6 +24,10 @@ class _HomePageState extends State<HomePage> {
 
   Future<void> _checkMoodScreen() async {
     final prefs = await SharedPreferences.getInstance();
+
+    // TEMP: clear for debugging
+    await prefs.remove('lastMoodScreenDate'); // or await prefs.clear();
+
     final now = DateTime.now();
     final currentDate = "${now.year}-${now.month}-${now.day}";
     final lastShownDate = prefs.getString('lastMoodScreenDate');
@@ -38,7 +42,8 @@ class _HomePageState extends State<HomePage> {
   void _showMoodDialog() {
     showDialog(
       context: context,
-      barrierDismissible: false, // Force user to pick a mood
+      useRootNavigator: true,
+      barrierDismissible: false,
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text("How are you feeling today?"),
@@ -76,35 +81,59 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> _submitMood(String mood) async {
-    Navigator.pop(context); // Close dialog
+    Navigator.of(context, rootNavigator: true).pop();
 
-    // Store that we've shown the mood screen today
-    final prefs = await SharedPreferences.getInstance();
+    final messenger = ScaffoldMessenger.of(context);
     final now = DateTime.now();
+    final prefs = await SharedPreferences.getInstance();
     final currentDate = "${now.year}-${now.month}-${now.day}";
     await prefs.setString('lastMoodScreenDate', currentDate);
 
-    // Send mood to backend
     try {
-      final response = await http.post(
-        Uri.parse('https://your-api-url.com/api/mood'),
-        headers: {'Content-Type': 'application/json'},
-        body: '{"mood": "$mood"}',
-      );
+      // Simulate API call or success
+      messenger.showSnackBar(SnackBar(content: Text("Submitted mood: $mood")));
 
-      if (response.statusCode == 200) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text("Mood submitted: $mood")));
-      } else {
-        throw Exception("Failed to submit mood");
-      }
+      // Simulate network logic here if needed
+      // final response = await ...
     } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text("Failed to submit mood")));
+      if (mounted) {
+        messenger.showSnackBar(
+          const SnackBar(content: Text("Failed to submit mood")),
+        );
+      }
     }
   }
+
+  // Future<void> _submitMood(String mood) async {
+  //   Navigator.of(context, rootNavigator: true).pop();
+
+  //   // Store that we've shown the mood screen today
+  //   final prefs = await SharedPreferences.getInstance();
+  //   final now = DateTime.now();
+  //   final currentDate = "${now.year}-${now.month}-${now.day}";
+  //   await prefs.setString('lastMoodScreenDate', currentDate);
+
+  //   // Send mood to backend
+  //   try {
+  //     // final response = await http.post(
+  //     //   Uri.parse('https://your-api-url.com/api/mood'),
+  //     //   headers: {'Content-Type': 'application/json'},
+  //     //   body: '{"mood": "$mood"}',
+  //     // );
+
+  //     // if (response.statusCode == 200) {
+  //     //   ScaffoldMessenger.of(
+  //     //     context,
+  //     //   ).showSnackBar(SnackBar(content: Text("Mood submitted: $mood")));
+  //     // } else {
+  //     //   throw Exception("Failed to submit mood");
+  //     // }
+  //   } catch (e) {
+  //     ScaffoldMessenger.of(
+  //       context,
+  //     ).showSnackBar(const SnackBar(content: Text("Failed to submit mood")));
+  //   }
+  // }
 
   void completeTask(int index) {
     setState(() {

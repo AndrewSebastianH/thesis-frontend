@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:thesis_frontend/providers/auth_provider.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:thesis_frontend/screens/main/calendar_page.dart';
 // Screens
 import 'package:thesis_frontend/screens/registration/link_accounts_page.dart';
 import 'package:thesis_frontend/screens/registration/view_connection_code.dart';
@@ -101,7 +102,7 @@ class MyApp extends StatelessWidget {
             ),
             GoRoute(
               path: '/calendar',
-              builder: (context, state) => const Loading(),
+              builder: (context, state) => const EmotionCalendarPage(),
             ),
             GoRoute(
               path: '/profile',
