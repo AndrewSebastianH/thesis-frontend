@@ -1,23 +1,65 @@
+// import 'dart:convert';
 // import 'package:flutter/material.dart';
-// import 'package:shared_preferences/shared_preferences.dart';
-// import '../services/auth_service.dart';
+// import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+// import 'package:jwt_decoder/jwt_decoder.dart';
+// import '../models/user_mdl.dart';
+// import '../services/auth_api_service.dart';
 
 // class AuthProvider extends ChangeNotifier {
+//   final _secureStorage = const FlutterSecureStorage();
+
 //   bool _isLoggedIn = false;
 //   String? _token;
+//   UserModel? _user;
 
 //   bool get isLoggedIn => _isLoggedIn;
 //   String? get token => _token;
+//   UserModel? get user => _user;
 
+//   // Controllers
+//   final TextEditingController emailController = TextEditingController();
+//   final TextEditingController passwordController = TextEditingController();
+//   final TextEditingController confirmPasswordController = TextEditingController();
+
+//   bool isPasswordVisible = false;
+//   bool isConfirmPasswordVisible = false;
+
+//   // --- Form validation ---
+//   bool validateEmail(String? value) {
+//     if (value == null || value.isEmpty) return false;
+//     return RegExp(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$").hasMatch(value);
+//   }
+
+//   bool validatePassword(String? value) {
+//     return value != null && value.length >= 6;
+//   }
+
+//   bool isPasswordMatching() {
+//     return passwordController.text == confirmPasswordController.text;
+//   }
+
+//   void togglePasswordVisibility() {
+//     isPasswordVisible = !isPasswordVisible;
+//     notifyListeners();
+//   }
+
+//   void toggleConfirmPasswordVisibility() {
+//     isConfirmPasswordVisible = !isConfirmPasswordVisible;
+//     notifyListeners();
+//   }
+
+//   // --- Auth actions ---
 //   Future<void> login(String email, String password) async {
 //     final token = await AuthService.login(email, password);
 
 //     if (token != null) {
+//       final decoded = JwtDecoder.decode(token);
+//       _user = UserModel.fromJwt(decoded);
 //       _token = token;
 //       _isLoggedIn = true;
 
-//       final prefs = await SharedPreferences.getInstance();
-//       await prefs.setString('auth_token', _token!);
+//       await _secureStorage.write(key: 'auth_token', value: token);
+//       await _secureStorage.write(key: 'user_data', value: jsonEncode(_user!.toJson()));
 
 //       notifyListeners();
 //     } else {
@@ -31,21 +73,38 @@
 //   }
 
 //   Future<void> logout() async {
-//     _token = null;
 //     _isLoggedIn = false;
+//     _token = null;
+//     _user = null;
 
-//     final prefs = await SharedPreferences.getInstance();
-//     await prefs.remove('auth_token');
+//     await _secureStorage.delete(key: 'auth_token');
+//     await _secureStorage.delete(key: 'user_data');
+
+//     emailController.clear();
+//     passwordController.clear();
+//     confirmPasswordController.clear();
 
 //     notifyListeners();
 //   }
 
-//   Future<void> checkLoginStatus() async {
-//     final prefs = await SharedPreferences.getInstance();
-//     _token = prefs.getString('auth_token');
+//   Future<void> tryAutoLogin() async {
+//     final token = await _secureStorage.read(key: 'auth_token');
+//     final userData = await _secureStorage.read(key: 'user_data');
 
-//     _isLoggedIn = _token != null;
-//     notifyListeners();
+//     if (token != null && userData != null && !JwtDecoder.isExpired(token)) {
+//       _token = token;
+//       _user = UserModel.fromJson(jsonDecode(userData));
+//       _isLoggedIn = true;
+//       notifyListeners();
+//     }
+//   }
+
+//   @override
+//   void dispose() {
+//     emailController.dispose();
+//     passwordController.dispose();
+//     confirmPasswordController.dispose();
+//     super.dispose();
 //   }
 // }
 
