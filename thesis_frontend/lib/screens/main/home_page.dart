@@ -146,14 +146,6 @@ class _HomePageState extends State<HomePage> {
     final incompleteTasks = tasks.where((task) => !task['completed']).toList();
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          "To do list app",
-          style: TextStyle(color: Colors.white),
-        ),
-        centerTitle: true,
-        backgroundColor: const Color(0xFFFF7F50),
-      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(

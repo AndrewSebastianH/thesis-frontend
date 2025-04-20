@@ -84,18 +84,21 @@ class _EmotionCalendarPageState extends State<EmotionCalendarPage> {
             },
             calendarStyle: const CalendarStyle(
               selectedDecoration: BoxDecoration(
-                color: Colors.deepOrange, // your theme orange
-                shape: BoxShape.circle,
-              ),
-              markerDecoration: BoxDecoration(
-                color: Colors.orange,
+                color: Color(0xFFFF7F50),
                 shape: BoxShape.circle,
               ),
               todayDecoration: BoxDecoration(
-                color: Color(0x33FF7F50), // a soft hint for today
                 shape: BoxShape.circle,
+                border: Border.fromBorderSide(
+                  BorderSide(color: Color(0xFFFF7F50), width: 2),
+                ),
+              ),
+              todayTextStyle: TextStyle(
+                color: Color(0xFFFF7F50), // match the border
+                fontWeight: FontWeight.bold,
               ),
             ),
+
             calendarBuilders: CalendarBuilders(
               markerBuilder: (context, date, events) {
                 if (events.isEmpty) return const SizedBox();
@@ -130,6 +133,10 @@ class _EmotionCalendarPageState extends State<EmotionCalendarPage> {
                       itemBuilder: (context, index) {
                         final log = _selectedEvents[index];
                         return Card(
+                          color:
+                              log.userId == '1'
+                                  ? Colors.orange[100]
+                                  : Colors.blue[100],
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
