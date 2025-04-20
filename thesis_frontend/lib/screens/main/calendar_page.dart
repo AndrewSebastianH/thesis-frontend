@@ -44,6 +44,7 @@ class _EmotionCalendarPageState extends State<EmotionCalendarPage> {
       }
     }
 
+    if (!mounted) return;
     setState(() {
       emotionEvents = eventMap;
       _selectedEvents = _getEventsForDay(_selectedDay ?? _focusedDay);
@@ -76,6 +77,7 @@ class _EmotionCalendarPageState extends State<EmotionCalendarPage> {
             availableCalendarFormats: const {CalendarFormat.month: 'Month'},
             eventLoader: _getEventsForDay,
             onDaySelected: (selectedDay, focusedDay) {
+              if (!mounted) return;
               setState(() {
                 _selectedDay = selectedDay;
                 _focusedDay = focusedDay;
@@ -134,7 +136,8 @@ class _EmotionCalendarPageState extends State<EmotionCalendarPage> {
                         final log = _selectedEvents[index];
                         return Card(
                           color:
-                              log.userId == '1'
+                              log.userId ==
+                                      '1' // log.userId == currentUserId
                                   ? Colors.orange[100]
                                   : Colors.blue[100],
                           shape: RoundedRectangleBorder(
@@ -153,7 +156,8 @@ class _EmotionCalendarPageState extends State<EmotionCalendarPage> {
                             leading: CircleAvatar(
                               radius: 20,
                               backgroundColor:
-                                  log.userId == '1'
+                                  log.userId ==
+                                          '1' // log.userId == currentUserId
                                       ? Colors.orange
                                       : Colors.blue,
                               child: Text(

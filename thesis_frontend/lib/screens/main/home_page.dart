@@ -28,7 +28,7 @@ class _HomePageState extends State<HomePage> {
     // TEMP: clear for debugging
     await prefs.remove('lastMoodScreenDate'); // or await prefs.clear();
 
-    final now = DateTime.now();
+    final now = DateTime.now().copyWith(hour: 16);
     final currentDate = "${now.year}-${now.month}-${now.day}";
     final lastShownDate = prefs.getString('lastMoodScreenDate');
 
@@ -44,15 +44,39 @@ class _HomePageState extends State<HomePage> {
       context: context,
       useRootNavigator: true,
       barrierDismissible: false,
+      barrierColor: Colors.orange[100],
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text("How are you feeling today?"),
+          backgroundColor: Colors.orange[300],
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(
+              12,
+            ), // Less rounded than default
+          ),
+          title: const Text(
+            "How are you feeling today?",
+            style: TextStyle(fontSize: 20),
+            textAlign: TextAlign.center,
+          ),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              _buildMoodButton("Happy", "😊"),
-              _buildMoodButton("Neutral", "😐"),
-              _buildMoodButton("Sad", "😢"),
+              Image.asset(
+                'assets/images/boybear_heart.png',
+                width: 100,
+                height: 100,
+              ),
+              const SizedBox(height: 20),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  _buildMoodButton("sad", "😢"),
+                  const SizedBox(width: 12),
+                  _buildMoodButton("neutral", "😐"),
+                  const SizedBox(width: 12),
+                  _buildMoodButton("happy", "😊"),
+                ],
+              ),
             ],
           ),
         );
@@ -61,21 +85,12 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buildMoodButton(String mood, String emoji) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6.0),
-      child: ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          minimumSize: const Size.fromHeight(45),
-          backgroundColor: const Color(0xFFFF7F50),
-          foregroundColor: Colors.white,
-        ),
-        onPressed: () => _submitMood(mood.toLowerCase()),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text("$emoji $mood", style: const TextStyle(fontSize: 18)),
-          ],
-        ),
+    return GestureDetector(
+      onTap: () => _submitMood(mood),
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(color: Colors.white, shape: BoxShape.circle),
+        child: Text(emoji, style: const TextStyle(fontSize: 28)),
       ),
     );
   }
@@ -91,9 +106,28 @@ class _HomePageState extends State<HomePage> {
 
     try {
       // Simulate API call or success
-      messenger.showSnackBar(SnackBar(content: Text("Submitted mood: $mood")));
-
-      // Simulate network logic here if needed
+      switch (mood) {
+        case "sad":
+          // Simulate a sad mood submission
+          messenger.showSnackBar(
+            SnackBar(content: Text("Hope things feel better soon 💛.")),
+          );
+          break;
+        case "neutral":
+          // Simulate a neutral mood submission
+          messenger.showSnackBar(
+            SnackBar(content: Text("Thanks for checking in 💪.")),
+          );
+          break;
+        case "happy":
+          // Simulate a happy mood submission
+          messenger.showSnackBar(SnackBar(content: Text("Good to hear! 💖.")));
+          break;
+        default:
+          messenger.showSnackBar(
+            SnackBar(content: Text("Submitted Mood: $mood")),
+          );
+      }
       // final response = await ...
     } catch (e) {
       if (mounted) {
@@ -136,6 +170,7 @@ class _HomePageState extends State<HomePage> {
   // }
 
   void completeTask(int index) {
+    if (!mounted) return;
     setState(() {
       tasks[index]['completed'] = true;
     });
