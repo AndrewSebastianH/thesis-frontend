@@ -1,21 +1,23 @@
-import 'dart:convert';
-import 'package:http/http.dart' as http;
-import 'package:thesis_frontend/config/apiConfig.dart';
+// services/auth_api_service.dart
+import 'package:dio/dio.dart';
+import 'package:thesis_frontend/config/api_config.dart';
 
 class AuthService {
   static Future<String?> login(String email, String password) async {
-    final response = await http.post(
-      Uri.parse('${ApiConfig.baseUrl}/auth/login'),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({'email': email, 'password': password}),
-    );
+    try {
+      final response = await ApiConfig.dio.post(
+        '/auth/login',
+        data: {'email': email, 'password': password},
+      );
 
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      return data['token'];
+      if (response.statusCode == 200) {
+        return response.data['token'];
+      }
+      return null;
+    } on DioException catch (e) {
+      print("Login failed: ${e.response?.data}");
+      return null;
     }
-
-    return null;
   }
 
   static Future<bool> signup(
@@ -23,16 +25,16 @@ class AuthService {
     String email,
     String password,
   ) async {
-    final response = await http.post(
-      Uri.parse('${ApiConfig.baseUrl}/auth/signup'),
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({
-        'username': username,
-        'email': email,
-        'password': password,
-      }),
-    );
+    try {
+      final response = await ApiConfig.dio.post(
+        '/auth/signup',
+        data: {'username': username, 'email': email, 'password': password},
+      );
 
-    return response.statusCode == 201;
+      return response.statusCode == 201;
+    } on DioException catch (e) {
+      print("Signup failed: ${e.response?.data}");
+      return false;
+    }
   }
 }

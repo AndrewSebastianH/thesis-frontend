@@ -279,7 +279,9 @@ class _EmotionCalendarPageState extends State<EmotionCalendarPage> {
                                 ),
                                 const SizedBox(height: 2),
                                 Text(
-                                  "From: $username",
+                                  isCurrentUser
+                                      ? "You shared this feeling"
+                                      : "$username shared this feeling",
                                   style: TextStyle(
                                     fontSize: 11,
                                     fontStyle: FontStyle.italic,

@@ -1,61 +1,27 @@
-import 'dart:convert';
-import 'package:http/http.dart' as http;
-import 'package:thesis_frontend/config/apiConfig.dart';
+import 'package:thesis_frontend/config/api_config.dart';
 import 'package:thesis_frontend/models/emotion_log_mdl.dart';
+import 'package:dio/dio.dart';
 
 class EmotionService {
   // Log mood
-  static Future<bool> submitEmotion(String emotion) async {
-    final url = Uri.parse('${ApiConfig.baseUrl}/mood');
-    final headers = await ApiConfig.getAuthHeaders();
+  static Future<bool> submitEmotion(String emotion, String detail) async {
+    try {
+      final response = await ApiConfig.dio.post(
+        '/emotion-log/',
+        data: {'emotion': emotion, 'detail': detail},
+      );
 
-    final response = await http.post(
-      url,
-      headers: headers,
-      body: jsonEncode({'emotion': emotion}),
-    );
-
-    if (response.statusCode == 200) {
-      return true;
-    } else {
-      print("Mood submission failed: ${response.body}");
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        print("Failed to log emotion: ${response.data}");
+        return false;
+      }
+    } on DioException catch (e) {
+      print("Error logging emotion: ${e.response?.data}");
       return false;
     }
   }
-
-  // // Fetch mood logs for the calendar
-  // static Future<List<EmotionLog>> fetchEmotionLogs() async {
-  //   final url = Uri.parse('${ApiConfig.baseUrl}/user/full-info');
-  //   final headers = await ApiConfig.getAuthHeaders();
-
-  //   final response = await http.get(url, headers: headers);
-
-  //   if (response.statusCode == 200) {
-  //     final Map<String, dynamic> data = jsonDecode(response.body);
-
-  //     final userLogsJson = data['user']['logs'] as List<dynamic>;
-  //     final relatedLogsJson = data['relatedUser']?['logs'] as List<dynamic>? ?? [];
-
-  //     final userLogs = userLogsJson.map((e) {
-  //       return EmotionLog.fromJson({
-  //         ...e,
-  //         'userId': data['user']['id'],
-  //       });
-  //     });
-
-  //     final relatedLogs = relatedLogsJson.map((e) {
-  //       return EmotionLog.fromJson({
-  //         ...e,
-  //         'userId': data['relatedUser']['id'],
-  //       });
-  //     });
-
-  //     return [...userLogs, ...relatedLogs];
-  //   } else {
-  //     print("Failed to fetch emotion logs: ${response.body}");
-  //     return [];
-  //   }
-  // }
 
   static Future<List<EmotionLog>> fetchEmotionLogs() async {
     await Future.delayed(const Duration(seconds: 1)); // simulate network delay
