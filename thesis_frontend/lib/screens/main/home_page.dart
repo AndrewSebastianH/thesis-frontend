@@ -105,18 +105,11 @@ class _HomePageState extends State<HomePage> {
     final currentDate = "${now.year}-${now.month}-${now.day}";
     await prefs.setString('lastMoodScreenDate', currentDate);
 
-    if (!mounted) return; // Dart-approved guard
+    if (!mounted) return;
 
-    ScaffoldMessenger.of(safeScaffoldContext).showSnackBar(
-      SnackBar(
-        content: Text(switch (mood) {
-          "sad" => "Hope things feel better soon. 💛",
-          "neutral" => "Thanks for checking in! 💪",
-          "happy" => "Good to hear! 💖",
-          _ => "Submitted Mood: $mood",
-        }),
-      ),
-    );
+    await Future.delayed(const Duration(milliseconds: 300)); // smooth UX
+
+    _showDetailInputDialog(mood);
   }
 
   // Future<void> _submitMood(String mood) async {
@@ -149,6 +142,104 @@ class _HomePageState extends State<HomePage> {
   //     ).showSnackBar(const SnackBar(content: Text("Failed to submit mood")));
   //   }
   // }
+
+  void _showDetailInputDialog(String mood) {
+    final TextEditingController _detailController = TextEditingController();
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) {
+        return AlertDialog(
+          backgroundColor: Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          title: Text(
+            "Write about your day?",
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 18,
+              color: Colors.orange[800],
+            ),
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text(
+                "Optional: Add a note about why you feel this way today.",
+                style: TextStyle(fontSize: 14),
+              ),
+              const SizedBox(height: 10),
+              TextField(
+                controller: _detailController,
+                maxLines: 4,
+                decoration: InputDecoration(
+                  hintText: "Type your thoughts here...",
+                  filled: true,
+                  fillColor: Colors.orange[50],
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide.none,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+                _finalizeMoodSubmission(mood, ''); // empty note
+              },
+              child: const Text("Not now"),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pop(context);
+                _finalizeMoodSubmission(mood, _detailController.text.trim());
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.orange,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              child: const Text(
+                "Submit",
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _finalizeMoodSubmission(String mood, String detail) async {
+    final prefs = await SharedPreferences.getInstance();
+    final now = DateTime.now();
+    final currentDate = "${now.year}-${now.month}-${now.day}";
+
+    await prefs.setString('lastMoodScreenDate', currentDate);
+
+    // TODO: Send this to backend later
+    print("Mood submitted: $mood");
+    print("Detail: $detail");
+
+    if (!mounted) return;
+
+    ScaffoldMessenger.of(safeScaffoldContext).showSnackBar(
+      SnackBar(
+        content: Text(switch (mood) {
+          "sad" => "Hope things feel better soon. 💛",
+          "neutral" => "Thanks for checking in! 💪",
+          "happy" => "Good to hear! 💖",
+          _ => "Mood submitted.",
+        }),
+      ),
+    );
+  }
 
   void completeTask(int index) {
     if (!mounted) return;
