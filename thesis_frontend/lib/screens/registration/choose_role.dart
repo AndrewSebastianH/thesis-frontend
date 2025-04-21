@@ -21,7 +21,7 @@ class _ChooseRoleScreenState extends State<ChooseRoleScreen> {
   Widget buildCircleImage(String path, int index, double maxWidth) {
     bool isSelected = selectedIndex == index;
 
-    double imageSize = maxWidth * 0.325; // 30% of available width
+    double imageSize = maxWidth * 0.325;
 
     return GestureDetector(
       onTap: () => onImageTap(index),
@@ -92,7 +92,7 @@ class _ChooseRoleScreenState extends State<ChooseRoleScreen> {
                       Column(
                         children: [
                           buildCircleImage(
-                            'assets/images/parent.png',
+                            'assets/images/parent_bears.png',
                             0,
                             maxWidth,
                           ),
@@ -104,7 +104,7 @@ class _ChooseRoleScreenState extends State<ChooseRoleScreen> {
                       Column(
                         children: [
                           buildCircleImage(
-                            'assets/images/child.png',
+                            'assets/images/children_bear.png',
                             1,
                             maxWidth,
                           ),
