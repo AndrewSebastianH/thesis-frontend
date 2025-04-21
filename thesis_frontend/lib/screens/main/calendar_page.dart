@@ -62,6 +62,81 @@ class _EmotionCalendarPageState extends State<EmotionCalendarPage> {
     return emotionEvents[normalized] ?? [];
   }
 
+  void _showLogDetailsDialog(
+    BuildContext context,
+    EmotionLog log,
+    String username,
+    String avatarAsset,
+  ) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                CircleAvatar(
+                  radius: 30,
+                  backgroundImage: AssetImage(avatarAsset),
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  "$username felt ${log.emotion}",
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(height: 5),
+                Text(
+                  DateFormat.yMMMMd().format(log.date),
+                  style: TextStyle(fontSize: 13, color: Colors.grey[600]),
+                ),
+                const SizedBox(height: 20),
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(14),
+                  decoration: BoxDecoration(
+                    color: Colors.orange[50],
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: Colors.orangeAccent),
+                  ),
+                  child: Text(
+                    log.detail.isNotEmpty
+                        ? log.detail
+                        : "No additional notes provided.",
+                    style: const TextStyle(fontSize: 14),
+                  ),
+                ),
+
+                const SizedBox(height: 16),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.orange,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text(
+                    "Close",
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final userProvider = Provider.of<UserProvider>(context);
@@ -173,6 +248,13 @@ class _EmotionCalendarPageState extends State<EmotionCalendarPage> {
                             horizontal: 16,
                           ),
                           child: ListTile(
+                            onTap:
+                                () => _showLogDetailsDialog(
+                                  context,
+                                  log,
+                                  username,
+                                  avatarAsset,
+                                ),
                             contentPadding: const EdgeInsets.symmetric(
                               horizontal: 16,
                               vertical: 8,

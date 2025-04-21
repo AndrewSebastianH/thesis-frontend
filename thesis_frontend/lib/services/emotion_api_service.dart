@@ -66,19 +66,50 @@ class EmotionService {
         "id": 1,
         "username": "Bearl Benson",
         "logs": [
-          {"date": "2025-04-14", "emotion": "happy", "detail": null},
-          {"date": "2025-04-13", "emotion": "sad", "detail": null},
-          {"date": "2025-04-11", "emotion": "neutral", "detail": null},
+          {
+            "date": "2025-04-14",
+            "emotion": "happy",
+            "detail": "Had fun playing with Mama today! 🐻",
+          },
+          {
+            "date": "2025-04-13",
+            "emotion": "sad",
+            "detail":
+                "I didn’t get to see Mama all day... I missed her a lot 😞",
+          },
+          {
+            "date": "2025-04-11",
+            "emotion": "neutral",
+            "detail": "Just a regular day, nothing special happened.",
+          },
         ],
       },
       "relative": {
         "id": 2,
         "username": "Mama Bear",
         "logs": [
-          {"date": "2025-04-14", "emotion": "neutral", "detail": null},
-          {"date": "2025-04-13", "emotion": "happy", "detail": null},
-          {"date": "2025-04-12", "emotion": "sad", "detail": null},
-          {"date": "2025-04-10", "emotion": "happy", "detail": null},
+          {
+            "date": "2025-04-14",
+            "emotion": "neutral",
+            "detail":
+                "Work was tiring, but I’m glad I saw Bearl smiling today.",
+          },
+          {
+            "date": "2025-04-13",
+            "emotion": "happy",
+            "detail": "Bearl gave me a drawing and it made my whole day 💖",
+          },
+          {
+            "date": "2025-04-12",
+            "emotion": "sad",
+            "detail": "I yelled earlier... I feel really guilty about it 😢",
+          },
+          {
+            "date": "2025-04-10",
+            "emotion": "happy",
+            "detail":
+                "We watched a movie together and cuddled. Perfect evening!",
+          },
         ],
       },
     };
@@ -94,6 +125,7 @@ class EmotionService {
         date: DateTime.parse(log['date']),
         emotion: log['emotion'],
         userId: userId,
+        detail: log['detail'] ?? '',
       );
     });
 
@@ -104,6 +136,7 @@ class EmotionService {
         date: DateTime.parse(log['date']),
         emotion: log['emotion'],
         userId: relativeId,
+        detail: log['detail'] ?? '',
       );
     });
 
