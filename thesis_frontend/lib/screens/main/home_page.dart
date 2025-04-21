@@ -107,47 +107,17 @@ class _HomePageState extends State<HomePage> {
 
     if (!mounted) return;
 
-    await Future.delayed(const Duration(milliseconds: 300)); // smooth UX
+    // await Future.delayed(const Duration(milliseconds: 150)); // smooth UX
 
     _showDetailInputDialog(mood);
   }
-
-  // Future<void> _submitMood(String mood) async {
-  //   Navigator.of(context, rootNavigator: true).pop();
-
-  //   // Store that we've shown the mood screen today
-  //   final prefs = await SharedPreferences.getInstance();
-  //   final now = DateTime.now();
-  //   final currentDate = "${now.year}-${now.month}-${now.day}";
-  //   await prefs.setString('lastMoodScreenDate', currentDate);
-
-  //   // Send mood to backend
-  //   try {
-  //     // final response = await http.post(
-  //     //   Uri.parse('https://your-api-url.com/api/mood'),
-  //     //   headers: {'Content-Type': 'application/json'},
-  //     //   body: '{"mood": "$mood"}',
-  //     // );
-
-  //     // if (response.statusCode == 200) {
-  //     //   ScaffoldMessenger.of(
-  //     //     context,
-  //     //   ).showSnackBar(SnackBar(content: Text("Mood submitted: $mood")));
-  //     // } else {
-  //     //   throw Exception("Failed to submit mood");
-  //     // }
-  //   } catch (e) {
-  //     ScaffoldMessenger.of(
-  //       context,
-  //     ).showSnackBar(const SnackBar(content: Text("Failed to submit mood")));
-  //   }
-  // }
 
   void _showDetailInputDialog(String mood) {
     final TextEditingController _detailController = TextEditingController();
 
     showDialog(
       context: context,
+      barrierColor: Colors.orange[100],
       barrierDismissible: false,
       builder: (context) {
         return AlertDialog(
@@ -166,10 +136,6 @@ class _HomePageState extends State<HomePage> {
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Text(
-                "Optional: Add a note about why you feel this way today.",
-                style: TextStyle(fontSize: 14),
-              ),
               const SizedBox(height: 10),
               TextField(
                 controller: _detailController,
@@ -224,8 +190,8 @@ class _HomePageState extends State<HomePage> {
     await prefs.setString('lastMoodScreenDate', currentDate);
 
     // TODO: Send this to backend later
-    print("Mood submitted: $mood");
-    print("Detail: $detail");
+    // print("Mood submitted: $mood");
+    // print("Detail: $detail");
 
     if (!mounted) return;
 
