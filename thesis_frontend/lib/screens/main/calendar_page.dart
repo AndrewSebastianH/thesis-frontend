@@ -106,7 +106,7 @@ class _EmotionCalendarPageState extends State<EmotionCalendarPage> {
                 ),
               ),
               todayTextStyle: TextStyle(
-                color: Color(0xFFFF7F50), // match the border
+                color: Color(0xFFFF7F50),
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -119,7 +119,9 @@ class _EmotionCalendarPageState extends State<EmotionCalendarPage> {
                   children:
                       events.map((e) {
                         final color =
-                            (e).userId == '1' ? Colors.orange : Colors.blue;
+                            (e).userId == currentUser?.id
+                                ? Colors.orange
+                                : Colors.blue;
                         return Container(
                           width: 6,
                           height: 6,
@@ -145,8 +147,7 @@ class _EmotionCalendarPageState extends State<EmotionCalendarPage> {
                       itemBuilder: (context, index) {
                         final log = _selectedEvents[index];
 
-                        final isCurrentUser =
-                            log.userId == currentUser?.id.toString();
+                        final isCurrentUser = log.userId == currentUser?.id;
 
                         final username =
                             isCurrentUser

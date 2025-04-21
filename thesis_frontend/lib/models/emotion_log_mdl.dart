@@ -1,7 +1,7 @@
 class EmotionLog {
   final DateTime date;
   final String emotion;
-  final String userId;
+  final int userId;
   final String detail;
 
   EmotionLog({

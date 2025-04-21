@@ -25,16 +25,34 @@ class EmotionService {
 
   // // Fetch mood logs for the calendar
   // static Future<List<EmotionLog>> fetchEmotionLogs() async {
-  //   final url = Uri.parse('${ApiConfig.baseUrl}/mood');
+  //   final url = Uri.parse('${ApiConfig.baseUrl}/user/full-info');
   //   final headers = await ApiConfig.getAuthHeaders();
 
   //   final response = await http.get(url, headers: headers);
 
   //   if (response.statusCode == 200) {
-  //     final List jsonData = jsonDecode(response.body);
-  //     return jsonData.map((e) => EmotionLog.fromJson(e)).toList();
+  //     final Map<String, dynamic> data = jsonDecode(response.body);
+
+  //     final userLogsJson = data['user']['logs'] as List<dynamic>;
+  //     final relatedLogsJson = data['relatedUser']?['logs'] as List<dynamic>? ?? [];
+
+  //     final userLogs = userLogsJson.map((e) {
+  //       return EmotionLog.fromJson({
+  //         ...e,
+  //         'userId': data['user']['id'],
+  //       });
+  //     });
+
+  //     final relatedLogs = relatedLogsJson.map((e) {
+  //       return EmotionLog.fromJson({
+  //         ...e,
+  //         'userId': data['relatedUser']['id'],
+  //       });
+  //     });
+
+  //     return [...userLogs, ...relatedLogs];
   //   } else {
-  //     print("Failed to fetch mood logs: ${response.body}");
+  //     print("Failed to fetch emotion logs: ${response.body}");
   //     return [];
   //   }
   // }
@@ -42,34 +60,53 @@ class EmotionService {
   static Future<List<EmotionLog>> fetchEmotionLogs() async {
     await Future.delayed(const Duration(seconds: 1)); // simulate network delay
 
-    return [
-      EmotionLog(
-        date: DateTime.utc(2025, 4, 14),
-        emotion: 'happy',
-        userId: '1',
-      ),
-      EmotionLog(
-        date: DateTime.utc(2025, 4, 14),
-        emotion: 'neutral',
-        userId: '2',
-      ),
-      EmotionLog(date: DateTime.utc(2025, 4, 13), emotion: 'sad', userId: '1'),
-      EmotionLog(
-        date: DateTime.utc(2025, 4, 13),
-        emotion: 'happy',
-        userId: '2',
-      ),
-      EmotionLog(date: DateTime.utc(2025, 4, 12), emotion: 'sad', userId: '2'),
-      EmotionLog(
-        date: DateTime.utc(2025, 4, 11),
-        emotion: 'neutral',
-        userId: '1',
-      ),
-      EmotionLog(
-        date: DateTime.utc(2025, 4, 10),
-        emotion: 'happy',
-        userId: '2',
-      ),
-    ];
+    // Simulated API response
+    final data = {
+      "user": {
+        "id": 1,
+        "username": "Bearl Benson",
+        "logs": [
+          {"date": "2025-04-14", "emotion": "happy", "detail": null},
+          {"date": "2025-04-13", "emotion": "sad", "detail": null},
+          {"date": "2025-04-11", "emotion": "neutral", "detail": null},
+        ],
+      },
+      "relative": {
+        "id": 2,
+        "username": "Mama Bear",
+        "logs": [
+          {"date": "2025-04-14", "emotion": "neutral", "detail": null},
+          {"date": "2025-04-13", "emotion": "happy", "detail": null},
+          {"date": "2025-04-12", "emotion": "sad", "detail": null},
+          {"date": "2025-04-10", "emotion": "happy", "detail": null},
+        ],
+      },
+    };
+
+    final userMap = data['user'] as Map<String, dynamic>?;
+    final relativeMap = data['relative'] as Map<String, dynamic>?;
+
+    final int userId = userMap?['id'] as int? ?? -1;
+    final int relativeId = relativeMap?['id'] as int? ?? -1;
+
+    final userLogs = (userMap?['logs'] as List<dynamic>? ?? []).map((log) {
+      return EmotionLog(
+        date: DateTime.parse(log['date']),
+        emotion: log['emotion'],
+        userId: userId,
+      );
+    });
+
+    final relativeLogs = (relativeMap?['logs'] as List<dynamic>? ?? []).map((
+      log,
+    ) {
+      return EmotionLog(
+        date: DateTime.parse(log['date']),
+        emotion: log['emotion'],
+        userId: relativeId,
+      );
+    });
+
+    return [...userLogs, ...relativeLogs];
   }
 }
