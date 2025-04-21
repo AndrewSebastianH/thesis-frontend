@@ -1,9 +1,9 @@
 class UserModel {
-  final String id;
+  final int id;
   final String username;
   final String email;
   final String role;
-  final String? relatedUserId;
+  final int? relatedUserId;
   final int expPoints;
 
   UserModel({
@@ -17,11 +17,11 @@ class UserModel {
 
   factory UserModel.fromJwt(Map<String, dynamic> jwt) {
     return UserModel(
-      id: jwt['id'].toString(),
+      id: jwt['id'],
       username: jwt['username'],
       email: jwt['email'],
       role: jwt['role'],
-      relatedUserId: jwt['relatedUserId']?.toString(),
+      relatedUserId: jwt['relatedUserId'],
       expPoints: jwt['expPoints'],
     );
   }

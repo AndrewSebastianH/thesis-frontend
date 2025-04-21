@@ -49,23 +49,28 @@
 //   }
 
 //   // --- Auth actions ---
-//   Future<void> login(String email, String password) async {
-//     final token = await AuthService.login(email, password);
+// Future<void> login(String email, String password, BuildContext context) async {
+//   final token = await AuthService.login(email, password);
 
-//     if (token != null) {
-//       final decoded = JwtDecoder.decode(token);
-//       _user = UserModel.fromJwt(decoded);
-//       _token = token;
-//       _isLoggedIn = true;
+//   if (token != null) {
+//     final decoded = JwtDecoder.decode(token);
+//     final user = UserModel.fromJwt(decoded);
 
-//       await _secureStorage.write(key: 'auth_token', value: token);
-//       await _secureStorage.write(key: 'user_data', value: jsonEncode(_user!.toJson()));
+//     _token = token;
+//     _isLoggedIn = true;
+//     _user = user;
 
-//       notifyListeners();
-//     } else {
-//       throw Exception('Invalid login credentials');
-//     }
+//     // Save it to secure storage
+//     await _secureStorage.write(key: 'auth_token', value: token);
+
+//     // 💡 Pass it to UserProvider
+//     Provider.of<UserProvider>(context, listen: false).setUser(user);
+
+//     notifyListeners();
+//   } else {
+//     throw Exception("Invalid login");
 //   }
+// }
 
 //   Future<void> signup(String username, String email, String password) async {
 //     final success = await AuthService.signup(username, email, password);

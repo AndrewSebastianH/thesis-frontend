@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 // import 'package:http/http.dart' as http;
 // import 'package:thesis_frontend/config/apiConfig.dart';
+import 'package:thesis_frontend/providers/user_provider.dart';
+import 'package:provider/provider.dart';
 import 'package:thesis_frontend/models/emotion_log_mdl.dart';
 import 'package:thesis_frontend/services/emotion_api_service.dart';
 import 'package:intl/intl.dart';
@@ -23,6 +25,10 @@ class _EmotionCalendarPageState extends State<EmotionCalendarPage> {
   @override
   void initState() {
     super.initState();
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    userProvider.setMockUser();
+    userProvider.setMockRelatedUser();
+
     loadEmotionLogs();
   }
 
@@ -58,6 +64,10 @@ class _EmotionCalendarPageState extends State<EmotionCalendarPage> {
 
   @override
   Widget build(BuildContext context) {
+    final userProvider = Provider.of<UserProvider>(context);
+    final currentUser = userProvider.user;
+    final relatedUser = userProvider.relatedUser;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -134,10 +144,23 @@ class _EmotionCalendarPageState extends State<EmotionCalendarPage> {
                       itemCount: _selectedEvents.length,
                       itemBuilder: (context, index) {
                         final log = _selectedEvents[index];
+
+                        final isCurrentUser =
+                            log.userId == currentUser?.id.toString();
+
+                        final username =
+                            isCurrentUser
+                                ? "You"
+                                : relatedUser?.username ?? "Someone";
+
+                        final avatarAsset =
+                            isCurrentUser
+                                ? userProvider.userAvatarAsset
+                                : userProvider.relatedUserAvatarAsset;
+
                         return Card(
                           color:
-                              log.userId ==
-                                      '1' // log.userId == currentUserId
+                              isCurrentUser
                                   ? Colors.orange[100]
                                   : Colors.blue[100],
                           shape: RoundedRectangleBorder(
@@ -155,18 +178,7 @@ class _EmotionCalendarPageState extends State<EmotionCalendarPage> {
                             ),
                             leading: CircleAvatar(
                               radius: 20,
-                              backgroundColor:
-                                  log.userId ==
-                                          '1' // log.userId == currentUserId
-                                      ? Colors.orange
-                                      : Colors.blue,
-                              child: Text(
-                                log.userId,
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
+                              backgroundImage: AssetImage(avatarAsset),
                             ),
                             title: Text(
                               "${log.emotion[0].toUpperCase()}${log.emotion.substring(1)}",
@@ -175,9 +187,23 @@ class _EmotionCalendarPageState extends State<EmotionCalendarPage> {
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
-                            subtitle: Text(
-                              DateFormat.yMMMMd().format(log.date),
-                              style: const TextStyle(fontSize: 12),
+                            subtitle: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  DateFormat.yMMMMd().format(log.date),
+                                  style: const TextStyle(fontSize: 12),
+                                ),
+                                const SizedBox(height: 2),
+                                Text(
+                                  "From: $username",
+                                  style: TextStyle(
+                                    fontSize: 11,
+                                    fontStyle: FontStyle.italic,
+                                    color: Colors.grey[700],
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         );

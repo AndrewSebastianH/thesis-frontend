@@ -57,7 +57,7 @@ class EmotionService {
       EmotionLog(
         date: DateTime.utc(2025, 4, 13),
         emotion: 'happy',
-        userId: '3',
+        userId: '2',
       ),
       EmotionLog(date: DateTime.utc(2025, 4, 12), emotion: 'sad', userId: '2'),
       EmotionLog(
@@ -68,7 +68,7 @@ class EmotionService {
       EmotionLog(
         date: DateTime.utc(2025, 4, 10),
         emotion: 'happy',
-        userId: '3',
+        userId: '2',
       ),
     ];
   }

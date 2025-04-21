@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
-import 'package:thesis_frontend/providers/auth_provider.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:thesis_frontend/screens/main/calendar_page.dart';
+// Providers
+import 'package:thesis_frontend/providers/auth_provider.dart';
+import 'package:thesis_frontend/providers/user_provider.dart';
 // Screens
 import 'package:thesis_frontend/screens/registration/link_accounts_page.dart';
 import 'package:thesis_frontend/screens/registration/view_connection_code.dart';
+import 'package:thesis_frontend/screens/main/calendar_page.dart';
 import 'package:thesis_frontend/screens/registration/signin.dart';
 import 'package:thesis_frontend/screens/registration/signup.dart';
 import 'package:thesis_frontend/screens/registration/loading.dart';
@@ -25,7 +27,11 @@ void main() async {
 
   runApp(
     MultiProvider(
-      providers: [ChangeNotifierProvider(create: (_) => AuthProvider())],
+      providers: [
+        ChangeNotifierProvider(create: (_) => AuthProvider()),
+        ChangeNotifierProvider(create: (_) => UserProvider()),
+      ],
+
       child: const MyApp(),
     ),
   );
