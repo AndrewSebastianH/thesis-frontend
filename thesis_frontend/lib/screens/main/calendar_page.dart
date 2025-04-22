@@ -67,11 +67,15 @@ class _EmotionCalendarPageState extends State<EmotionCalendarPage> {
     EmotionLog log,
     String username,
     String avatarAsset,
+    bool isCurrentUser,
   ) {
     showDialog(
       context: context,
       builder: (context) {
         return Dialog(
+          backgroundColor:
+              isCurrentUser ? Colors.orange[100] : Colors.blue[100],
+
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),
@@ -254,6 +258,7 @@ class _EmotionCalendarPageState extends State<EmotionCalendarPage> {
                                   log,
                                   username,
                                   avatarAsset,
+                                  isCurrentUser,
                                 ),
                             contentPadding: const EdgeInsets.symmetric(
                               horizontal: 16,
