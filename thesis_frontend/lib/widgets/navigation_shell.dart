@@ -27,6 +27,9 @@ class _NavigationShellState extends State<NavigationShell> {
       case 2:
         context.go('/mail');
         break;
+      case 3:
+        context.go('/profile');
+        break;
     }
   }
 
@@ -56,6 +59,10 @@ class _NavigationShellState extends State<NavigationShell> {
               BottomNavigationBarItem(
                 icon: Icon(Icons.mail_rounded),
                 label: 'Mail',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.person),
+                label: 'Profile',
               ),
             ],
           ),
