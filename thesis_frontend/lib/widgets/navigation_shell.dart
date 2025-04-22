@@ -33,18 +33,33 @@ class _NavigationShellState extends State<NavigationShell> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: widget.child, // The content of the selected tab
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: _selectedIndex,
-        onDestinationSelected: _onDestinationSelected,
-        destinations: const [
-          NavigationDestination(icon: Icon(Icons.home), label: 'Home'),
-          NavigationDestination(
-            icon: Icon(Icons.calendar_month),
-            label: 'Calendar',
+      body: widget.child,
+      extendBody: true, // Makes nav bar float over background
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(30),
+          child: BottomNavigationBar(
+            currentIndex: _selectedIndex,
+            onTap: _onDestinationSelected,
+            backgroundColor: Colors.amber[800],
+            selectedItemColor: Colors.white,
+            unselectedItemColor: Colors.white70,
+            type: BottomNavigationBarType.fixed,
+            elevation: 12,
+            items: const [
+              BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.calendar_month),
+                label: 'Calendar',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.mail_rounded),
+                label: 'Mail',
+              ),
+            ],
           ),
-          NavigationDestination(icon: Icon(Icons.mail_rounded), label: 'Mail'),
-        ],
+        ),
       ),
     );
   }
