@@ -23,7 +23,7 @@ class TaskService {
           "description": "Reflect on your week",
           "type": "system",
           "recurrenceInterval": "weekly",
-          "completed": true,
+          "completed": false,
         },
       ],
       "customTasks": [
@@ -43,7 +43,7 @@ class TaskService {
           "type": "custom",
           "dueDate": "2025-04-24",
           "recurrenceInterval": null,
-          "completed": true,
+          "completed": false,
         },
       ],
     };
