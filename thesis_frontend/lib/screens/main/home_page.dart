@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../models/tasks_mdl.dart';
 import '../../services/tasks_api_service.dart';
+import 'package:intl/intl.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -13,6 +14,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   late BuildContext safeScaffoldContext;
   List<TaskModel> tasks = [];
+  String _filterType = 'All';
 
   @override
   void initState() {
@@ -41,6 +43,16 @@ class _HomePageState extends State<HomePage> {
     ScaffoldMessenger.of(safeScaffoldContext).showSnackBar(
       const SnackBar(content: Text("Task marked as completed! 🎉")),
     );
+  }
+
+  List<TaskModel> get filteredTasks {
+    if (_filterType == 'System') {
+      return tasks.where((t) => !t.completed && !t.isCustomTask).toList();
+    } else if (_filterType == 'Custom') {
+      return tasks.where((t) => !t.completed && t.isCustomTask).toList();
+    } else {
+      return tasks.where((t) => !t.completed).toList();
+    }
   }
 
   Future<void> _checkMoodScreen() async {
@@ -213,6 +225,8 @@ class _HomePageState extends State<HomePage> {
           children: [
             Positioned(
               bottom: 175,
+              left: MediaQuery.of(context).size.width / 2 - 180,
+
               child: Dialog(
                 backgroundColor: Colors.white,
                 shape: RoundedRectangleBorder(
@@ -238,6 +252,37 @@ class _HomePageState extends State<HomePage> {
                           task.description!,
                           textAlign: TextAlign.center,
                           style: const TextStyle(fontSize: 14),
+                        ),
+                      const SizedBox(height: 12),
+
+                      if (task.dueDate != null)
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 6,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(color: Colors.orange.shade100),
+                          ),
+                          child: Row(
+                            children: [
+                              const Icon(
+                                Icons.calendar_today_rounded,
+                                size: 14,
+                                color: Colors.orange,
+                              ),
+                              const SizedBox(width: 6),
+                              Text(
+                                "Complete before ${DateFormat.yMMMd().format(task.dueDate!)}",
+                                style: const TextStyle(
+                                  fontSize: 11,
+                                  color: Colors.black87,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                     ],
                   ),
@@ -314,13 +359,10 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    final incompleteTasks = tasks.where((t) => !t.completed).toList();
-
     return Scaffold(
       body: Builder(
         builder: (scaffoldCtx) {
           safeScaffoldContext = scaffoldCtx;
-
           return Container(
             decoration: const BoxDecoration(
               image: DecorationImage(
@@ -334,20 +376,50 @@ class _HomePageState extends State<HomePage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const SizedBox(height: 10),
-                  if (incompleteTasks.isNotEmpty) ...[
-                    const Text(
-                      "Tasks to do:",
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
+                  if (filteredTasks.isNotEmpty)
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          "Tasks to do:",
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        PopupMenuButton<String>(
+                          icon: const Icon(
+                            Icons.filter_list,
+                            color: Colors.black,
+                          ),
+                          color: Colors.white, // background color of dropdown
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          onSelected:
+                              (value) => setState(() => _filterType = value),
+                          itemBuilder:
+                              (BuildContext context) => [
+                                const PopupMenuItem(
+                                  value: 'All',
+                                  child: Text("All"),
+                                ),
+                                const PopupMenuItem(
+                                  value: 'System',
+                                  child: Text("Basic"),
+                                ),
+                                const PopupMenuItem(
+                                  value: 'Custom',
+                                  child: Text("Custom"),
+                                ),
+                              ],
+                        ),
+                      ],
                     ),
-                    const SizedBox(height: 12),
-                  ],
-
+                  const SizedBox(height: 12),
                   Expanded(
                     child:
-                        incompleteTasks.isEmpty
+                        filteredTasks.isEmpty
                             ? const Center(
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
@@ -355,7 +427,7 @@ class _HomePageState extends State<HomePage> {
                                   Text("🎉", style: TextStyle(fontSize: 48)),
                                   SizedBox(height: 12),
                                   Text(
-                                    "You've completed all your tasks!\n Great Job! 🎊",
+                                    "You've completed all your tasks!\nGreat Job! 🎊",
                                     textAlign: TextAlign.center,
                                     style: TextStyle(fontSize: 16),
                                   ),
@@ -363,15 +435,14 @@ class _HomePageState extends State<HomePage> {
                               ),
                             )
                             : ListView.builder(
-                              itemCount: incompleteTasks.length,
+                              itemCount: filteredTasks.length,
                               itemBuilder: (context, index) {
-                                final task = incompleteTasks[index];
+                                final task = filteredTasks[index];
                                 return Card(
                                   color:
                                       task.isCustomTask
                                           ? Colors.blue[50]
                                           : Colors.orange[50],
-                                  elevation: 3,
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(16),
                                   ),
@@ -379,37 +450,64 @@ class _HomePageState extends State<HomePage> {
                                     vertical: 6,
                                   ),
                                   child: ListTile(
-                                    contentPadding: const EdgeInsets.symmetric(
-                                      horizontal: 16,
-                                      vertical: 6,
+                                    onTap: () => _showTaskDetails(task),
+                                    title: Text(task.title),
+                                    subtitle: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          task.isCustomTask
+                                              ? 'Custom Task'
+                                              : 'Repeats ${task.recurrenceInterval}',
+                                          style: const TextStyle(
+                                            fontSize: 11,
+                                            color: Colors.grey,
+                                          ),
+                                        ),
+                                        if (task.dueDate != null) ...[
+                                          const SizedBox(height: 6),
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 10,
+                                              vertical: 6,
+                                            ),
+                                            decoration: BoxDecoration(
+                                              color: Colors.white,
+                                              borderRadius:
+                                                  BorderRadius.circular(10),
+                                              border: Border.all(
+                                                color: Colors.orange.shade100,
+                                              ),
+                                            ),
+                                            child: Row(
+                                              children: [
+                                                const Icon(
+                                                  Icons.calendar_today_rounded,
+                                                  size: 14,
+                                                  color: Colors.orange,
+                                                ),
+                                                const SizedBox(width: 6),
+                                                Text(
+                                                  "Complete before ${DateFormat.yMMMd().format(task.dueDate!)}",
+                                                  style: const TextStyle(
+                                                    fontSize: 11,
+                                                    color: Colors.black87,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ],
+                                      ],
                                     ),
-                                    title: Text(
-                                      task.title,
-                                      style: const TextStyle(
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                    subtitle: Text(
-                                      task.isCustomTask
-                                          ? 'Custom Task'
-                                          : 'Repeats ${task.recurrenceInterval}',
-                                      style: const TextStyle(
-                                        fontSize: 11,
-                                        color: Colors.grey,
-                                      ),
-                                    ),
+
                                     trailing: ElevatedButton(
                                       onPressed: () => _completeTask(task),
                                       style: ElevatedButton.styleFrom(
                                         backgroundColor: Colors.green,
-                                        minimumSize: const Size(
-                                          48,
-                                          48,
-                                        ), // Square size
-                                        padding:
-                                            EdgeInsets
-                                                .zero, // No internal padding distortion,
+                                        minimumSize: const Size(48, 48),
+                                        padding: EdgeInsets.zero,
                                         shape: RoundedRectangleBorder(
                                           borderRadius: BorderRadius.circular(
                                             12,
@@ -422,7 +520,6 @@ class _HomePageState extends State<HomePage> {
                                         size: 20,
                                       ),
                                     ),
-                                    onTap: () => _showTaskDetails(task),
                                   ),
                                 );
                               },

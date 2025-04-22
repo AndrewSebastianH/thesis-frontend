@@ -4,7 +4,8 @@ class TaskModel {
   final String? description;
   final String type; // "custom" or "system"
   final String? recurrenceInterval; // system only
-  final String? dueDate; // custom only
+
+  final DateTime? dueDate; // custom only
   final bool completed;
 
   const TaskModel({
@@ -24,7 +25,7 @@ class TaskModel {
       description: json['description'],
       type: json['type'],
       recurrenceInterval: json['recurrenceInterval'],
-      dueDate: json['dueDate'],
+      dueDate: json['dueDate'] != null ? DateTime.parse(json['dueDate']) : null,
       completed: json['completed'] ?? false,
     );
   }
