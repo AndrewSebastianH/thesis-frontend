@@ -14,7 +14,7 @@ import './screens/registration/link_accounts_page.dart';
 import './screens/main/home_page.dart';
 import './screens/main/calendar_page.dart';
 import './screens/registration/view_connection_code.dart';
-import './screens/registration/loading.dart';
+import 'widgets/loading.dart';
 
 // Widgets
 import './widgets/navigation_shell.dart';
