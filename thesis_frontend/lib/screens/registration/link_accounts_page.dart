@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_otp_text_field/flutter_otp_text_field.dart';
 import 'package:go_router/go_router.dart';
-import 'package:thesis_frontend/widgets/custom_button.dart';
+import '../../widgets/custom_button.dart';
 
 class LinkAccountPage extends StatelessWidget {
   const LinkAccountPage({Key? key}) : super(key: key);

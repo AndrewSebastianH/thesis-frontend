@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:thesis_frontend/providers/auth_provider.dart';
 import 'package:provider/provider.dart';
-import 'package:thesis_frontend/widgets/custom_button.dart%20';
+import '../../providers/auth_provider.dart';
+import '../../widgets/custom_button.dart';
 
 class SignUp extends StatelessWidget {
   const SignUp({Key? key}) : super(key: key);

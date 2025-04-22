@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:thesis_frontend/widgets/custom_button.dart';
+import '../../widgets/custom_button.dart';
 
 class ChooseRoleScreen extends StatefulWidget {
   final String? connectionCode;

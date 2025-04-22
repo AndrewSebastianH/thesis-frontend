@@ -32,11 +32,7 @@ class EmotionService {
         "id": 1,
         "username": "Bearl Benson",
         "logs": [
-          {
-            "date": "2025-04-14",
-            "emotion": "happy",
-            "detail": "Had fun playing with Mama today! 🐻",
-          },
+          {"date": "2025-04-14", "emotion": "happy", "detail": ""},
           {
             "date": "2025-04-13",
             "emotion": "sad",
