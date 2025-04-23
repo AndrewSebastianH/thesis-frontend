@@ -480,18 +480,20 @@ class _HomePageState extends State<HomePage> {
                                                 color: Colors.orange.shade100,
                                               ),
                                             ),
-                                            child: Row(
+                                            child: Wrap(
+                                              crossAxisAlignment:
+                                                  WrapCrossAlignment.center,
+                                              spacing: 6,
                                               children: [
                                                 const Icon(
                                                   Icons.calendar_today_rounded,
                                                   size: 14,
                                                   color: Colors.orange,
                                                 ),
-                                                const SizedBox(width: 6),
                                                 Text(
                                                   "Complete before ${DateFormat.yMMMd().format(task.dueDate!)}",
                                                   style: const TextStyle(
-                                                    fontSize: 11,
+                                                    fontSize: 10,
                                                     color: Colors.black87,
                                                   ),
                                                 ),
