@@ -381,7 +381,7 @@ class _HomePageState extends State<HomePage> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         const Text(
-                          "Tasks to do:",
+                          "Today's goals:",
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
@@ -402,15 +402,15 @@ class _HomePageState extends State<HomePage> {
                               (BuildContext context) => [
                                 const PopupMenuItem(
                                   value: 'All',
-                                  child: Text("All"),
+                                  child: Text("Show All"),
                                 ),
                                 const PopupMenuItem(
                                   value: 'System',
-                                  child: Text("Basic"),
+                                  child: Text("Show Goals"),
                                 ),
                                 const PopupMenuItem(
                                   value: 'Custom',
-                                  child: Text("Custom"),
+                                  child: Text("Show Custom Tasks"),
                                 ),
                               ],
                         ),
