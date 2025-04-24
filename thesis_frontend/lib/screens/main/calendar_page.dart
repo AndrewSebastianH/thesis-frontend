@@ -1,9 +1,6 @@
-// import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:table_calendar/table_calendar.dart';
-// import 'package:http/http.dart' as http;
-// import 'package:thesis_frontend/config/apiConfig.dart';
 import 'package:thesis_frontend/providers/user_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:thesis_frontend/models/emotion_log_mdl.dart';
@@ -23,13 +20,13 @@ class _EmotionCalendarPageState extends State<EmotionCalendarPage> {
   DateTime? _selectedDay;
   List<EmotionLog> _selectedEvents = [];
   bool _isLoading = true;
+  String _logFilter = 'All'; // Options: All, You, Relative
 
   @override
   void initState() {
     super.initState();
     final userProvider = Provider.of<UserProvider>(context, listen: false);
-    userProvider.setMockUser();
-    userProvider.setMockRelatedUser();
+    userProvider.setMockParentUser();
 
     loadEmotionLogs();
   }
@@ -62,7 +59,19 @@ class _EmotionCalendarPageState extends State<EmotionCalendarPage> {
 
   List<EmotionLog> _getEventsForDay(DateTime day) {
     final normalized = DateTime.utc(day.year, day.month, day.day);
-    return emotionEvents[normalized] ?? [];
+    final logs = emotionEvents[normalized] ?? [];
+
+    final currentUser = Provider.of<UserProvider>(context, listen: false).user;
+    final relatedUser =
+        Provider.of<UserProvider>(context, listen: false).relatedUser;
+
+    if (_logFilter == 'You') {
+      return logs.where((log) => log.userId == currentUser?.id).toList();
+    } else if (_logFilter == 'Relative') {
+      return logs.where((log) => log.userId == relatedUser?.id).toList();
+    } else {
+      return logs; // All
+    }
   }
 
   void _showLogDetailsDialog(
@@ -151,18 +160,21 @@ class _EmotionCalendarPageState extends State<EmotionCalendarPage> {
     final relatedUser = userProvider.relatedUser;
 
     return Scaffold(
+      backgroundColor: Colors.orange[50],
       appBar: AppBar(
         title: const Text(
           "Emotion Calendar",
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.orange[50],
       ),
       body: Skeletonizer(
         enabled: _isLoading,
         child: Column(
           children: [
             TableCalendar<EmotionLog>(
+              rowHeight: 42,
+              daysOfWeekHeight: 20,
               firstDay: DateTime.utc(2024, 1, 1),
               lastDay: DateTime.utc(2030, 12, 31),
               focusedDay: _focusedDay,
@@ -178,6 +190,7 @@ class _EmotionCalendarPageState extends State<EmotionCalendarPage> {
                   _selectedEvents = _getEventsForDay(selectedDay);
                 });
               },
+
               calendarStyle: const CalendarStyle(
                 selectedDecoration: BoxDecoration(
                   color: Color(0xFFFF7F50),
@@ -220,6 +233,61 @@ class _EmotionCalendarPageState extends State<EmotionCalendarPage> {
               ),
             ),
             const SizedBox(height: 12),
+            Wrap(
+              spacing: 8,
+              children: [
+                FilterChip(
+                  label: const Text("All"),
+                  selected: _logFilter == 'All',
+                  onSelected: (_) => setState(() => _logFilter = 'All'),
+                  selectedColor: Colors.orange[300], // background when selected
+                  backgroundColor:
+                      Colors.orange[50], // background when NOT selected
+                  labelStyle: TextStyle(
+                    color:
+                        _logFilter == 'All' ? Colors.white : Colors.orange[800],
+                    fontWeight: FontWeight.w600,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                ),
+                FilterChip(
+                  label: const Text("My Logs"),
+                  selected: _logFilter == 'You',
+                  onSelected: (_) => setState(() => _logFilter = 'You'),
+                  selectedColor: Colors.orange[300],
+                  backgroundColor: Colors.orange[50],
+                  labelStyle: TextStyle(
+                    color:
+                        _logFilter == 'You' ? Colors.white : Colors.orange[800],
+                    fontWeight: FontWeight.w600,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                ),
+                FilterChip(
+                  label: const Text("Relative's "),
+                  selected: _logFilter == 'Relative',
+                  onSelected: (_) => setState(() => _logFilter = 'Relative'),
+                  selectedColor: Colors.orange[300],
+                  backgroundColor: Colors.orange[50],
+                  labelStyle: TextStyle(
+                    color:
+                        _logFilter == 'Relative'
+                            ? Colors.white
+                            : Colors.orange[800],
+                    fontWeight: FontWeight.w600,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 10),
+
             Expanded(
               child:
                   _selectedEvents.isEmpty
