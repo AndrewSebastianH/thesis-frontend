@@ -208,16 +208,44 @@ class _EmotionCalendarPageState extends State<EmotionCalendarPage> {
                 ),
               ),
               calendarBuilders: CalendarBuilders(
+                defaultBuilder: (context, date, _) {
+                  final logs = _getEventsForDay(date);
+
+                  // Only show emoji if there's exactly 1 event
+                  if (logs.length == 1 && _logFilter != 'All') {
+                    final log = logs.first;
+                    final emoji = switch (log.emotion) {
+                      'happy' => '😊',
+                      'neutral' => '😐',
+                      'sad' => '😢',
+                      _ => '',
+                    };
+
+                    return Center(
+                      child: Text(emoji, style: const TextStyle(fontSize: 24)),
+                    );
+                  }
+
+                  // Default day display
+                  return null;
+                },
                 markerBuilder: (context, date, events) {
-                  if (events.isEmpty) return const SizedBox();
+                  final logs = _getEventsForDay(date);
+
+                  // Hide marker if filter is not 'All' and there's only one log
+                  // if ((_logFilter != 'All' && logs.length == 1) || logs.isEmpty) {
+                  //   return const SizedBox.shrink();
+                  // }
+
                   return Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children:
-                        events.map((e) {
+                        logs.map((e) {
                           final color =
                               e.userId == currentUser?.id
                                   ? Colors.orange
                                   : Colors.blue;
+
                           return Container(
                             width: 6,
                             height: 6,
