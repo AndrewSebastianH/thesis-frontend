@@ -5,6 +5,7 @@ class CustomButton extends StatelessWidget {
   final VoidCallback onPressed;
   final bool isOutlined;
   final Color? color;
+  final bool isEnabled;
 
   const CustomButton({
     Key? key,
@@ -12,23 +13,25 @@ class CustomButton extends StatelessWidget {
     required this.onPressed,
     this.isOutlined = false,
     this.color,
+    this.isEnabled = true,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final defaultColor = color ?? const Color(0xFFFF7F50); // Coral
+    final disabledColor = Colors.grey.shade400;
 
     return isOutlined
         ? OutlinedButton(
+          onPressed: isEnabled ? onPressed : null,
           style: OutlinedButton.styleFrom(
-            foregroundColor: defaultColor,
-            side: BorderSide(color: defaultColor),
+            foregroundColor: isEnabled ? defaultColor : disabledColor,
+            side: BorderSide(color: isEnabled ? defaultColor : disabledColor),
             padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 20),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(8),
             ),
           ),
-          onPressed: onPressed,
           child: Text(
             text,
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
@@ -36,9 +39,9 @@ class CustomButton extends StatelessWidget {
         )
         : ElevatedButton(
           style: ElevatedButton.styleFrom(
-            backgroundColor: defaultColor,
-            padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 20),
+            backgroundColor: isEnabled ? defaultColor : disabledColor,
             foregroundColor: Colors.white,
+            padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 20),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(8),
             ),

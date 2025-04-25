@@ -14,6 +14,7 @@ import './screens/registration/link_accounts_page.dart';
 import './screens/main/home_page.dart';
 import './screens/main/calendar_page.dart';
 import './screens/registration/view_connection_code.dart';
+import './screens/main/create_task_page.dart';
 import 'widgets/loading.dart';
 
 // Widgets
@@ -97,6 +98,12 @@ class MyApp extends StatelessWidget {
             ),
           ],
         ),
+
+        GoRoute(
+          path: '/create-task',
+          builder: (context, state) => const CreateTaskPage(),
+        ),
+
         ShellRoute(
           builder: (context, state, child) {
             return NavigationShell(child: child);
@@ -133,6 +140,9 @@ class MyApp extends StatelessWidget {
         appBarTheme: const AppBarTheme(
           backgroundColor: Colors.white,
           foregroundColor: Colors.deepOrange,
+        ),
+        inputDecorationTheme: const InputDecorationTheme(
+          hintStyle: TextStyle(color: Colors.grey),
         ),
       ),
       routerConfig: router,

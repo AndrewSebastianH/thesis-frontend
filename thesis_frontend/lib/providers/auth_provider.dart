@@ -1,77 +1,3 @@
-// import 'dart:convert';
-// import 'package:flutter/material.dart';
-// import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-// import 'package:jwt_decoder/jwt_decoder.dart';
-// import '../models/user_mdl.dart';
-// import '../services/auth_api_service.dart';
-
-// class AuthProvider extends ChangeNotifier {
-//   final _secureStorage = const FlutterSecureStorage();
-
-//   bool _isLoggedIn = false;
-//   String? _token;
-//   UserModel? _user;
-
-//   bool get isLoggedIn => _isLoggedIn;
-//   String? get token => _token;
-//   UserModel? get user => _user;
-
-//   // Controllers
-//   final TextEditingController emailController = TextEditingController();
-//   final TextEditingController passwordController = TextEditingController();
-//   final TextEditingController confirmPasswordController = TextEditingController();
-
-//   bool isPasswordVisible = false;
-//   bool isConfirmPasswordVisible = false;
-
-//   // --- Form validation ---
-//   bool validateEmail(String? value) {
-//     if (value == null || value.isEmpty) return false;
-//     return RegExp(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$").hasMatch(value);
-//   }
-
-//   bool validatePassword(String? value) {
-//     return value != null && value.length >= 6;
-//   }
-
-//   bool isPasswordMatching() {
-//     return passwordController.text == confirmPasswordController.text;
-//   }
-
-//   void togglePasswordVisibility() {
-//     isPasswordVisible = !isPasswordVisible;
-//     notifyListeners();
-//   }
-
-//   void toggleConfirmPasswordVisibility() {
-//     isConfirmPasswordVisible = !isConfirmPasswordVisible;
-//     notifyListeners();
-//   }
-
-//   // --- Auth actions ---
-// Future<void> login(String email, String password, BuildContext context) async {
-//   final token = await AuthService.login(email, password);
-
-//   if (token != null) {
-//     final decoded = JwtDecoder.decode(token);
-//     final user = UserModel.fromJwt(decoded);
-
-//     _token = token;
-//     _isLoggedIn = true;
-//     _user = user;
-
-//     // Save it to secure storage
-//     await _secureStorage.write(key: 'auth_token', value: token);
-
-//     // 💡 Pass it to UserProvider
-//     Provider.of<UserProvider>(context, listen: false).setUser(user);
-
-//     notifyListeners();
-//   } else {
-//     throw Exception("Invalid login");
-//   }
-// }
-
 //   Future<void> signup(String username, String email, String password) async {
 //     final success = await AuthService.signup(username, email, password);
 //     if (!success) throw Exception("Signup failed");
@@ -123,9 +49,15 @@ class AuthProvider extends ChangeNotifier {
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController confirmPasswordController =
       TextEditingController();
+  final TextEditingController usernameController = TextEditingController();
 
   bool isPasswordVisible = false;
   bool isConfirmPasswordVisible = false;
+
+  // Username Validation
+  bool validateUsername(String? value) {
+    return value != null;
+  }
 
   //  Email Validation
   bool validateEmail(String? value) {

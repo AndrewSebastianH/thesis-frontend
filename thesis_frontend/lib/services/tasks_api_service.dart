@@ -1,5 +1,9 @@
 import 'dart:async';
+import 'package:intl/intl.dart';
+
 import '../models/tasks_mdl.dart';
+import 'package:thesis_frontend/config/api_config.dart';
+import 'package:dio/dio.dart';
 
 class TaskService {
   static Future<List<TaskModel>> fetchTasks() async {
@@ -60,6 +64,38 @@ class TaskService {
 
     return [...systemTasks, ...customTasks];
   }
+
+  // Create custom task
+  // static Future<String?> createCustomTask(
+  //   String title,
+  //   String? description,
+  //   bool isRecurring,
+  //   DateTime dueDate,
+  //   String recurrenceInterval,
+  // ) async {
+  //   try {
+  //     final formattedDueDate = DateFormat('yyyy-MM-dd').format(dueDate);
+  //     final response = await ApiConfig.dio.post(
+  //       '/tasks/user/create',
+  //       data: {
+  //         'title': title,
+  //         'description': description,
+  //         'isRecurring': isRecurring,
+  //         'dueDate': formattedDueDate,
+  //         'recurrenceInterval': recurrenceInterval,
+  //       },
+  //     );
+
+  //     if (response.statusCode == 200) {
+  //       return response.data;
+  //     }
+
+  //     return null;
+  //   } on DioException catch (e) {
+  //     print("Login failed: ${e.response?.data}");
+  //     return null;
+  //   }
+  // }
 
   // Mock complete functions
   static Future<void> completeCustomTask(int taskId) async {

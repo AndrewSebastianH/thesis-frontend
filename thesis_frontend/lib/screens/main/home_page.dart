@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../models/tasks_mdl.dart';
 import '../../services/tasks_api_service.dart';
@@ -107,6 +108,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  // Function to show emoji buttons
   Widget _buildMoodButton(String mood, String emoji) {
     return GestureDetector(
       onTap: () => _submitMood(mood),
@@ -121,6 +123,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  // Submit mood modal (1/2)
   Future<void> _submitMood(String mood) async {
     Navigator.of(context, rootNavigator: true).pop();
     final prefs = await SharedPreferences.getInstance();
@@ -132,6 +135,7 @@ class _HomePageState extends State<HomePage> {
     _showDetailInputDialog(mood);
   }
 
+  // Show reflection Modal (2/2)
   void _showDetailInputDialog(String mood) {
     final TextEditingController _detailController = TextEditingController();
 
@@ -195,6 +199,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  // Submit Mood and Reflection
   Future<void> _finalizeMoodSubmission(String mood, String detail) async {
     final prefs = await SharedPreferences.getInstance();
     final now = DateTime.now();
@@ -215,6 +220,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  // Task press modal
   void _showTaskDetails(TaskModel task) {
     showDialog(
       context: context,
@@ -357,6 +363,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  // UI
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -417,6 +424,7 @@ class _HomePageState extends State<HomePage> {
                       ],
                     ),
                   const SizedBox(height: 12),
+                  // Task cards
                   Expanded(
                     child:
                         filteredTasks.isEmpty
@@ -503,7 +511,6 @@ class _HomePageState extends State<HomePage> {
                                         ],
                                       ],
                                     ),
-
                                     trailing: ElevatedButton(
                                       onPressed: () => _completeTask(task),
                                       style: ElevatedButton.styleFrom(

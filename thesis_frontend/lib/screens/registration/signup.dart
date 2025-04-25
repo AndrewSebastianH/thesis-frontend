@@ -66,6 +66,22 @@ class __FormContentState extends State<_FormContent> {
             ),
             _gap(height: 40),
             TextFormField(
+              controller: controller.usernameController,
+              validator:
+                  (value) =>
+                      controller.validateUsername(value)
+                          ? null
+                          : 'Please enter a valid name',
+
+              decoration: const InputDecoration(
+                labelText: 'Name',
+                hintText: 'Enter your name',
+                prefixIcon: Icon(Icons.person_outline_rounded),
+                border: OutlineInputBorder(),
+              ),
+            ),
+            _gap(),
+            TextFormField(
               controller: controller.emailController,
               validator:
                   (value) =>

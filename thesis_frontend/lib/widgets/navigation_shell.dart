@@ -38,8 +38,29 @@ class _NavigationShellState extends State<NavigationShell> {
     return Scaffold(
       body: widget.child,
       extendBody: true, // Makes nav bar float over background
+      floatingActionButton:
+          _selectedIndex == 0
+              ? Padding(
+                padding: const EdgeInsets.only(top: 22),
+                child: Container(
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Colors.orange,
+                  ),
+                  padding: const EdgeInsets.all(4), // outline thickness
+                  child: FloatingActionButton(
+                    mini: true,
+                    backgroundColor: Colors.white,
+                    shape: const CircleBorder(),
+                    onPressed: () => context.push('/create-task'),
+                    child: const Icon(Icons.add, color: Colors.orange),
+                  ),
+                ),
+              )
+              : null,
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 12),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(30),
           child: BottomNavigationBar(
