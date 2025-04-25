@@ -81,68 +81,98 @@ class _EmotionCalendarPageState extends State<EmotionCalendarPage> {
     String avatarAsset,
     bool isCurrentUser,
   ) {
-    showDialog(
+    showGeneralDialog(
       context: context,
-      builder: (context) {
-        return Dialog(
-          backgroundColor:
-              isCurrentUser ? Colors.orange[100] : Colors.blue[100],
-
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.center,
+      barrierDismissible: true,
+      barrierLabel: 'Log Details',
+      pageBuilder: (context, animation, secondaryAnimation) {
+        return Center(
+          child: Material(
+            color: Colors.transparent,
+            child: Stack(
               children: [
-                CircleAvatar(
-                  radius: 30,
-                  backgroundImage: AssetImage(avatarAsset),
-                ),
-                const SizedBox(height: 10),
-                Text(
-                  "$username felt ${log.emotion}",
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                const SizedBox(height: 5),
-                Text(
-                  DateFormat.yMMMMd().format(log.date),
-                  style: TextStyle(fontSize: 13, color: Colors.grey[600]),
-                ),
-                const SizedBox(height: 20),
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(14),
-                  decoration: BoxDecoration(
-                    color: Colors.orange[50],
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Colors.orangeAccent),
-                  ),
-                  child: Text(
-                    log.detail.isNotEmpty
-                        ? log.detail
-                        : "No additional notes provided.",
-                    style: const TextStyle(fontSize: 14),
-                  ),
-                ),
-
-                const SizedBox(height: 16),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.orange,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
+                Padding(
+                  padding: const EdgeInsets.only(left: 16, right: 16),
+                  child: Container(
+                    width: 320,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 24,
+                    ),
+                    decoration: BoxDecoration(
+                      color:
+                          isCurrentUser ? Colors.orange[100] : Colors.blue[100],
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(
+                        color:
+                            isCurrentUser ? Colors.orange : Colors.blueAccent,
+                        width: 2,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withAlpha(20),
+                          blurRadius: 10,
+                          offset: const Offset(0, 5),
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const SizedBox(height: 30), // to avoid X overlap
+                        CircleAvatar(
+                          radius: 30,
+                          backgroundImage: AssetImage(avatarAsset),
+                        ),
+                        const SizedBox(height: 10),
+                        Text(
+                          "$username felt ${log.emotion}",
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        const SizedBox(height: 5),
+                        Text(
+                          DateFormat.yMMMMd().format(log.date),
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(14),
+                          decoration: BoxDecoration(
+                            color: Colors.orange[50],
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: Colors.orangeAccent),
+                          ),
+                          child: Text(
+                            log.detail.isNotEmpty
+                                ? log.detail
+                                : "No additional notes provided.",
+                            style: const TextStyle(fontSize: 14),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  onPressed: () => Navigator.pop(context),
-                  child: const Text(
-                    "Close",
-                    style: TextStyle(color: Colors.white),
+                ),
+
+                // Close (X) button
+                Positioned(
+                  top: 6,
+                  right: 20,
+                  child: IconButton(
+                    icon: const Icon(
+                      Icons.close_rounded,
+                      size: 24,
+                      color: Colors.grey,
+                    ),
+                    splashRadius: 20,
+                    onPressed: () => Navigator.of(context).pop(),
                   ),
                 ),
               ],
@@ -150,6 +180,13 @@ class _EmotionCalendarPageState extends State<EmotionCalendarPage> {
           ),
         );
       },
+      transitionBuilder: (context, animation, secondaryAnimation, child) {
+        return ScaleTransition(
+          scale: CurvedAnimation(parent: animation, curve: Curves.easeOutBack),
+          child: child,
+        );
+      },
+      transitionDuration: const Duration(milliseconds: 400),
     );
   }
 

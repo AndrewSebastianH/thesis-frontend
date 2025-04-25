@@ -3,7 +3,7 @@ class MailModel {
   final int senderId;
   final int receiverId;
   final String message;
-  final bool isRead;
+  bool isRead;
   final DateTime createdAt;
 
   MailModel({

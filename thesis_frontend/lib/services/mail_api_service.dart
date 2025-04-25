@@ -11,8 +11,8 @@ class MailApiService {
       "mails": [
         {
           "id": "uuid-1",
-          "senderId": 2,
-          "receiverId": 1,
+          "senderId": 1,
+          "receiverId": 2,
           "message": "Hope your day is nice today ☀️",
           "isRead": false,
           "createdAt":
@@ -22,8 +22,8 @@ class MailApiService {
         },
         {
           "id": "uuid-2",
-          "senderId": 2,
-          "receiverId": 1,
+          "senderId": 1,
+          "receiverId": 2,
           "message": "I’m proud of you!",
           "isRead": true,
           "createdAt":
@@ -47,8 +47,8 @@ class MailApiService {
       "mails": [
         {
           "id": "uuid-3",
-          "senderId": 1,
-          "receiverId": 2,
+          "senderId": 2,
+          "receiverId": 1,
           "message": "You mean the world to me 💛",
           "isRead": true,
           "createdAt":
@@ -58,8 +58,8 @@ class MailApiService {
         },
         {
           "id": "uuid-4",
-          "senderId": 1,
-          "receiverId": 2,
+          "senderId": 2,
+          "receiverId": 1,
           "message": "WASH THE DISHES NNNNOOOOOOOOOOW",
           "isRead": true,
           "createdAt":
@@ -69,8 +69,8 @@ class MailApiService {
         },
         {
           "id": "uuid-5",
-          "senderId": 1,
-          "receiverId": 2,
+          "senderId": 2,
+          "receiverId": 1,
           "message": "Bodolah cik",
           "isRead": true,
           "createdAt":

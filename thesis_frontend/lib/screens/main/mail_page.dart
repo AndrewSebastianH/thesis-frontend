@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:thesis_frontend/models/mail_mdl.dart';
+import 'package:thesis_frontend/providers/user_provider.dart';
 import 'package:thesis_frontend/services/mail_api_service.dart';
 
 class MailInboxPage extends StatefulWidget {
@@ -64,7 +66,7 @@ class _MailInboxPageState extends State<MailInboxPage> {
       body:
           isLoading
               ? ListView.builder(
-                itemCount: 5, // 5 fake skeleton mails
+                itemCount: 5,
                 itemBuilder: (context, index) => const SkeletonMailCard(),
               )
               : mails.isEmpty
@@ -73,6 +75,7 @@ class _MailInboxPageState extends State<MailInboxPage> {
                 itemCount: mails.length,
                 itemBuilder: (context, index) {
                   final mail = mails[index];
+
                   return Card(
                     color:
                         mail.isRead
@@ -83,7 +86,12 @@ class _MailInboxPageState extends State<MailInboxPage> {
                       vertical: 6,
                     ),
                     child: ListTile(
-                      title: Text(mail.message),
+                      onTap: () => _openMail(mail),
+                      title: Text(
+                        mail.message,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                       subtitle: Text(DateFormat.yMMMd().format(mail.createdAt)),
                       trailing:
                           showInbox && !mail.isRead
@@ -101,9 +109,122 @@ class _MailInboxPageState extends State<MailInboxPage> {
               ),
     );
   }
+
+  void _openMail(MailModel mail) {
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    final currentUser = userProvider.user;
+
+    showGeneralDialog(
+      context: context,
+      barrierDismissible: true,
+      barrierLabel: 'Mail',
+      pageBuilder: (context, animation, secondaryAnimation) {
+        return Center(
+          child: Material(
+            color: Colors.transparent,
+            child: Container(
+              width: 300,
+              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 20),
+              decoration: BoxDecoration(
+                color: Colors.orange[50],
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.2),
+                    blurRadius: 10,
+                    offset: const Offset(0, 5),
+                  ),
+                ],
+                border: Border.all(
+                  color: showInbox ? Colors.orange : Colors.lightBlue,
+                  width: 2,
+                ),
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      IconButton(
+                        icon: const Icon(
+                          Icons.close_rounded,
+                          size: 20,
+                          color: Colors.grey,
+                        ),
+                        onPressed: () => Navigator.of(context).pop(),
+                        splashRadius: 20,
+                      ),
+                    ],
+                  ),
+
+                  Image.asset(
+                    showInbox
+                        ? 'assets/images/bear_mail.png'
+                        : 'assets/images/bear_sent.png',
+                    width: 70,
+                    height: 70,
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    showInbox ? "You've got a mail!" : "Mail sent!",
+
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: showInbox ? Colors.orange : Colors.lightBlue,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 20),
+                  // Add this white "paper" box!
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color:
+                            showInbox
+                                ? Colors.orange.withAlpha(30)
+                                : Colors.lightBlue.withAlpha(30),
+                      ),
+                    ),
+                    child: Text(
+                      mail.message,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        color: Colors.black87,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+      transitionBuilder: (context, animation, secondaryAnimation, child) {
+        return ScaleTransition(
+          scale: CurvedAnimation(parent: animation, curve: Curves.easeOutBack),
+          child: child,
+        );
+      },
+      transitionDuration: const Duration(milliseconds: 400),
+    );
+
+    if (!mail.isRead && mail.senderId != currentUser?.id) {
+      MailApiService.readMail(mail.id);
+      setState(() {
+        mail.isRead = true;
+      });
+    }
+  }
 }
 
-// Fake skeleton mail card for loading state
 class SkeletonMailCard extends StatelessWidget {
   const SkeletonMailCard({super.key});
 
