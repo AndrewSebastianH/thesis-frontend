@@ -319,8 +319,11 @@ class _EmotionCalendarPageState extends State<EmotionCalendarPage> {
             Expanded(
               child:
                   _selectedEvents.isEmpty
-                      ? const Center(
-                        child: Text("No emotion logs for this day."),
+                      ? Padding(
+                        padding: const EdgeInsets.only(bottom: 80.0),
+                        child: const Center(
+                          child: Text("No emotion logs for this day."),
+                        ),
                       )
                       : ListView.builder(
                         itemCount: _selectedEvents.length,
