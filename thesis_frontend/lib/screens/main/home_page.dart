@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../models/tasks_mdl.dart';
 import '../../services/tasks_api_service.dart';
@@ -69,6 +68,7 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  // Show mood modal (1/2)
   void _showMoodDialog() {
     showDialog(
       context: context,
@@ -123,7 +123,6 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  // Submit mood modal (1/2)
   Future<void> _submitMood(String mood) async {
     Navigator.of(context, rootNavigator: true).pop();
     final prefs = await SharedPreferences.getInstance();
@@ -176,7 +175,10 @@ class _HomePageState extends State<HomePage> {
                   Navigator.pop(context);
                   _finalizeMoodSubmission(mood, '');
                 },
-                child: const Text("Not now"),
+                child: const Text(
+                  "Not now",
+                  style: TextStyle(color: Colors.black54),
+                ),
               ),
               ElevatedButton(
                 onPressed: () {

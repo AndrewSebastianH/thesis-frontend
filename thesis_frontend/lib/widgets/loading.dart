@@ -42,11 +42,15 @@ class _LoadingState extends State<Loading> with TickerProviderStateMixin {
 
     // Simulate a delay before fading out
     Future.delayed(const Duration(seconds: 3), () {
+      if (!mounted) return;
       setState(() {
         _isFadingOut = true;
       });
+
       _fadeController.forward().whenComplete(() {
-        widget.onFinish?.call();
+        if (mounted) {
+          widget.onFinish?.call();
+        }
       });
     });
   }

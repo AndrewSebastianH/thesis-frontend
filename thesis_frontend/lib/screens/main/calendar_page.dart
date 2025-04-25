@@ -168,240 +168,296 @@ class _EmotionCalendarPageState extends State<EmotionCalendarPage> {
         ),
         backgroundColor: Colors.orange[50],
       ),
-      body: Skeletonizer(
-        enabled: _isLoading,
-        child: Column(
-          children: [
-            TableCalendar<EmotionLog>(
-              rowHeight: 42,
-              daysOfWeekHeight: 20,
-              firstDay: DateTime.utc(2024, 1, 1),
-              lastDay: DateTime.utc(2030, 12, 31),
-              focusedDay: _focusedDay,
-              selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
-              calendarFormat: CalendarFormat.month,
-              availableCalendarFormats: const {CalendarFormat.month: 'Month'},
-              eventLoader: _getEventsForDay,
-              onDaySelected: (selectedDay, focusedDay) {
-                if (!mounted) return;
-                setState(() {
-                  _selectedDay = selectedDay;
-                  _focusedDay = focusedDay;
-                  _selectedEvents = _getEventsForDay(selectedDay);
-                });
-              },
+      body: Column(
+        children: [
+          TableCalendar<EmotionLog>(
+            rowHeight: 42,
+            daysOfWeekHeight: 20,
+            firstDay: DateTime.utc(2024, 1, 1),
+            lastDay: DateTime.utc(2030, 12, 31),
+            focusedDay: _focusedDay,
+            selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
+            calendarFormat: CalendarFormat.month,
+            availableCalendarFormats: const {CalendarFormat.month: 'Month'},
+            eventLoader: _getEventsForDay,
+            onDaySelected: (selectedDay, focusedDay) {
+              if (!mounted) return;
+              setState(() {
+                _selectedDay = selectedDay;
+                _focusedDay = focusedDay;
+                _selectedEvents = _getEventsForDay(selectedDay);
+              });
+            },
 
-              calendarStyle: const CalendarStyle(
-                selectedDecoration: BoxDecoration(
-                  color: Color(0xFFFF7F50),
-                  shape: BoxShape.circle,
-                ),
-                todayDecoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.fromBorderSide(
-                    BorderSide(color: Color(0xFFFF7F50), width: 2),
-                  ),
-                ),
-                todayTextStyle: TextStyle(
-                  color: Color(0xFFFF7F50),
-                  fontWeight: FontWeight.bold,
+            calendarStyle: const CalendarStyle(
+              selectedDecoration: BoxDecoration(
+                color: Color(0xFFFF7F50),
+                shape: BoxShape.circle,
+              ),
+              todayDecoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.fromBorderSide(
+                  BorderSide(color: Color(0xFFFF7F50), width: 2),
                 ),
               ),
-              calendarBuilders: CalendarBuilders(
-                defaultBuilder: (context, date, _) {
-                  final logs = _getEventsForDay(date);
+              todayTextStyle: TextStyle(
+                color: Color(0xFFFF7F50),
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            calendarBuilders: CalendarBuilders(
+              defaultBuilder: (context, date, _) {
+                final logs = _getEventsForDay(date);
 
-                  // Only show emoji if there's exactly 1 event
-                  if (logs.length == 1 && _logFilter != 'All') {
-                    final log = logs.first;
-                    final emoji = switch (log.emotion) {
-                      'happy' => '😊',
-                      'neutral' => '😐',
-                      'sad' => '😢',
-                      _ => '',
-                    };
+                // Only show emoji if there's exactly 1 event
+                if (logs.length == 1 && _logFilter != 'All') {
+                  final log = logs.first;
+                  final emoji = switch (log.emotion) {
+                    'happy' => '😊',
+                    'neutral' => '😐',
+                    'sad' => '😢',
+                    _ => '',
+                  };
 
-                    return Center(
-                      child: Text(emoji, style: const TextStyle(fontSize: 24)),
-                    );
-                  }
-
-                  // Default day display
-                  return null;
-                },
-                markerBuilder: (context, date, events) {
-                  final logs = _getEventsForDay(date);
-
-                  // Hide marker if filter is not 'All' and there's only one log
-                  // if ((_logFilter != 'All' && logs.length == 1) || logs.isEmpty) {
-                  //   return const SizedBox.shrink();
-                  // }
-
-                  return Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children:
-                        logs.map((e) {
-                          final color =
-                              e.userId == currentUser?.id
-                                  ? Colors.orange
-                                  : Colors.blue;
-
-                          return Container(
-                            width: 6,
-                            height: 6,
-                            margin: const EdgeInsets.symmetric(horizontal: 0.5),
-                            decoration: BoxDecoration(
-                              color: color,
-                              shape: BoxShape.circle,
-                            ),
-                          );
-                        }).toList(),
+                  return Center(
+                    child: Text(emoji, style: const TextStyle(fontSize: 24)),
                   );
-                },
+                }
+
+                // Default day display
+                return null;
+              },
+              markerBuilder: (context, date, events) {
+                final logs = _getEventsForDay(date);
+
+                // Hide marker if filter is not 'All' and there's only one log
+                // if ((_logFilter != 'All' && logs.length == 1) || logs.isEmpty) {
+                //   return const SizedBox.shrink();
+                // }
+
+                return Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children:
+                      logs.map((e) {
+                        final color =
+                            e.userId == currentUser?.id
+                                ? Colors.orange
+                                : Colors.blue;
+
+                        return Container(
+                          width: 6,
+                          height: 6,
+                          margin: const EdgeInsets.symmetric(horizontal: 0.5),
+                          decoration: BoxDecoration(
+                            color: color,
+                            shape: BoxShape.circle,
+                          ),
+                        );
+                      }).toList(),
+                );
+              },
+            ),
+          ),
+          const SizedBox(height: 12),
+          Wrap(
+            spacing: 8,
+            children: [
+              FilterChip(
+                label: const Text("All"),
+                selected: _logFilter == 'All',
+                onSelected: (_) => setState(() => _logFilter = 'All'),
+                selectedColor: Colors.orange[300], // background when selected
+                backgroundColor:
+                    Colors.orange[50], // background when NOT selected
+                labelStyle: TextStyle(
+                  color:
+                      _logFilter == 'All' ? Colors.white : Colors.orange[800],
+                  fontWeight: FontWeight.w600,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
               ),
-            ),
-            const SizedBox(height: 12),
-            Wrap(
-              spacing: 8,
-              children: [
-                FilterChip(
-                  label: const Text("All"),
-                  selected: _logFilter == 'All',
-                  onSelected: (_) => setState(() => _logFilter = 'All'),
-                  selectedColor: Colors.orange[300], // background when selected
-                  backgroundColor:
-                      Colors.orange[50], // background when NOT selected
-                  labelStyle: TextStyle(
-                    color:
-                        _logFilter == 'All' ? Colors.white : Colors.orange[800],
-                    fontWeight: FontWeight.w600,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
+              FilterChip(
+                label: const Text("My Logs"),
+                selected: _logFilter == 'You',
+                onSelected: (_) => setState(() => _logFilter = 'You'),
+                selectedColor: Colors.orange[300],
+                backgroundColor: Colors.orange[50],
+                labelStyle: TextStyle(
+                  color:
+                      _logFilter == 'You' ? Colors.white : Colors.orange[800],
+                  fontWeight: FontWeight.w600,
                 ),
-                FilterChip(
-                  label: const Text("My Logs"),
-                  selected: _logFilter == 'You',
-                  onSelected: (_) => setState(() => _logFilter = 'You'),
-                  selectedColor: Colors.orange[300],
-                  backgroundColor: Colors.orange[50],
-                  labelStyle: TextStyle(
-                    color:
-                        _logFilter == 'You' ? Colors.white : Colors.orange[800],
-                    fontWeight: FontWeight.w600,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
                 ),
-                FilterChip(
-                  label: const Text("Relative's "),
-                  selected: _logFilter == 'Relative',
-                  onSelected: (_) => setState(() => _logFilter = 'Relative'),
-                  selectedColor: Colors.orange[300],
-                  backgroundColor: Colors.orange[50],
-                  labelStyle: TextStyle(
-                    color:
-                        _logFilter == 'Relative'
-                            ? Colors.white
-                            : Colors.orange[800],
-                    fontWeight: FontWeight.w600,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
+              ),
+              FilterChip(
+                label: const Text("Relative's "),
+                selected: _logFilter == 'Relative',
+                onSelected: (_) => setState(() => _logFilter = 'Relative'),
+                selectedColor: Colors.orange[300],
+                backgroundColor: Colors.orange[50],
+                labelStyle: TextStyle(
+                  color:
+                      _logFilter == 'Relative'
+                          ? Colors.white
+                          : Colors.orange[800],
+                  fontWeight: FontWeight.w600,
                 ),
-              ],
-            ),
-            const SizedBox(height: 10),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
 
-            Expanded(
-              child:
-                  _selectedEvents.isEmpty
-                      ? Padding(
-                        padding: const EdgeInsets.only(bottom: 80.0),
-                        child: const Center(
-                          child: Text("No emotion logs for this day."),
-                        ),
-                      )
-                      : ListView.builder(
-                        itemCount: _selectedEvents.length,
-                        itemBuilder: (context, index) {
-                          final log = _selectedEvents[index];
-                          final isCurrentUser = log.userId == currentUser?.id;
-                          final username =
-                              isCurrentUser
-                                  ? "You"
-                                  : relatedUser?.username ?? "Someone";
-                          final avatarAsset =
-                              isCurrentUser
-                                  ? userProvider.userAvatarAsset
-                                  : userProvider.relatedUserAvatarAsset;
-
-                          return Card(
-                            color:
-                                isCurrentUser
-                                    ? Colors.orange[100]
-                                    : Colors.blue[100],
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            elevation: 2,
-                            margin: const EdgeInsets.symmetric(
-                              vertical: 5,
-                              horizontal: 16,
-                            ),
-                            child: ListTile(
-                              onTap:
-                                  () => _showLogDetailsDialog(
-                                    context,
-                                    log,
-                                    username,
-                                    avatarAsset,
-                                    isCurrentUser,
-                                  ),
-                              contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                                vertical: 8,
-                              ),
-                              leading: CircleAvatar(
-                                radius: 20,
-                                backgroundImage: AssetImage(avatarAsset),
-                              ),
-                              title: Text(
-                                "${log.emotion[0].toUpperCase()}${log.emotion.substring(1)}",
-                                style: const TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                              subtitle: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    DateFormat.yMMMMd().format(log.date),
-                                    style: const TextStyle(fontSize: 12),
-                                  ),
-                                  const SizedBox(height: 2),
-                                  Text(
-                                    isCurrentUser
-                                        ? "You shared this feeling"
-                                        : "$username shared this feeling",
-                                    style: TextStyle(
-                                      fontSize: 11,
-                                      fontStyle: FontStyle.italic,
-                                      color: Colors.grey[700],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          );
-                        },
+          Expanded(
+            child:
+                _isLoading
+                    ? ListView.builder(
+                      padding: const EdgeInsets.only(bottom: 80),
+                      itemCount: 3,
+                      itemBuilder:
+                          (context, index) => const SkeletonEmotionCard(),
+                    )
+                    : _selectedEvents.isEmpty
+                    ? const Padding(
+                      padding: EdgeInsets.only(bottom: 80.0),
+                      child: Center(
+                        child: Text("No emotion logs for this day."),
                       ),
+                    )
+                    : ListView.builder(
+                      itemCount: _selectedEvents.length,
+                      itemBuilder: (context, index) {
+                        final log = _selectedEvents[index];
+                        final isCurrentUser = log.userId == currentUser?.id;
+                        final username =
+                            isCurrentUser
+                                ? "You"
+                                : relatedUser?.username ?? "Someone";
+                        final avatarAsset =
+                            isCurrentUser
+                                ? userProvider.userAvatarAsset
+                                : userProvider.relatedUserAvatarAsset;
+
+                        return Card(
+                          color:
+                              isCurrentUser
+                                  ? Colors.orange[100]
+                                  : Colors.blue[100],
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          elevation: 2,
+                          margin: const EdgeInsets.symmetric(
+                            vertical: 5,
+                            horizontal: 16,
+                          ),
+                          child: ListTile(
+                            onTap:
+                                () => _showLogDetailsDialog(
+                                  context,
+                                  log,
+                                  username,
+                                  avatarAsset,
+                                  isCurrentUser,
+                                ),
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 8,
+                            ),
+                            leading: CircleAvatar(
+                              radius: 20,
+                              backgroundImage: AssetImage(avatarAsset),
+                            ),
+                            title: Text(
+                              "${log.emotion[0].toUpperCase()}${log.emotion.substring(1)}",
+                              style: const TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            subtitle: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  DateFormat.yMMMMd().format(log.date),
+                                  style: const TextStyle(fontSize: 12),
+                                ),
+                                const SizedBox(height: 2),
+                                Text(
+                                  isCurrentUser
+                                      ? "You shared this feeling"
+                                      : "$username shared this feeling",
+                                  style: TextStyle(
+                                    fontSize: 11,
+                                    fontStyle: FontStyle.italic,
+                                    color: Colors.grey[700],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class SkeletonEmotionCard extends StatelessWidget {
+  const SkeletonEmotionCard({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Skeletonizer(
+      child: Card(
+        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        child: ListTile(
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 12,
+          ),
+          leading: const CircleAvatar(radius: 20),
+          title: Container(
+            height: 16,
+            width: 100,
+            decoration: BoxDecoration(
+              color: Colors.grey[300],
+              borderRadius: BorderRadius.circular(6),
             ),
-          ],
+          ),
+          subtitle: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 6),
+              Container(
+                height: 10,
+                width: 150,
+                decoration: BoxDecoration(
+                  color: Colors.grey[300],
+                  borderRadius: BorderRadius.circular(4),
+                ),
+              ),
+              const SizedBox(height: 4),
+              Container(
+                height: 8,
+                width: 120,
+                decoration: BoxDecoration(
+                  color: Colors.grey[300],
+                  borderRadius: BorderRadius.circular(4),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

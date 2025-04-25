@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:thesis_frontend/screens/main/mail_page.dart';
 // Providers
 import './providers/auth_provider.dart';
 import './providers/user_provider.dart';
@@ -124,7 +125,7 @@ class MyApp extends StatelessWidget {
             ),
             GoRoute(
               path: '/mail',
-              builder: (context, state) => const Loading(),
+              builder: (context, state) => const MailInboxPage(),
             ),
           ],
         ),
