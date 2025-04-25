@@ -42,11 +42,49 @@ class _FormContent extends StatefulWidget {
 
 class __FormContentState extends State<_FormContent> {
   final _formKey = GlobalKey<FormState>();
+  bool _isFormValid = false;
+  late AuthProvider controller;
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    controller = Provider.of<AuthProvider>(context, listen: false);
+    controller.usernameController.addListener(_validateForm);
+    controller.emailController.addListener(_validateForm);
+    controller.passwordController.addListener(_validateForm);
+    controller.confirmPasswordController.addListener(_validateForm);
+  }
+
+  void _validateForm() {
+    final isValid =
+        controller.validateUsername(controller.usernameController.text) &&
+        controller.validateEmail(controller.emailController.text) &&
+        controller.validatePassword(controller.passwordController.text) &&
+        controller.isPasswordMatching();
+
+    if (_isFormValid != isValid) {
+      setState(() {
+        _isFormValid = isValid;
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    controller.usernameController.removeListener(_validateForm);
+    controller.emailController.removeListener(_validateForm);
+    controller.passwordController.removeListener(_validateForm);
+    controller.confirmPasswordController.removeListener(_validateForm);
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    final controller = Provider.of<AuthProvider>(context, listen: false);
-
     return Container(
       constraints: const BoxConstraints(maxWidth: 300),
       child: Form(
@@ -180,6 +218,7 @@ class __FormContentState extends State<_FormContent> {
                   // }
                   // }
                 },
+                isEnabled: _isFormValid,
               ),
             ),
           ],

@@ -47,7 +47,7 @@ class MyApp extends StatelessWidget {
     final authProvider = Provider.of<AuthProvider>(context);
 
     final router = GoRouter(
-      initialLocation: '/home',
+      initialLocation: '/signin',
       redirect: (context, state) {
         final isLoggedIn = authProvider.isLoggedIn;
         final isAuthRoute = state.path == '/signin' || state.path == '/signup';

@@ -38,21 +38,21 @@ class CustomButton extends StatelessWidget {
           ),
         )
         : ElevatedButton(
+          onPressed: isEnabled ? onPressed : null,
           style: ElevatedButton.styleFrom(
             backgroundColor: isEnabled ? defaultColor : disabledColor,
-            foregroundColor: Colors.white,
+            foregroundColor: isEnabled ? Colors.white : Colors.black38,
             padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 20),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(8),
             ),
           ),
-          onPressed: onPressed,
           child: Text(
             text,
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w600,
-              color: Colors.white,
+              color: isEnabled ? Colors.white : Colors.black38,
             ),
           ),
         );

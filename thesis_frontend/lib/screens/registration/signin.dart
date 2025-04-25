@@ -44,7 +44,6 @@ class _Logo extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        FlutterLogo(size: isSmallScreen ? 100 : 200),
         Padding(
           padding: const EdgeInsets.all(16.0),
           child: Text(
@@ -72,13 +71,45 @@ class _FormContent extends StatefulWidget {
 
 class __FormContentState extends State<_FormContent> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-
+  bool _isFormValid = false;
   bool _rememberMe = false;
+
+  late AuthProvider controller;
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    controller = Provider.of<AuthProvider>(context, listen: false);
+    controller.emailController.addListener(_validateForm);
+    controller.passwordController.addListener(_validateForm);
+  }
+
+  void _validateForm() {
+    final isValid =
+        controller.validateEmail(controller.emailController.text) &&
+        controller.validatePassword(controller.passwordController.text);
+
+    if (_isFormValid != isValid) {
+      setState(() {
+        _isFormValid = isValid;
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    controller.emailController.removeListener(_validateForm);
+    controller.passwordController.removeListener(_validateForm);
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    final controller = Provider.of<AuthProvider>(context, listen: false);
-
     return Container(
       constraints: const BoxConstraints(maxWidth: 300),
       child: Form(
@@ -103,6 +134,7 @@ class __FormContentState extends State<_FormContent> {
             ),
             _gap(),
             TextFormField(
+              controller: controller.passwordController,
               validator: (value) {
                 if (value == null || value.isEmpty) {
                   return 'Please enter your password';
@@ -146,6 +178,7 @@ class __FormContentState extends State<_FormContent> {
               title: const Text('Remember me'),
               controlAffinity: ListTileControlAffinity.leading,
               dense: true,
+              activeColor: Colors.orange,
               contentPadding: const EdgeInsets.all(0),
             ),
             _gap(height: 24),
@@ -159,6 +192,7 @@ class __FormContentState extends State<_FormContent> {
                     context.go('/home');
                   }
                 },
+                isEnabled: _isFormValid,
               ),
             ),
             _gap(),
