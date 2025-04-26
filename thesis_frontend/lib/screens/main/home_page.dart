@@ -369,6 +369,52 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: const Text(
+          "Today's Goals",
+          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.orange),
+        ),
+        backgroundColor: Colors.orange[50],
+        elevation: 0,
+        actions: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: PopupMenuButton<String>(
+                tooltip: "Filter tasks",
+                icon: const Icon(
+                  Icons.filter_alt_rounded,
+                  color: Colors.orange,
+                ),
+                color: Colors.white, // background color of dropdown
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                onSelected: (value) => setState(() => _filterType = value),
+                itemBuilder:
+                    (BuildContext context) => [
+                      const PopupMenuItem(
+                        value: 'All',
+                        child: Text("Show All"),
+                      ),
+                      const PopupMenuItem(
+                        value: 'System',
+                        child: Text("Show Goals"),
+                      ),
+                      const PopupMenuItem(
+                        value: 'Custom',
+                        child: Text("Show Custom Tasks"),
+                      ),
+                    ],
+              ),
+            ),
+          ),
+        ],
+      ),
       body: Builder(
         builder: (scaffoldCtx) {
           safeScaffoldContext = scaffoldCtx;
@@ -385,63 +431,26 @@ class _HomePageState extends State<HomePage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const SizedBox(height: 10),
-                  if (filteredTasks.isNotEmpty)
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text(
-                          "Today's goals:",
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        PopupMenuButton<String>(
-                          icon: const Icon(
-                            Icons.filter_list,
-                            color: Colors.black,
-                          ),
-                          color: Colors.white, // background color of dropdown
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          onSelected:
-                              (value) => setState(() => _filterType = value),
-                          itemBuilder:
-                              (BuildContext context) => [
-                                const PopupMenuItem(
-                                  value: 'All',
-                                  child: Text("Show All"),
-                                ),
-                                const PopupMenuItem(
-                                  value: 'System',
-                                  child: Text("Show Goals"),
-                                ),
-                                const PopupMenuItem(
-                                  value: 'Custom',
-                                  child: Text("Show Custom Tasks"),
-                                ),
-                              ],
-                        ),
-                      ],
-                    ),
-                  const SizedBox(height: 12),
+
                   // Task cards
                   Expanded(
                     child:
                         filteredTasks.isEmpty
                             ? const Center(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text("🎉", style: TextStyle(fontSize: 48)),
-                                  SizedBox(height: 12),
-                                  Text(
-                                    "You've completed all your tasks!\nGreat Job! 🎊",
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(fontSize: 16),
-                                  ),
-                                ],
+                              child: Padding(
+                                padding: EdgeInsets.only(bottom: 100),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text("🎉", style: TextStyle(fontSize: 48)),
+                                    SizedBox(height: 12),
+                                    Text(
+                                      "You've completed all your tasks!\nGreat Job! 🎊",
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(fontSize: 16),
+                                    ),
+                                  ],
+                                ),
                               ),
                             )
                             : ListView.builder(
@@ -516,7 +525,7 @@ class _HomePageState extends State<HomePage> {
                                     trailing: ElevatedButton(
                                       onPressed: () => _completeTask(task),
                                       style: ElevatedButton.styleFrom(
-                                        backgroundColor: Colors.green,
+                                        backgroundColor: Colors.lightGreen[700],
                                         minimumSize: const Size(48, 48),
                                         padding: EdgeInsets.zero,
                                         shape: RoundedRectangleBorder(
