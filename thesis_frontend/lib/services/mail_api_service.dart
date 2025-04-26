@@ -103,4 +103,10 @@ class MailApiService {
     // Simulate deletion
     return true;
   }
+
+  static Future<bool> deleteAllMail(String mailId) async {
+    await Future.delayed(const Duration(milliseconds: 200));
+    // Simulate deletion
+    return true;
+  }
 }

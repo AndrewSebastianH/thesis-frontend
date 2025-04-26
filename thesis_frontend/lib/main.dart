@@ -18,6 +18,7 @@ import './screens/main/home_page.dart';
 import './screens/main/calendar_page.dart';
 import './screens/main/create_task_page.dart';
 import './screens/main/profile_page.dart';
+import './screens/main/compose_mail.dart';
 
 import 'widgets/loading.dart';
 
@@ -106,6 +107,10 @@ class MyApp extends StatelessWidget {
         GoRoute(
           path: '/create-task',
           builder: (context, state) => const CreateTaskPage(),
+        ),
+        GoRoute(
+          path: '/compose-mail',
+          builder: (context, state) => const ComposeMailPage(),
         ),
 
         ShellRoute(

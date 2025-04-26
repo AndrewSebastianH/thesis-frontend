@@ -332,6 +332,34 @@ class _MailInboxPageState extends State<MailInboxPage> {
       });
     }
   }
+
+  void _showDeleteAllConfirmation(BuildContext context) {
+    showDialog(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            title: const Text("Delete All Mails"),
+            content: const Text(
+              "Are you sure you want to delete all mails? This action cannot be undone.",
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text("Cancel"),
+              ),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  // TODO: Actually trigger delete all API
+                  print("All mails deleted.");
+                },
+                child: const Text("Delete All"),
+              ),
+            ],
+          ),
+    );
+  }
 }
 
 class SkeletonMailCard extends StatelessWidget {
