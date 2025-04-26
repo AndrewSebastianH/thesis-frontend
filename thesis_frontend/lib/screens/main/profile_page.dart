@@ -72,14 +72,17 @@ class ProfilePage extends StatelessWidget {
                       const SizedBox(height: 12),
                       Container(
                         padding: const EdgeInsets.symmetric(
-                          vertical: 6,
+                          vertical: 8,
                           horizontal: 12,
                         ),
                         decoration: BoxDecoration(
                           color: Colors.orange.shade100,
-                          borderRadius: BorderRadius.circular(20),
+                          borderRadius: BorderRadius.circular(12),
                         ),
-                        child: Text('EXP: $exp'),
+                        child: Text(
+                          'EXP: $exp',
+                          style: TextStyle(fontSize: 12),
+                        ),
                       ),
                     ],
                   ),
@@ -117,7 +120,7 @@ class ProfilePage extends StatelessWidget {
       appBar: AppBar(
         title: const Text(
           'Profile',
-          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.orange),
+          style: TextStyle(fontWeight: FontWeight.bold),
         ),
         backgroundColor: Colors.orange[50],
         elevation: 0,

@@ -46,67 +46,156 @@ class _MailInboxPageState extends State<MailInboxPage> {
     return Scaffold(
       backgroundColor: Colors.orange[50],
       appBar: AppBar(
-        title: Text(
-          showInbox ? 'Inbox' : 'Sent Mails',
-          style: const TextStyle(fontWeight: FontWeight.bold),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              setState(() {
-                showInbox = !showInbox;
-              });
-              loadMails();
-            },
-            child: Text(showInbox ? 'Sent' : 'Inbox'),
-          ),
-        ],
         backgroundColor: Colors.orange[50],
-      ),
-      body:
-          isLoading
-              ? ListView.builder(
-                itemCount: 5,
-                itemBuilder: (context, index) => const SkeletonMailCard(),
-              )
-              : mails.isEmpty
-              ? const Center(child: Text("No mails found."))
-              : ListView.builder(
-                itemCount: mails.length,
-                itemBuilder: (context, index) {
-                  final mail = mails[index];
-
-                  return Card(
-                    color:
-                        mail.isRead
-                            ? Colors.brown.shade100
-                            : Colors.orange[100],
-                    margin: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 6,
-                    ),
-                    child: ListTile(
-                      onTap: () => _openMail(mail),
-                      title: Text(
-                        mail.message,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      subtitle: Text(DateFormat.yMMMd().format(mail.createdAt)),
-                      trailing:
-                          showInbox && !mail.isRead
-                              ? const Icon(
-                                Icons.mark_email_unread,
-                                color: Colors.red,
-                              )
-                              : const Icon(
-                                Icons.mark_email_read,
-                                color: Colors.black,
-                              ),
-                    ),
-                  );
-                },
+        elevation: 0,
+        title: const Text(
+          'Mail',
+          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.orange),
+        ),
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(56),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Container(
+              margin: const EdgeInsets.only(bottom: 8),
+              height: 48,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(30),
+                border: Border.all(color: Colors.orange),
               ),
+              child: Stack(
+                children: [
+                  AnimatedAlign(
+                    duration: const Duration(milliseconds: 300),
+                    curve: Curves.easeInOut,
+                    alignment:
+                        showInbox
+                            ? Alignment.centerLeft
+                            : Alignment.centerRight,
+                    child: Container(
+                      width:
+                          (MediaQuery.of(context).size.width - 32) /
+                          2, // half of the container
+                      margin: const EdgeInsets.all(4),
+                      decoration: BoxDecoration(
+                        color: Colors.orange,
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                    ),
+                  ),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: () {
+                            if (!showInbox) {
+                              setState(() {
+                                showInbox = true;
+                              });
+                              loadMails();
+                            }
+                          },
+                          child: Container(
+                            alignment: Alignment.center,
+                            child: Text(
+                              'Inbox',
+                              style: TextStyle(
+                                color: showInbox ? Colors.white : Colors.orange,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: () {
+                            if (showInbox) {
+                              setState(() {
+                                showInbox = false;
+                              });
+                              loadMails();
+                            }
+                          },
+                          child: Container(
+                            alignment: Alignment.center,
+                            child: Text(
+                              'Sent',
+                              style: TextStyle(
+                                color:
+                                    !showInbox ? Colors.white : Colors.orange,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+
+      body: AnimatedSwitcher(
+        duration: const Duration(milliseconds: 300),
+        transitionBuilder: (Widget child, Animation<double> animation) {
+          return FadeTransition(opacity: animation, child: child);
+        },
+        child:
+            isLoading
+                ? ListView.builder(
+                  key: const ValueKey('loading'),
+                  itemCount: 5,
+                  itemBuilder: (context, index) => const SkeletonMailCard(),
+                )
+                : mails.isEmpty
+                ? const Center(
+                  key: ValueKey('empty'),
+                  child: Text("No mails found."),
+                )
+                : ListView.builder(
+                  key: ValueKey(showInbox),
+                  itemCount: mails.length,
+                  itemBuilder: (context, index) {
+                    final mail = mails[index];
+                    return Card(
+                      color:
+                          mail.isRead
+                              ? Colors.brown.shade100
+                              : Colors.orange[100],
+                      margin: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 6,
+                      ),
+                      child: ListTile(
+                        onTap: () => _openMail(mail),
+                        title: Text(
+                          mail.message,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        subtitle: Text(
+                          DateFormat.yMMMd().format(mail.createdAt),
+                        ),
+                        trailing:
+                            showInbox && !mail.isRead
+                                ? const Icon(
+                                  Icons.mark_email_unread,
+                                  color: Colors.red,
+                                )
+                                : const Icon(
+                                  Icons.mark_email_read,
+                                  color: Colors.black,
+                                ),
+                      ),
+                    );
+                  },
+                ),
+      ),
     );
   }
 

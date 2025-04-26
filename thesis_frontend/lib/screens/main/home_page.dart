@@ -372,7 +372,7 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         title: const Text(
           "Today's Goals",
-          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.orange),
+          style: TextStyle(fontWeight: FontWeight.bold),
         ),
         backgroundColor: Colors.orange[50],
         elevation: 0,
@@ -460,8 +460,8 @@ class _HomePageState extends State<HomePage> {
                                 return Card(
                                   color:
                                       task.isCustomTask
-                                          ? Colors.blue[50]
-                                          : Colors.orange[50],
+                                          ? Colors.blue[100]
+                                          : Colors.orange[100],
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(16),
                                   ),
@@ -481,7 +481,7 @@ class _HomePageState extends State<HomePage> {
                                               : 'Repeats ${task.recurrenceInterval}',
                                           style: const TextStyle(
                                             fontSize: 11,
-                                            color: Colors.grey,
+                                            color: Colors.black38,
                                           ),
                                         ),
                                         if (task.dueDate != null) ...[
