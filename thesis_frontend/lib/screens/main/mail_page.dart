@@ -87,45 +87,58 @@ class _MailInboxPageState extends State<MailInboxPage> {
                   Row(
                     children: [
                       Expanded(
-                        child: GestureDetector(
-                          onTap: () {
-                            if (!showInbox) {
-                              setState(() {
-                                showInbox = true;
-                              });
-                              loadMails();
-                            }
-                          },
-                          child: Container(
-                            alignment: Alignment.center,
-                            child: Text(
-                              'Inbox',
-                              style: TextStyle(
-                                color: showInbox ? Colors.white : Colors.orange,
-                                fontWeight: FontWeight.bold,
+                        child: Material(
+                          color:
+                              Colors
+                                  .transparent, // make sure the area is tappable
+                          child: InkWell(
+                            borderRadius: BorderRadius.circular(30),
+                            onTap: () {
+                              if (!showInbox) {
+                                setState(() {
+                                  showInbox = true;
+                                });
+                                loadMails();
+                              }
+                            },
+                            child: Container(
+                              alignment: Alignment.center,
+                              height: 48, // Make sure it fills vertically
+                              child: Text(
+                                'Inbox',
+                                style: TextStyle(
+                                  color:
+                                      showInbox ? Colors.white : Colors.orange,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                             ),
                           ),
                         ),
                       ),
                       Expanded(
-                        child: GestureDetector(
-                          onTap: () {
-                            if (showInbox) {
-                              setState(() {
-                                showInbox = false;
-                              });
-                              loadMails();
-                            }
-                          },
-                          child: Container(
-                            alignment: Alignment.center,
-                            child: Text(
-                              'Sent',
-                              style: TextStyle(
-                                color:
-                                    !showInbox ? Colors.white : Colors.orange,
-                                fontWeight: FontWeight.bold,
+                        child: Material(
+                          color: Colors.transparent,
+                          child: InkWell(
+                            borderRadius: BorderRadius.circular(30),
+                            onTap: () {
+                              if (showInbox) {
+                                setState(() {
+                                  showInbox = false;
+                                });
+                                loadMails();
+                              }
+                            },
+                            child: Container(
+                              alignment: Alignment.center,
+                              height: 48,
+                              child: Text(
+                                'Sent',
+                                style: TextStyle(
+                                  color:
+                                      !showInbox ? Colors.white : Colors.orange,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                             ),
                           ),
@@ -166,6 +179,8 @@ class _MailInboxPageState extends State<MailInboxPage> {
                       color:
                           mail.isRead
                               ? Colors.brown.shade100
+                              : !showInbox && !mail.isRead
+                              ? Colors.lightGreen.shade100
                               : Colors.orange[100],
                       margin: const EdgeInsets.symmetric(
                         horizontal: 16,
@@ -186,6 +201,11 @@ class _MailInboxPageState extends State<MailInboxPage> {
                                 ? const Icon(
                                   Icons.mark_email_unread,
                                   color: Colors.red,
+                                )
+                                : !showInbox && !mail.isRead
+                                ? const Icon(
+                                  Icons.check_circle,
+                                  color: Colors.green,
                                 )
                                 : const Icon(
                                   Icons.mark_email_read,
@@ -225,7 +245,7 @@ class _MailInboxPageState extends State<MailInboxPage> {
                   ),
                 ],
                 border: Border.all(
-                  color: showInbox ? Colors.orange : Colors.lightBlue,
+                  color: showInbox ? Colors.orange : Colors.lightGreen.shade100,
                   width: 2,
                 ),
               ),
@@ -261,7 +281,7 @@ class _MailInboxPageState extends State<MailInboxPage> {
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
-                      color: showInbox ? Colors.orange : Colors.lightBlue,
+                      color: showInbox ? Colors.orange : Colors.lightGreen,
                     ),
                     textAlign: TextAlign.center,
                   ),
@@ -277,7 +297,7 @@ class _MailInboxPageState extends State<MailInboxPage> {
                         color:
                             showInbox
                                 ? Colors.orange.withAlpha(30)
-                                : Colors.lightBlue.withAlpha(30),
+                                : Colors.lightGreen.shade100,
                       ),
                     ),
                     child: Text(

@@ -50,7 +50,7 @@ class MailApiService {
           "senderId": 2,
           "receiverId": 1,
           "message": "You mean the world to me 💛",
-          "isRead": true,
+          "isRead": false,
           "createdAt":
               DateTime.now()
                   .subtract(const Duration(days: 3))
