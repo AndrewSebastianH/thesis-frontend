@@ -352,96 +352,112 @@ class _EmotionCalendarPageState extends State<EmotionCalendarPage> {
           const SizedBox(height: 10),
 
           Expanded(
-            child:
-                _isLoading
-                    ? ListView.builder(
-                      padding: const EdgeInsets.only(bottom: 80),
-                      itemCount: 3,
-                      itemBuilder:
-                          (context, index) => const SkeletonEmotionCard(),
-                    )
-                    : _selectedEvents.isEmpty
-                    ? const Padding(
-                      padding: EdgeInsets.only(bottom: 80.0),
-                      child: Center(
-                        child: Text("No emotion logs for this day."),
-                      ),
-                    )
-                    : ListView.builder(
-                      itemCount: _selectedEvents.length,
-                      itemBuilder: (context, index) {
-                        final log = _selectedEvents[index];
-                        final isCurrentUser = log.userId == currentUser?.id;
-                        final username =
-                            isCurrentUser
-                                ? "You"
-                                : relatedUser?.username ?? "Someone";
-                        final avatarAsset =
-                            isCurrentUser
-                                ? userProvider.userAvatarAsset
-                                : userProvider.relatedUserAvatarAsset;
+            child: AnimatedSwitcher(
+              duration: const Duration(milliseconds: 300),
+              transitionBuilder: (Widget child, Animation<double> animation) {
+                return FadeTransition(opacity: animation, child: child);
+              },
+              child:
+                  _isLoading
+                      ? ListView.builder(
+                        key: const ValueKey('loading'),
+                        padding: const EdgeInsets.only(bottom: 80),
+                        itemCount: 3,
+                        itemBuilder:
+                            (context, index) => const SkeletonEmotionCard(),
+                      )
+                      : _selectedEvents.isEmpty
+                      ? const Padding(
+                        key: ValueKey('empty'),
+                        padding: EdgeInsets.only(bottom: 80),
+                        child: Center(
+                          child: Text("No emotion logs for this day."),
+                        ),
+                      )
+                      : ListView.builder(
+                        key: ValueKey('list'),
+                        itemCount: _selectedEvents.length,
+                        itemBuilder: (context, index) {
+                          final log = _selectedEvents[index];
+                          final userProvider = Provider.of<UserProvider>(
+                            context,
+                            listen: false,
+                          );
+                          final currentUser = userProvider.user;
+                          final relatedUser = userProvider.relatedUser;
 
-                        return Card(
-                          color:
+                          final isCurrentUser = log.userId == currentUser?.id;
+                          final username =
                               isCurrentUser
-                                  ? Colors.orange[100]
-                                  : Colors.blue[100],
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          elevation: 2,
-                          margin: const EdgeInsets.symmetric(
-                            vertical: 5,
-                            horizontal: 16,
-                          ),
-                          child: ListTile(
-                            onTap:
-                                () => _showLogDetailsDialog(
-                                  context,
-                                  log,
-                                  username,
-                                  avatarAsset,
-                                  isCurrentUser,
-                                ),
-                            contentPadding: const EdgeInsets.symmetric(
+                                  ? "You"
+                                  : relatedUser?.username ?? "Relative";
+                          final avatarAsset =
+                              isCurrentUser
+                                  ? userProvider.userAvatarAsset
+                                  : userProvider.relatedUserAvatarAsset;
+
+                          return Card(
+                            color:
+                                isCurrentUser
+                                    ? Colors.orange[100]
+                                    : Colors.blue[100],
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            elevation: 2,
+                            margin: const EdgeInsets.symmetric(
+                              vertical: 5,
                               horizontal: 16,
-                              vertical: 8,
                             ),
-                            leading: CircleAvatar(
-                              radius: 20,
-                              backgroundImage: AssetImage(avatarAsset),
-                            ),
-                            title: Text(
-                              "${log.emotion[0].toUpperCase()}${log.emotion.substring(1)}",
-                              style: const TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w600,
+                            child: ListTile(
+                              onTap:
+                                  () => _showLogDetailsDialog(
+                                    context,
+                                    log,
+                                    username,
+                                    avatarAsset,
+                                    isCurrentUser,
+                                  ),
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 8,
+                              ),
+                              leading: CircleAvatar(
+                                radius: 20,
+                                backgroundImage: AssetImage(avatarAsset),
+                              ),
+                              title: Text(
+                                "${log.emotion[0].toUpperCase()}${log.emotion.substring(1)}",
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              subtitle: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    DateFormat.yMMMMd().format(log.date),
+                                    style: const TextStyle(fontSize: 12),
+                                  ),
+                                  const SizedBox(height: 2),
+                                  Text(
+                                    isCurrentUser
+                                        ? "You shared this feeling"
+                                        : "$username shared this feeling",
+                                    style: TextStyle(
+                                      fontSize: 11,
+                                      fontStyle: FontStyle.italic,
+                                      color: Colors.grey[700],
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
-                            subtitle: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  DateFormat.yMMMMd().format(log.date),
-                                  style: const TextStyle(fontSize: 12),
-                                ),
-                                const SizedBox(height: 2),
-                                Text(
-                                  isCurrentUser
-                                      ? "You shared this feeling"
-                                      : "$username shared this feeling",
-                                  style: TextStyle(
-                                    fontSize: 11,
-                                    fontStyle: FontStyle.italic,
-                                    color: Colors.grey[700],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        );
-                      },
-                    ),
+                          );
+                        },
+                      ),
+            ),
           ),
         ],
       ),
