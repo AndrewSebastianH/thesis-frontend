@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/user_provider.dart';
-// import '../../models/user_mdl.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
@@ -9,65 +8,162 @@ class ProfilePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final userProvider = Provider.of<UserProvider>(context);
+    userProvider.setMockParentUser();
     final user = userProvider.user;
+    final relatedUser = userProvider.relatedUser;
+
+    Widget buildProfileCard(
+      String title,
+      String asset,
+      String name,
+      String email,
+      int exp,
+    ) {
+      return Container(
+        margin: const EdgeInsets.symmetric(vertical: 12),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: const Color(0xFFFFF9EC),
+          borderRadius: BorderRadius.circular(24),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.brown.withAlpha(20),
+              blurRadius: 8,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Column(
+          children: [
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                title,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                CircleAvatar(radius: 40, backgroundImage: AssetImage(asset)),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        name,
+                        style: const TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        email,
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: Colors.grey,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 6,
+                          horizontal: 12,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.orange.shade100,
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Text('EXP: $exp'),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: const Color(0xFFFFE8D6),
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: TextButton(
+                onPressed: () {
+                  // TODO: View insight action
+                },
+                child: const Text(
+                  'View Insight',
+                  style: TextStyle(
+                    color: Colors.deepOrange,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Profile'), centerTitle: true),
+      backgroundColor: const Color(0xFFFFF6DC),
+      appBar: AppBar(
+        title: const Text(
+          'Profile',
+          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.orange),
+        ),
+        backgroundColor: Colors.orange[50],
+        elevation: 0,
+        actions: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: IconButton(
+                icon: const Icon(Icons.edit, color: Colors.orange),
+                onPressed: () {
+                  // TODO: Edit profile
+                },
+              ),
+            ),
+          ),
+        ],
+      ),
       body:
           user == null
               ? const Center(child: Text('No user data'))
-              : Padding(
-                padding: const EdgeInsets.all(16.0),
+              : SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
+                ),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    // Avatar
-                    CircleAvatar(
-                      radius: 50,
-                      backgroundImage: AssetImage(userProvider.userAvatarAsset),
-                    ),
-                    const SizedBox(height: 16),
-
-                    // Username
-                    Text(
+                    buildProfileCard(
+                      'You',
+                      userProvider.userAvatarAsset,
                       user.username,
-                      style: const TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
+                      user.email,
+                      user.expPoints,
+                    ),
+                    if (relatedUser != null)
+                      buildProfileCard(
+                        'Connected User',
+                        userProvider.relatedUserAvatarAsset,
+                        relatedUser.username,
+                        relatedUser.email,
+                        relatedUser.expPoints,
                       ),
-                    ),
-                    const SizedBox(height: 8),
-
-                    // Email
-                    Text(user.email, style: const TextStyle(fontSize: 16)),
-                    const SizedBox(height: 24),
-
-                    // EXP Points
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Icon(Icons.star, size: 24),
-                        const SizedBox(width: 8),
-                        Text(
-                          'EXP: ${user.expPoints}',
-                          style: const TextStyle(fontSize: 18),
-                        ),
-                      ],
-                    ),
-
-                    const Spacer(),
-
-                    // Logout Button
-                    ElevatedButton(
-                      onPressed: () {
-                        // Add your logout logic here
-                        userProvider.clear();
-                        Navigator.of(
-                          context,
-                        ).pushNamedAndRemoveUntil('/login', (route) => false);
-                      },
-                      child: const Text('Log Out'),
-                    ),
                   ],
                 ),
               ),
