@@ -8,14 +8,17 @@ import 'package:thesis_frontend/screens/main/mail_page.dart';
 import './providers/auth_provider.dart';
 import './providers/user_provider.dart';
 // Screens
-import './screens/registration/choose_role.dart';
-import './screens/registration/signin.dart';
-import './screens/registration/signup.dart';
+import 'screens/registration/choose_role_page.dart';
+import 'screens/registration/signin_page.dart';
+import 'screens/registration/signup_page.dart';
 import './screens/registration/link_accounts_page.dart';
+import 'screens/registration/view_connection_code_page.dart';
+
 import './screens/main/home_page.dart';
 import './screens/main/calendar_page.dart';
-import './screens/registration/view_connection_code.dart';
 import './screens/main/create_task_page.dart';
+import './screens/main/profile_page.dart';
+
 import 'widgets/loading.dart';
 
 // Widgets
@@ -121,7 +124,7 @@ class MyApp extends StatelessWidget {
             ),
             GoRoute(
               path: '/profile',
-              builder: (context, state) => const Loading(),
+              builder: (context, state) => const ProfilePage(),
             ),
             GoRoute(
               path: '/mail',

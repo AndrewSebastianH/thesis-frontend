@@ -71,7 +71,7 @@ class MailApiService {
           "id": "uuid-5",
           "senderId": 2,
           "receiverId": 1,
-          "message": "Bodolah cik",
+          "message": "Bodolah",
           "isRead": true,
           "createdAt":
               DateTime.now()

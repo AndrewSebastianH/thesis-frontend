@@ -1,5 +1,5 @@
 name: thesis_frontend
-description: "A new Flutter project."
+description: "A parenting app that helps you to get closer to your child. with a non-authoritative approach to parenting. "
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
@@ -43,6 +43,7 @@ dependencies:
   flutter_secure_storage: ^9.2.4
   dio: ^5.8.0+1
   skeletonizer: ^1.4.3
+  flutter_launcher_icons: ^0.14.3
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -77,9 +78,14 @@ flutter:
   - assets/images/
   - assets/images/avatars/
   - assets/images/backgrounds/
+  - assets/images/icons/
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
 
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/icons/icon.png"
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
 
