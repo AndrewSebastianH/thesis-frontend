@@ -71,17 +71,15 @@ class MyApp extends StatelessWidget {
       routes: [
         GoRoute(path: '/signin', builder: (context, state) => const SignIn()),
         GoRoute(
-          path: '/see-connectioncode',
+          path: '/view-connection-code',
           builder: (context, state) {
-            final code = state.extra as String;
-            return ConnectionCodeScreen(code: code);
+            return ConnectionCodeScreen();
           },
         ),
         GoRoute(
           path: '/choose-role',
           builder: (context, state) {
-            final code = state.extra as String;
-            return ChooseRoleScreen(connectionCode: code);
+            return ChooseRoleScreen();
           },
         ),
         ShellRoute(
@@ -117,8 +115,7 @@ class MyApp extends StatelessWidget {
           path: '/profile/insights',
           builder: (context, state) {
             final showSelf =
-                state.extra as bool? ??
-                true; // 👈 default true if nothing passed
+                state.extra as bool? ?? true; //  default true if nothing passed
             return InsightsPage(showSelf: showSelf);
           },
         ),

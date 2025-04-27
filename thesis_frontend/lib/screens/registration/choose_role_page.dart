@@ -123,7 +123,7 @@ class _ChooseRoleScreenState extends State<ChooseRoleScreen> {
                       onPressed: () {
                         if (selectedIndex != -1) {
                           context.go(
-                            '/see-connectioncode',
+                            '/view-connection-code',
                             extra: widget.connectionCode,
                           );
                         } else {

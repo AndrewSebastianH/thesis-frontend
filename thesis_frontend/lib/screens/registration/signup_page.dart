@@ -202,16 +202,14 @@ class __FormContentState extends State<_FormContent> {
                 onPressed: () {
                   // if (_formKey.currentState?.validate() ?? false) {
 
-                  final connectionCode = 'ABCDEFG';
-                  if (connectionCode.isNotEmpty) {
-                    context.go('/choose-role', extra: connectionCode);
-                  } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Signup failed. Please try again.'),
-                      ),
-                    );
-                  }
+                  context.go('/choose-role');
+
+                  // ScaffoldMessenger.of(context).showSnackBar(
+                  //   const SnackBar(
+                  //     content: Text('Signup failed. Please try again.'),
+                  //   ),
+                  // );
+
                   // final result = await controller.signup();
                   // if (result) {
                   //   final connectionCode = result['connectionCode'];

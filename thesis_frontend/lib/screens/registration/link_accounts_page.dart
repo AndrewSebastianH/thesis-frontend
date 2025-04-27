@@ -47,13 +47,13 @@ class LinkAccountPage extends StatelessWidget {
                               children: [
                                 if (role == "parent")
                                   Image.asset(
-                                    "assets/images/parent.png",
+                                    "assets/images/avatar/3.png",
                                     width: 100,
                                     height: 100,
                                   )
                                 else
                                   Image.asset(
-                                    "assets/images/child.png",
+                                    "assets/images/avatar/1.png",
                                     width: 100,
                                     height: 100,
                                   ),
