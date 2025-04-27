@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../../providers/user_provider.dart';
 
@@ -18,6 +19,7 @@ class ProfilePage extends StatelessWidget {
       String name,
       String email,
       int exp,
+      bool isSelf,
     ) {
       return Container(
         margin: const EdgeInsets.symmetric(vertical: 12),
@@ -45,7 +47,8 @@ class ProfilePage extends StatelessWidget {
                 ),
               ),
             ),
-            const SizedBox(height: 12),
+            Divider(color: Colors.brown.withAlpha(50), thickness: 1),
+            const SizedBox(height: 6),
             Row(
               children: [
                 CircleAvatar(radius: 40, backgroundImage: AssetImage(asset)),
@@ -99,7 +102,7 @@ class ProfilePage extends StatelessWidget {
               ),
               child: TextButton(
                 onPressed: () {
-                  // TODO: View insight action
+                  context.push('/profile/insights', extra: isSelf);
                 },
                 child: const Text(
                   'View Insight',
@@ -158,6 +161,7 @@ class ProfilePage extends StatelessWidget {
                       user.username,
                       user.email,
                       user.expPoints,
+                      true,
                     ),
                     if (relatedUser != null)
                       buildProfileCard(
@@ -166,6 +170,7 @@ class ProfilePage extends StatelessWidget {
                         relatedUser.username,
                         relatedUser.email,
                         relatedUser.expPoints,
+                        false,
                       ),
                   ],
                 ),

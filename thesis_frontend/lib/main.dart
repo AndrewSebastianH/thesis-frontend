@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:thesis_frontend/screens/main/insights_page.dart';
 import 'package:thesis_frontend/screens/main/mail_page.dart';
 // Providers
 import './providers/auth_provider.dart';
@@ -111,6 +112,15 @@ class MyApp extends StatelessWidget {
         GoRoute(
           path: '/compose-mail',
           builder: (context, state) => const ComposeMailPage(),
+        ),
+        GoRoute(
+          path: '/profile/insights',
+          builder: (context, state) {
+            final showSelf =
+                state.extra as bool? ??
+                true; // 👈 default true if nothing passed
+            return InsightsPage(showSelf: showSelf);
+          },
         ),
 
         ShellRoute(

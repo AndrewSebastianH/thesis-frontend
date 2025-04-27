@@ -194,7 +194,7 @@ class _EmotionCalendarPageState extends State<EmotionCalendarPage> {
   Widget build(BuildContext context) {
     final userProvider = Provider.of<UserProvider>(context);
     final currentUser = userProvider.user;
-    final relatedUser = userProvider.relatedUser;
+    // final relatedUser = userProvider.relatedUser;
 
     return Scaffold(
       backgroundColor: Colors.orange[50],

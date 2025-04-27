@@ -59,7 +59,10 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
                       lastDate: DateTime(2030),
                     );
                     if (picked != null) {
-                      setState(() => _dueDate = picked);
+                      setState(() {
+                        _dueDate = picked;
+                        _isRecurring = false;
+                      });
                     }
                   },
                 ),
@@ -68,7 +71,9 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
                   title: const Text("Remove date"),
                   onTap: () {
                     Navigator.pop(context);
-                    setState(() => _dueDate = null);
+                    setState(() {
+                      _dueDate = null;
+                    });
                   },
                 ),
               ],
@@ -173,7 +178,7 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
                 borderRadius: BorderRadius.circular(12),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.09),
+                    color: Colors.black.withAlpha(20),
                     blurRadius: 4,
                     offset: const Offset(0, 2),
                   ),
@@ -182,73 +187,95 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               child: Column(
                 children: [
-                  ListTile(
-                    onTap: _selectDueDate,
-                    contentPadding: EdgeInsets.zero,
-                    title: Text(
-                      _dueDate == null
-                          ? "No due date"
-                          : "Due: ${DateFormat.yMMMd().format(_dueDate!)}",
-                      style: TextStyle(
-                        color: _dueDate == null ? Colors.grey : Colors.black87,
-                        fontWeight:
-                            _dueDate == null
-                                ? FontWeight.normal
-                                : FontWeight.w500,
-                      ),
-                    ),
-
-                    trailing: const Icon(Icons.calendar_today),
-                  ),
-                  const Divider(),
-                  SwitchListTile(
-                    contentPadding: EdgeInsets.zero,
-                    value: _isRecurring,
-                    onChanged: (val) => setState(() => _isRecurring = val),
-                    activeColor: Colors.orange,
-                    title: Text(
-                      "Repeat this task?",
-                      style: TextStyle(
-                        color: _isRecurring ? Colors.black87 : Colors.grey,
-                      ),
-                    ),
-                  ),
-                  if (_isRecurring) ...[
-                    const SizedBox(height: 8),
-                    Row(
+                  if (!_isRecurring) // 🔥 Only show due date if NOT recurring
+                    Column(
                       children: [
-                        const Text(
-                          "Repeat: ",
-                          style: TextStyle(color: Colors.grey),
-                        ),
-                        const SizedBox(width: 8),
-                        DropdownButton<String>(
-                          value: _recurrenceInterval,
-                          items: const [
-                            DropdownMenuItem(
-                              value: 'daily',
-                              child: Text(
-                                "Daily",
-                                style: TextStyle(color: Colors.black87),
-                              ),
+                        ListTile(
+                          onTap: _selectDueDate,
+                          contentPadding: EdgeInsets.zero,
+                          title: Text(
+                            _dueDate == null
+                                ? "No due date"
+                                : "Due: ${DateFormat.yMMMd().format(_dueDate!)}",
+                            style: TextStyle(
+                              color:
+                                  _dueDate == null
+                                      ? Colors.grey
+                                      : Colors.black87,
+                              fontWeight:
+                                  _dueDate == null
+                                      ? FontWeight.normal
+                                      : FontWeight.w500,
                             ),
-                            DropdownMenuItem(
-                              value: 'weekly',
-                              child: Text(
-                                "Weekly",
-                                style: TextStyle(color: Colors.black87),
-                              ),
-                            ),
-                          ],
-                          onChanged: (val) {
-                            if (val != null) {
-                              setState(() => _recurrenceInterval = val);
-                            }
-                          },
+                          ),
+                          trailing: const Icon(Icons.calendar_today),
                         ),
+                        const Divider(),
                       ],
                     ),
-                  ],
+
+                  if (_dueDate ==
+                      null) // 🔥 Only show recurring toggle if NO due date set
+                    Column(
+                      children: [
+                        SwitchListTile(
+                          contentPadding: EdgeInsets.zero,
+                          value: _isRecurring,
+                          onChanged: (val) {
+                            setState(() {
+                              _isRecurring = val;
+                              if (_isRecurring)
+                                _dueDate = null; // Just extra safety
+                            });
+                          },
+                          activeColor: Colors.orange,
+                          title: Text(
+                            "Repeat this task?",
+                            style: TextStyle(
+                              color:
+                                  _isRecurring ? Colors.black87 : Colors.grey,
+                            ),
+                          ),
+                        ),
+
+                        if (_isRecurring) ...[
+                          const SizedBox(height: 8),
+                          Row(
+                            children: [
+                              const Text(
+                                "Repeat: ",
+                                style: TextStyle(color: Colors.grey),
+                              ),
+                              const SizedBox(width: 8),
+                              DropdownButton<String>(
+                                value: _recurrenceInterval,
+                                items: const [
+                                  DropdownMenuItem(
+                                    value: 'daily',
+                                    child: Text(
+                                      "Daily",
+                                      style: TextStyle(color: Colors.black87),
+                                    ),
+                                  ),
+                                  DropdownMenuItem(
+                                    value: 'weekly',
+                                    child: Text(
+                                      "Weekly",
+                                      style: TextStyle(color: Colors.black87),
+                                    ),
+                                  ),
+                                ],
+                                onChanged: (val) {
+                                  if (val != null) {
+                                    setState(() => _recurrenceInterval = val);
+                                  }
+                                },
+                              ),
+                            ],
+                          ),
+                        ],
+                      ],
+                    ),
                 ],
               ),
             ),
