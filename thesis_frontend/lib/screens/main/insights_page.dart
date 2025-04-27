@@ -261,7 +261,15 @@ class _InsightsPageState extends State<InsightsPage> {
                 Icons.check_circle_outline,
                 color: Colors.grey[300],
               ),
-              title: Container(height: 32, width: 100, color: Colors.grey[300]),
+
+              title: Container(
+                height: 32,
+                width: 100,
+                decoration: BoxDecoration(
+                  color: Colors.grey[300],
+                  borderRadius: BorderRadius.circular(20),
+                ),
+              ),
               trailing: Container(
                 height: 16,
                 width: 20,
