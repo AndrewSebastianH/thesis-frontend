@@ -91,66 +91,81 @@ class _InsightsPageState extends State<InsightsPage> {
 
   Widget _buildToggle() {
     return Container(
-      padding: const EdgeInsets.all(8),
+      height: 48,
+      padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(30),
+        border: Border.all(color: Colors.orange),
       ),
-      child: Row(
+      child: Stack(
         children: [
-          Expanded(
-            child: GestureDetector(
-              onTap: () {
-                if (!showSelf) {
-                  setState(() {
-                    showSelf = true;
-                  });
-                  loadInsight();
-                }
-              },
-              child: Container(
-                padding: const EdgeInsets.symmetric(vertical: 12),
-                decoration: BoxDecoration(
-                  color: showSelf ? Colors.orange : Colors.transparent,
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                alignment: Alignment.center,
-                child: Text(
-                  "You",
-                  style: TextStyle(
-                    color: showSelf ? Colors.white : Colors.orange,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+          AnimatedAlign(
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeInOut,
+            alignment: showSelf ? Alignment.centerLeft : Alignment.centerRight,
+            child: Container(
+              width: (MediaQuery.of(context).size.width - 64) / 2,
+              margin: const EdgeInsets.all(4),
+              decoration: BoxDecoration(
+                color: Colors.orange,
+                borderRadius: BorderRadius.circular(30),
               ),
             ),
           ),
-          Expanded(
-            child: GestureDetector(
-              onTap: () {
-                if (showSelf) {
-                  setState(() {
-                    showSelf = false;
-                  });
-                  loadInsight();
-                }
-              },
-              child: Container(
-                padding: const EdgeInsets.symmetric(vertical: 12),
-                decoration: BoxDecoration(
-                  color: !showSelf ? Colors.orange : Colors.transparent,
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                alignment: Alignment.center,
-                child: Text(
-                  "Relative",
-                  style: TextStyle(
-                    color: !showSelf ? Colors.white : Colors.orange,
-                    fontWeight: FontWeight.bold,
+          Row(
+            children: [
+              Expanded(
+                child: Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(30),
+                    onTap: () {
+                      if (!showSelf) {
+                        setState(() {
+                          showSelf = true;
+                        });
+                        loadInsight();
+                      }
+                    },
+                    child: Center(
+                      child: Text(
+                        "You",
+                        style: TextStyle(
+                          color: showSelf ? Colors.white : Colors.orange,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
                   ),
                 ),
               ),
-            ),
+              Expanded(
+                child: Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(30),
+                    onTap: () {
+                      if (showSelf) {
+                        setState(() {
+                          showSelf = false;
+                        });
+                        loadInsight();
+                      }
+                    },
+                    child: Center(
+                      child: Text(
+                        "Relative",
+                        style: TextStyle(
+                          color: !showSelf ? Colors.white : Colors.orange,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
         ],
       ),
