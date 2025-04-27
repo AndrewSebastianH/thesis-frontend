@@ -1,4 +1,7 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:skeletonizer/skeletonizer.dart';
@@ -21,7 +24,10 @@ class _MailInboxPageState extends State<MailInboxPage> {
 
   @override
   void initState() {
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    userProvider.setMockParentUserNoRelation();
     super.initState();
+
     loadMails();
   }
 
@@ -42,180 +48,246 @@ class _MailInboxPageState extends State<MailInboxPage> {
   @override
   Widget build(BuildContext context) {
     final mails = showInbox ? inboxMails : sentMails;
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    final hasConnection = userProvider.hasConnection;
 
-    return Scaffold(
-      backgroundColor: Colors.orange[50],
-      appBar: AppBar(
-        backgroundColor: Colors.orange[50],
-        elevation: 0,
-        title: const Text(
-          'Mail',
-          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.orange),
-        ),
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(56),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Container(
-              margin: const EdgeInsets.only(bottom: 8),
-              height: 48,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(30),
-                border: Border.all(color: Colors.orange),
+    return Stack(
+      children: [
+        Scaffold(
+          backgroundColor: Colors.orange[50],
+          appBar: AppBar(
+            backgroundColor: Colors.orange[50],
+            elevation: 0,
+            title: const Text(
+              'Mail',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.orange,
               ),
-              child: Stack(
-                children: [
-                  AnimatedAlign(
-                    duration: const Duration(milliseconds: 300),
-                    curve: Curves.easeInOut,
-                    alignment:
-                        showInbox
-                            ? Alignment.centerLeft
-                            : Alignment.centerRight,
-                    child: Container(
-                      width:
-                          (MediaQuery.of(context).size.width - 32) /
-                          2, // half of the container
-                      margin: const EdgeInsets.all(4),
-                      decoration: BoxDecoration(
-                        color: Colors.orange,
-                        borderRadius: BorderRadius.circular(30),
-                      ),
-                    ),
+            ),
+            bottom: PreferredSize(
+              preferredSize: const Size.fromHeight(56),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Container(
+                  margin: const EdgeInsets.only(bottom: 8),
+                  height: 48,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(30),
+                    border: Border.all(color: Colors.orange),
                   ),
-                  Row(
+                  child: Stack(
                     children: [
-                      Expanded(
-                        child: Material(
-                          color:
-                              Colors
-                                  .transparent, // make sure the area is tappable
-                          child: InkWell(
+                      AnimatedAlign(
+                        duration: const Duration(milliseconds: 300),
+                        curve: Curves.easeInOut,
+                        alignment:
+                            showInbox
+                                ? Alignment.centerLeft
+                                : Alignment.centerRight,
+                        child: Container(
+                          width:
+                              (MediaQuery.of(context).size.width - 32) /
+                              2, // half of the container
+                          margin: const EdgeInsets.all(4),
+                          decoration: BoxDecoration(
+                            color: Colors.orange,
                             borderRadius: BorderRadius.circular(30),
-                            onTap: () {
-                              if (!showInbox) {
-                                setState(() {
-                                  showInbox = true;
-                                });
-                                loadMails();
-                              }
-                            },
-                            child: Container(
-                              alignment: Alignment.center,
-                              height: 48, // Make sure it fills vertically
-                              child: Text(
-                                'Inbox',
-                                style: TextStyle(
-                                  color:
-                                      showInbox ? Colors.white : Colors.orange,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
                           ),
                         ),
                       ),
-                      Expanded(
-                        child: Material(
-                          color: Colors.transparent,
-                          child: InkWell(
-                            borderRadius: BorderRadius.circular(30),
-                            onTap: () {
-                              if (showInbox) {
-                                setState(() {
-                                  showInbox = false;
-                                });
-                                loadMails();
-                              }
-                            },
-                            child: Container(
-                              alignment: Alignment.center,
-                              height: 48,
-                              child: Text(
-                                'Sent',
-                                style: TextStyle(
-                                  color:
-                                      !showInbox ? Colors.white : Colors.orange,
-                                  fontWeight: FontWeight.bold,
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Material(
+                              color:
+                                  Colors
+                                      .transparent, // make sure the area is tappable
+                              child: InkWell(
+                                borderRadius: BorderRadius.circular(30),
+                                onTap: () {
+                                  if (!showInbox) {
+                                    setState(() {
+                                      showInbox = true;
+                                    });
+                                    loadMails();
+                                  }
+                                },
+                                child: Container(
+                                  alignment: Alignment.center,
+                                  height: 48, // Make sure it fills vertically
+                                  child: Text(
+                                    'Inbox',
+                                    style: TextStyle(
+                                      color:
+                                          showInbox
+                                              ? Colors.white
+                                              : Colors.orange,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
                                 ),
                               ),
                             ),
                           ),
-                        ),
+                          Expanded(
+                            child: Material(
+                              color: Colors.transparent,
+                              child: InkWell(
+                                borderRadius: BorderRadius.circular(30),
+                                onTap: () {
+                                  if (showInbox) {
+                                    setState(() {
+                                      showInbox = false;
+                                    });
+                                    loadMails();
+                                  }
+                                },
+                                child: Container(
+                                  alignment: Alignment.center,
+                                  height: 48,
+                                  child: Text(
+                                    'Sent',
+                                    style: TextStyle(
+                                      color:
+                                          !showInbox
+                                              ? Colors.white
+                                              : Colors.orange,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
-                ],
+                ),
               ),
             ),
           ),
-        ),
-      ),
 
-      body: AnimatedSwitcher(
-        duration: const Duration(milliseconds: 300),
-        transitionBuilder: (Widget child, Animation<double> animation) {
-          return FadeTransition(opacity: animation, child: child);
-        },
-        child:
-            isLoading
-                ? ListView.builder(
-                  key: const ValueKey('loading'),
-                  itemCount: 5,
-                  itemBuilder: (context, index) => const SkeletonMailCard(),
-                )
-                : mails.isEmpty
-                ? const Center(
-                  key: ValueKey('empty'),
-                  child: Text("No mails found."),
-                )
-                : ListView.builder(
-                  key: ValueKey(showInbox),
-                  itemCount: mails.length,
-                  itemBuilder: (context, index) {
-                    final mail = mails[index];
-                    return Card(
-                      color:
-                          mail.isRead
-                              ? Colors.brown.shade100
-                              : !showInbox && !mail.isRead
-                              ? Colors.lightGreen.shade100
-                              : Colors.orange[100],
-                      margin: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 6,
-                      ),
-                      child: ListTile(
-                        onTap: () => _openMail(mail),
-                        title: Text(
-                          mail.message,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        subtitle: Text(
-                          DateFormat.yMMMd().format(mail.createdAt),
-                        ),
-                        trailing:
-                            showInbox && !mail.isRead
-                                ? const Icon(
-                                  Icons.mark_email_unread,
-                                  color: Colors.red,
-                                )
-                                : !showInbox && !mail.isRead
-                                ? const Icon(
-                                  Icons.check_circle,
-                                  color: Colors.green,
-                                )
-                                : const Icon(
-                                  Icons.mark_email_read,
-                                  color: Colors.black,
+          body: Stack(
+            children: [
+              AnimatedSwitcher(
+                duration: const Duration(milliseconds: 300),
+                transitionBuilder: (Widget child, Animation<double> animation) {
+                  return FadeTransition(opacity: animation, child: child);
+                },
+                child:
+                    isLoading
+                        ? ListView.builder(
+                          key: const ValueKey('loading'),
+                          itemCount: 5,
+                          itemBuilder:
+                              (context, index) => const SkeletonMailCard(),
+                        )
+                        : mails.isEmpty
+                        ? const Center(
+                          key: ValueKey('empty'),
+                          child: Text("No mails found."),
+                        )
+                        : ListView.builder(
+                          key: ValueKey(showInbox),
+                          itemCount: mails.length,
+                          itemBuilder: (context, index) {
+                            final mail = mails[index];
+                            return Card(
+                              color:
+                                  mail.isRead
+                                      ? Colors.brown.shade100
+                                      : !showInbox && !mail.isRead
+                                      ? Colors.lightGreen.shade100
+                                      : Colors.orange[100],
+                              margin: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 6,
+                              ),
+                              child: ListTile(
+                                onTap: () => _openMail(mail),
+                                title: Text(
+                                  mail.message,
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
                                 ),
-                      ),
-                    );
-                  },
+                                subtitle: Text(
+                                  DateFormat.yMMMd().format(mail.createdAt),
+                                ),
+                                trailing:
+                                    showInbox && !mail.isRead
+                                        ? const Icon(
+                                          Icons.mark_email_unread,
+                                          color: Colors.red,
+                                        )
+                                        : !showInbox && !mail.isRead
+                                        ? const Icon(
+                                          Icons.check_circle,
+                                          color: Colors.green,
+                                        )
+                                        : const Icon(
+                                          Icons.mark_email_read,
+                                          color: Colors.black,
+                                        ),
+                              ),
+                            );
+                          },
+                        ),
+              ),
+            ],
+          ),
+        ),
+        // Blocking Layer if NOT connected
+        if (!hasConnection)
+          Positioned.fill(
+            child: ClipRect(
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 6, sigmaY: 6),
+                child: Container(
+                  color: Colors.black.withAlpha(30),
+                  child: Center(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Text(
+                          "Connect with a relative to use the Mail feature.",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        ElevatedButton(
+                          onPressed: () {
+                            context.push('/view-connection-code');
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.orange,
+                            foregroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(30),
+                            ),
+                          ),
+                          child: const Padding(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 24,
+                              vertical: 12,
+                            ),
+                            child: Text("Connect Now"),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
-      ),
+              ),
+            ),
+          ),
+      ],
     );
   }
 
@@ -331,34 +403,6 @@ class _MailInboxPageState extends State<MailInboxPage> {
         mail.isRead = true;
       });
     }
-  }
-
-  void _showDeleteAllConfirmation(BuildContext context) {
-    showDialog(
-      context: context,
-      builder:
-          (context) => AlertDialog(
-            title: const Text("Delete All Mails"),
-            content: const Text(
-              "Are you sure you want to delete all mails? This action cannot be undone.",
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(),
-                child: const Text("Cancel"),
-              ),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                  // TODO: Actually trigger delete all API
-                  print("All mails deleted.");
-                },
-                child: const Text("Delete All"),
-              ),
-            ],
-          ),
-    );
   }
 }
 

@@ -52,6 +52,8 @@ class UserProvider extends ChangeNotifier {
     }
   }
 
+  // Testing related functions below
+
   void setMockChildUser() {
     _user = UserModel(
       id: 1,
@@ -90,5 +92,17 @@ class UserProvider extends ChangeNotifier {
       relatedUserId: 2,
       expPoints: 0,
     );
+  }
+
+  void setMockParentUserNoRelation() {
+    _user = UserModel(
+      id: 2,
+      username: "Mama Bear",
+      email: "b@mail.com",
+      role: "parent",
+      relatedUserId: 1,
+      expPoints: 0,
+    );
+    _relatedUser = null;
   }
 }
