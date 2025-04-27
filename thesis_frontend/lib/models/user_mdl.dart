@@ -5,6 +5,7 @@ class UserModel {
   final String role;
   final int? relatedUserId;
   final int expPoints;
+  final int? avatar;
 
   UserModel({
     required this.id,
@@ -13,6 +14,7 @@ class UserModel {
     required this.role,
     this.relatedUserId,
     required this.expPoints,
+    this.avatar,
   });
 
   factory UserModel.fromJwt(Map<String, dynamic> jwt) {
@@ -23,6 +25,7 @@ class UserModel {
       role: jwt['role'],
       relatedUserId: jwt['relatedUserId'],
       expPoints: jwt['expPoints'],
+      avatar: jwt['avatar'],
     );
   }
 
@@ -33,6 +36,7 @@ class UserModel {
     'role': role,
     'relatedUserId': relatedUserId,
     'expPoints': expPoints,
+    'avatar': avatar,
   };
 
   factory UserModel.fromJson(Map<String, dynamic> json) => UserModel(
@@ -42,5 +46,6 @@ class UserModel {
     role: json['role'],
     relatedUserId: json['relatedUserId'],
     expPoints: json['expPoints'],
+    avatar: json['avatar'],
   );
 }
