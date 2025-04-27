@@ -15,6 +15,7 @@ class _InsightsPageState extends State<InsightsPage> {
   late bool showSelf;
   InsightModel? insightData;
   bool isLoading = true;
+  String selectedRange = 'month';
 
   @override
   void initState() {
@@ -23,10 +24,24 @@ class _InsightsPageState extends State<InsightsPage> {
     loadInsight();
   }
 
+  String _rangeLabel(String range) {
+    switch (range) {
+      case 'week':
+        return 'Weekly';
+      case '2weeks':
+        return '2 Weeks';
+      case 'month':
+        return 'Monthly';
+      default:
+        return '';
+    }
+  }
+
   Future<void> loadInsight() async {
     setState(() => isLoading = true);
     final fetchedInsight = await InsightApiService.fetchInsight(
       showSelf ? 'self' : 'related',
+      selectedRange, // 👈 pass range!
     );
     setState(() {
       insightData = fetchedInsight;
@@ -39,14 +54,54 @@ class _InsightsPageState extends State<InsightsPage> {
     return Scaffold(
       backgroundColor: Colors.orange[50],
       appBar: AppBar(
-        title: const Text(
-          "Insights",
-          style: TextStyle(fontWeight: FontWeight.bold),
+        title: Text(
+          "${_rangeLabel(selectedRange)} Insights ",
+          style: const TextStyle(fontWeight: FontWeight.bold),
         ),
         backgroundColor: Colors.orange[50],
         foregroundColor: Colors.orange,
         elevation: 0,
+        actions: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: PopupMenuButton<String>(
+                icon: const Icon(
+                  Icons.filter_list_rounded,
+                  color: Colors.orange,
+                ),
+                color: Colors.white,
+                onSelected: (value) {
+                  setState(() {
+                    selectedRange = value;
+                  });
+                  loadInsight();
+                },
+                itemBuilder:
+                    (context) => [
+                      const PopupMenuItem(
+                        value: 'week',
+                        child: Text('This Week'),
+                      ),
+                      const PopupMenuItem(
+                        value: '2weeks',
+                        child: Text('Last 2 Weeks'),
+                      ),
+                      const PopupMenuItem(
+                        value: 'month',
+                        child: Text('Last Month'),
+                      ),
+                    ],
+              ),
+            ),
+          ),
+        ],
       ),
+
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -106,7 +161,6 @@ class _InsightsPageState extends State<InsightsPage> {
             alignment: showSelf ? Alignment.centerLeft : Alignment.centerRight,
             child: Container(
               width: (MediaQuery.of(context).size.width - 64) / 2,
-              margin: const EdgeInsets.all(4),
               decoration: BoxDecoration(
                 color: Colors.orange,
                 borderRadius: BorderRadius.circular(30),
@@ -128,7 +182,9 @@ class _InsightsPageState extends State<InsightsPage> {
                         loadInsight();
                       }
                     },
-                    child: Center(
+                    child: Container(
+                      alignment: Alignment.center,
+                      height: 48,
                       child: Text(
                         "You",
                         style: TextStyle(
@@ -153,7 +209,9 @@ class _InsightsPageState extends State<InsightsPage> {
                         loadInsight();
                       }
                     },
-                    child: Center(
+                    child: Container(
+                      alignment: Alignment.center,
+                      height: 48,
                       child: Text(
                         "Relative",
                         style: TextStyle(
