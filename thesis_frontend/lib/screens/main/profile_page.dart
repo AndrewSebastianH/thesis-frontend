@@ -138,7 +138,14 @@ class ProfilePage extends StatelessWidget {
               child: IconButton(
                 icon: const Icon(Icons.edit, color: Colors.orange),
                 onPressed: () {
-                  // TODO: Edit profile
+                  showDialog(
+                    context: context,
+                    builder:
+                        (context) => EditProfileDialog(
+                          initialAvatarAsset: userProvider.userAvatarAsset,
+                          initialUsername: user?.username ?? '',
+                        ),
+                  );
                 },
               ),
             ),
@@ -175,6 +182,119 @@ class ProfilePage extends StatelessWidget {
                   ],
                 ),
               ),
+    );
+  }
+}
+
+class EditProfileDialog extends StatefulWidget {
+  final String initialAvatarAsset;
+  final String initialUsername;
+
+  const EditProfileDialog({
+    super.key,
+    required this.initialAvatarAsset,
+    required this.initialUsername,
+  });
+
+  @override
+  State<EditProfileDialog> createState() => _EditProfileDialogState();
+}
+
+class _EditProfileDialogState extends State<EditProfileDialog> {
+  late TextEditingController _usernameController;
+  late String _selectedAvatar;
+
+  @override
+  void initState() {
+    super.initState();
+    _usernameController = TextEditingController(text: widget.initialUsername);
+    _selectedAvatar = widget.initialAvatarAsset;
+  }
+
+  @override
+  void dispose() {
+    _usernameController.dispose();
+    super.dispose();
+  }
+
+  void _saveChanges() {
+    final updatedUsername = _usernameController.text.trim();
+    final updatedAvatar = _selectedAvatar;
+
+    if (updatedUsername.isEmpty) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text("Username cannot be empty")));
+      return;
+    }
+
+    // TODO: Send updatedUsername and updatedAvatar to backend
+    print("New Username: $updatedUsername");
+    print("New Avatar: $updatedAvatar");
+
+    Navigator.of(context).pop(); // Close the dialog
+  }
+
+  void _selectAvatar() {
+    // For now, just a simple toggle (mock). Later you can open a proper avatar picker.
+    setState(() {
+      _selectedAvatar =
+          _selectedAvatar == 'assets/images/avatars/1.png'
+              ? 'assets/images/bear_girl.png'
+              : 'assets/images/bear_boy.png';
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text(
+              "Edit Profile",
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+            ),
+            const SizedBox(height: 20),
+            GestureDetector(
+              onTap: _selectAvatar,
+              child: CircleAvatar(
+                radius: 40,
+                backgroundImage: AssetImage(_selectedAvatar),
+              ),
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: _usernameController,
+              decoration: const InputDecoration(
+                labelText: "Username",
+                border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 20),
+            SizedBox(
+              width: double.infinity,
+              height: 48,
+              child: ElevatedButton(
+                onPressed: _saveChanges,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.orange,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                child: const Text(
+                  "Save Changes",
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

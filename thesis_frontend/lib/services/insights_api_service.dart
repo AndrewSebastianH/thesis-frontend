@@ -5,7 +5,7 @@ import 'package:thesis_frontend/models/insights_mdl.dart';
 // import 'package:dio/dio.dart';
 
 class InsightApiService {
-  static Future<InsightModel> fetchInsight(String type) async {
+  static Future<InsightModel> fetchInsight(String type, String range) async {
     try {
       // In real use:
       // final response = await http.get(Uri.parse('https://yourapi.com/api/insight?type=$type'));
