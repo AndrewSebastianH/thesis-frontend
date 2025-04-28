@@ -88,7 +88,10 @@ class _HomePageState extends State<HomePage> {
           content: SingleChildScrollView(
             child: Column(
               children: [
-                Image.asset('assets/images/boybear_heart.png', width: 120),
+                Image.asset(
+                  'assets/images/parent_boy_bear_heart.png',
+                  width: 120,
+                ),
                 const SizedBox(height: 10),
                 Wrap(
                   alignment: WrapAlignment.center,
