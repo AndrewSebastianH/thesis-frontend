@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+import 'package:thesis_frontend/providers/user_provider.dart';
 import 'package:thesis_frontend/services/insights_api_service.dart';
 import 'package:thesis_frontend/models/insights_mdl.dart';
+import 'package:thesis_frontend/widgets/connect_prompt_card.dart';
 
 class InsightsPage extends StatefulWidget {
   final bool showSelf;
@@ -41,7 +44,7 @@ class _InsightsPageState extends State<InsightsPage> {
     setState(() => isLoading = true);
     final fetchedInsight = await InsightApiService.fetchInsight(
       showSelf ? 'self' : 'related',
-      selectedRange, // 👈 pass range!
+      selectedRange,
     );
     setState(() {
       insightData = fetchedInsight;
@@ -51,6 +54,8 @@ class _InsightsPageState extends State<InsightsPage> {
 
   @override
   Widget build(BuildContext context) {
+    final userProvider = Provider.of<UserProvider>(context);
+
     return Scaffold(
       backgroundColor: Colors.orange[50],
       appBar: AppBar(
@@ -114,6 +119,10 @@ class _InsightsPageState extends State<InsightsPage> {
                 child:
                     isLoading
                         ? _buildSkeletonLoader()
+                        : !showSelf && !userProvider.hasConnection
+                        ? ConnectPromptCard(
+                          text: "Connect with a relative to share insights!",
+                        )
                         : insightData == null
                         ? const Center(child: Text("No insights found."))
                         : ListView(

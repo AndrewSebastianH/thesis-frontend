@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:thesis_frontend/widgets/connect_prompt_card.dart';
 import '../../providers/user_provider.dart';
 
 class ProfilePage extends StatelessWidget {
@@ -9,7 +10,7 @@ class ProfilePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final userProvider = Provider.of<UserProvider>(context);
-    userProvider.setMockParentUser();
+    userProvider.setMockParentUserNoRelation();
     final user = userProvider.user;
     final relatedUser = userProvider.relatedUser;
 
@@ -170,7 +171,7 @@ class ProfilePage extends StatelessWidget {
                       user.expPoints,
                       true,
                     ),
-                    if (relatedUser != null)
+                    if (relatedUser != null) ...[
                       buildProfileCard(
                         'Connected User',
                         userProvider.relatedUserAvatarAsset,
@@ -179,6 +180,8 @@ class ProfilePage extends StatelessWidget {
                         relatedUser.expPoints,
                         false,
                       ),
+                    ] else
+                      const ConnectPromptCard(),
                   ],
                 ),
               ),
@@ -288,7 +291,10 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
                 ),
                 child: const Text(
                   "Save Changes",
-                  style: TextStyle(fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             ),
