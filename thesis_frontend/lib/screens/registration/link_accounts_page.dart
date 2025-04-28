@@ -155,7 +155,7 @@ class _LinkAccountPageState extends State<LinkAccountPage> {
 
   void _handleSubmit() {
     // TEMPORARY MOCK - replace this with API call later
-    final result = {'name': 'John Doe', 'role': 'child'};
+    final result = {'name': 'Bearl Benson', 'role': 'child'};
 
     setState(() {
       foundUser = result;

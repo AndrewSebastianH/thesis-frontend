@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
+import 'package:thesis_frontend/providers/user_provider.dart';
 import 'package:thesis_frontend/widgets/custom_button.dart';
 
 class CreateTaskPage extends StatefulWidget {
@@ -15,9 +17,22 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
   DateTime? _dueDate;
   bool _isRecurring = false;
   String _recurrenceInterval = 'daily';
+  late UserProvider userProvider;
 
   bool _isFormValid = false;
   bool _assignToSelf = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    userProvider = Provider.of<UserProvider>(context, listen: false);
+
+    if (!userProvider.hasConnection) {
+      setState(() {
+        _assignToSelf = true;
+      });
+    }
+  }
 
   @override
   void initState() {
@@ -53,6 +68,7 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
                   title: const Text("Pick a date"),
                   onTap: () async {
                     Navigator.pop(context);
+
                     final picked = await showDatePicker(
                       context: context,
                       initialDate: DateTime.now().add(const Duration(days: 1)),
@@ -104,6 +120,9 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
     });
 
     Navigator.pop(context); // Close page after submission
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text("Task created successfully!")));
   }
 
   @override
@@ -307,11 +326,14 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
                       Switch(
                         value: _assignToSelf,
                         activeColor: Colors.orange,
-                        onChanged: (val) {
-                          setState(() {
-                            _assignToSelf = val;
-                          });
-                        },
+                        onChanged:
+                            userProvider.hasConnection
+                                ? (val) {
+                                  setState(() {
+                                    _assignToSelf = val;
+                                  });
+                                }
+                                : null,
                       ),
                     ],
                   ),
@@ -330,6 +352,15 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
               ),
             ),
 
+            if (!userProvider.hasConnection)
+              Padding(
+                padding: const EdgeInsets.only(top: 8),
+                child: Text(
+                  "You currently have no connected user.\nTasks will be assigned to yourself.",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: Colors.grey[600], fontSize: 12),
+                ),
+              ),
             const SizedBox(height: 20),
 
             SizedBox(

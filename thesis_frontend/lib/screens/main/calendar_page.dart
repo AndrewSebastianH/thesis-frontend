@@ -25,8 +25,8 @@ class _EmotionCalendarPageState extends State<EmotionCalendarPage> {
   @override
   void initState() {
     super.initState();
-    final userProvider = Provider.of<UserProvider>(context, listen: false);
-    userProvider.setMockParentUser();
+    // final userProvider = Provider.of<UserProvider>(context, listen: false);
+    // userProvider.setMockParentUser();
 
     loadEmotionLogs();
   }
