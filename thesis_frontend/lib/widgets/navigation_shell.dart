@@ -1,116 +1,129 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
+import 'package:thesis_frontend/providers/user_provider.dart';
 
-class NavigationShell extends StatefulWidget {
+class NavigationShell extends StatelessWidget {
   final Widget child;
-  const NavigationShell({super.key, required this.child});
+  final GoRouterState state;
+  const NavigationShell({super.key, required this.child, required this.state});
 
-  @override
-  _NavigationShellState createState() => _NavigationShellState();
-}
-
-class _NavigationShellState extends State<NavigationShell> {
-  int _selectedIndex = 0;
-
-  void _onDestinationSelected(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-
-    switch (index) {
-      case 0:
-        context.go('/home');
-        break;
-      case 1:
-        context.go('/calendar');
-        break;
-      case 2:
-        context.go('/mail');
-        break;
-      case 3:
-        context.go('/profile');
-        break;
-    }
+  int _currentIndexFromLocation(String location) {
+    if (location.startsWith('/home')) return 0;
+    if (location.startsWith('/calendar')) return 1;
+    if (location.startsWith('/mail')) return 2;
+    if (location.startsWith('/profile')) return 3;
+    return 0; // default to Home if unknown
   }
 
   @override
   Widget build(BuildContext context) {
+    final userProvider = Provider.of<UserProvider>(context);
+    final hasConnection = userProvider.hasConnection;
+    final location = state.uri.toString();
+    final currentIndex = _currentIndexFromLocation(location);
+
     return Scaffold(
-      body: widget.child,
-      extendBody: true, // Makes nav bar float over background
-      floatingActionButton:
-          _selectedIndex == 0
-              ? Padding(
-                padding: const EdgeInsets.only(top: 22),
-                child: Container(
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Colors.orange,
-                  ),
-                  padding: const EdgeInsets.all(4), // outline thickness
-                  child: FloatingActionButton(
-                    mini: true,
-                    backgroundColor: Colors.white,
-                    shape: const CircleBorder(),
-                    onPressed: () => context.push('/create-task'),
-                    child: const Icon(Icons.add, color: Colors.orange),
-                  ),
-                ),
-              )
-              : _selectedIndex == 2
-              ? Padding(
-                padding: const EdgeInsets.only(top: 22),
-                child: Container(
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Colors.orange,
-                  ),
-                  padding: const EdgeInsets.all(4),
-                  child: FloatingActionButton(
-                    mini: true,
-                    backgroundColor: Colors.white,
-                    shape: const CircleBorder(),
-                    onPressed: () => _showMailOptions(context),
-                    child: const Icon(Icons.edit, color: Colors.orange),
-                  ),
-                ),
-              )
-              : null,
+      body: child,
+      extendBody: true,
+      floatingActionButton: _buildFloatingActionButton(
+        context,
+        currentIndex,
+        hasConnection,
+      ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      bottomNavigationBar: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 12),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(30),
-          child: BottomNavigationBar(
-            currentIndex: _selectedIndex,
-            onTap: _onDestinationSelected,
-            backgroundColor: Colors.amber[800],
-            selectedItemColor: Colors.white,
-            unselectedItemColor: Colors.white70,
-            type: BottomNavigationBarType.fixed,
-            elevation: 12,
-            items: const [
-              BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.calendar_month),
-                label: 'Calendar',
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.mail_rounded),
-                label: 'Mail',
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.person),
-                label: 'Profile',
-              ),
-            ],
-          ),
+      bottomNavigationBar: _buildBottomNavigationBar(context, currentIndex),
+    );
+  }
+
+  Widget? _buildFloatingActionButton(
+    BuildContext context,
+    int currentIndex,
+    bool hasConnection,
+  ) {
+    if (currentIndex == 0) {
+      return _circleButton(
+        onPressed: () => context.push('/create-task'),
+        icon: Icons.add,
+      );
+    }
+    if (currentIndex == 2 && hasConnection) {
+      return _circleButton(
+        onPressed: () => _showMailOptions(context),
+        icon: Icons.edit,
+      );
+    }
+    return null;
+  }
+
+  Widget _circleButton({
+    required VoidCallback onPressed,
+    required IconData icon,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 22),
+      child: Container(
+        decoration: const BoxDecoration(
+          shape: BoxShape.circle,
+          color: Colors.orange,
+        ),
+        padding: const EdgeInsets.all(4),
+        child: FloatingActionButton(
+          mini: true,
+          backgroundColor: Colors.white,
+          shape: const CircleBorder(),
+          onPressed: onPressed,
+          child: Icon(icon, color: Colors.orange),
         ),
       ),
     );
   }
 
-  // Mail related modals
+  Widget _buildBottomNavigationBar(BuildContext context, int currentIndex) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(30),
+        child: BottomNavigationBar(
+          currentIndex: currentIndex,
+          onTap: (index) {
+            switch (index) {
+              case 0:
+                context.go('/home');
+                break;
+              case 1:
+                context.go('/calendar');
+                break;
+              case 2:
+                context.go('/mail');
+                break;
+              case 3:
+                context.go('/profile');
+                break;
+            }
+          },
+          backgroundColor: Colors.amber[800],
+          selectedItemColor: Colors.white,
+          unselectedItemColor: Colors.white70,
+          type: BottomNavigationBarType.fixed,
+          elevation: 12,
+          items: const [
+            BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.calendar_month),
+              label: 'Calendar',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.mail_rounded),
+              label: 'Mail',
+            ),
+            BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
+          ],
+        ),
+      ),
+    );
+  }
+
   void _showMailOptions(BuildContext context) {
     showModalBottomSheet(
       context: context,
@@ -140,6 +153,7 @@ class _NavigationShellState extends State<NavigationShell> {
                 leading: const Icon(Icons.delete),
                 title: const Text("Delete All Received Mails"),
                 onTap: () {
+                  Navigator.pop(context);
                   _showConfirmDeleteDialog(context);
                 },
               ),
@@ -155,7 +169,7 @@ class _NavigationShellState extends State<NavigationShell> {
       context: context,
       barrierDismissible: true,
       barrierLabel: 'Delete All Received Mails',
-      barrierColor: Colors.black.withAlpha(40), // soft background dim
+      barrierColor: Colors.black.withAlpha(40),
       transitionDuration: const Duration(milliseconds: 300),
       pageBuilder: (context, animation, secondaryAnimation) {
         return Center(
@@ -174,7 +188,6 @@ class _NavigationShellState extends State<NavigationShell> {
                   const Text(
                     "Delete All Received Mails?",
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-                    textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 16),
                   const Text(
@@ -204,7 +217,6 @@ class _NavigationShellState extends State<NavigationShell> {
                         ),
                         onPressed: () {
                           Navigator.pop(context);
-                          // TODO: Actually trigger deleteAllMails API here
                           print("All received mails deleted.");
                         },
                         child: const Text("Delete All"),

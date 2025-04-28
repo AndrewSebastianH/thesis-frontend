@@ -122,7 +122,7 @@ class MyApp extends StatelessWidget {
 
         ShellRoute(
           builder: (context, state, child) {
-            return NavigationShell(child: child);
+            return NavigationShell(state: state, child: child);
           },
           routes: [
             GoRoute(path: '/', builder: (context, state) => const Loading()),
