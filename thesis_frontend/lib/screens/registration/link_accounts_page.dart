@@ -3,8 +3,16 @@ import 'package:flutter_otp_text_field/flutter_otp_text_field.dart';
 import 'package:go_router/go_router.dart';
 import '../../widgets/custom_button.dart';
 
-class LinkAccountPage extends StatelessWidget {
+class LinkAccountPage extends StatefulWidget {
   const LinkAccountPage({Key? key}) : super(key: key);
+
+  @override
+  State<LinkAccountPage> createState() => _LinkAccountPageState();
+}
+
+class _LinkAccountPageState extends State<LinkAccountPage> {
+  String _enteredCode = '';
+  Map<String, String>? foundUser; // ✅ store the user info when found
 
   @override
   Widget build(BuildContext context) {
@@ -28,94 +36,16 @@ class LinkAccountPage extends StatelessWidget {
                 focusedBorderColor: const Color(0xFFFF7F50),
                 showFieldAsBox: false,
                 borderWidth: 4.0,
+                onCodeChanged: (code) {
+                  setState(() {
+                    _enteredCode = code;
+                  });
+                },
                 onSubmit: (code) {
-                  print("Entered code: $code");
-                  final result = {'name': 'John Doe', 'role': 'parent'};
-
-                  // Handle logic
-                  if (result != null) {
-                    final name = result['name'];
-                    final role = result['role'];
-
-                    showDialog(
-                      context: context,
-                      builder:
-                          (BuildContext dialogContext) => AlertDialog(
-                            title: const Text("User Found"),
-                            content: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                if (role == "parent")
-                                  Image.asset(
-                                    "assets/images/avatar/3.png",
-                                    width: 100,
-                                    height: 100,
-                                  )
-                                else
-                                  Image.asset(
-                                    "assets/images/avatar/1.png",
-                                    width: 100,
-                                    height: 100,
-                                  ),
-                                const SizedBox(height: 16),
-
-                                Text(
-                                  "$name",
-                                  style: const TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                const SizedBox(height: 10),
-                                Text(
-                                  "${role?[0].toUpperCase()}${role?.substring(1)}",
-                                ),
-                              ],
-                            ),
-                            actions: [
-                              TextButton(
-                                style: TextButton.styleFrom(
-                                  backgroundColor: Colors.white,
-                                  foregroundColor: const Color(0xFFFF7F50),
-                                ),
-                                onPressed:
-                                    () => Navigator.of(dialogContext).pop(),
-                                child: const Text("Cancel"),
-                              ),
-                              TextButton(
-                                style: TextButton.styleFrom(
-                                  backgroundColor: const Color(0xFFFF7F50),
-                                  foregroundColor: Colors.white,
-                                ),
-                                onPressed: () => context.go('/home'),
-                                child: const Text("Connect"),
-                              ),
-                            ],
-                          ),
-                    );
-                  } else {
-                    showDialog(
-                      context: context,
-                      builder:
-                          (BuildContext alertContext) => AlertDialog(
-                            title: Text("User not found"),
-                            content: Text(
-                              "The code is invalid or expired. Please try again",
-                            ),
-                            actions: [
-                              TextButton(
-                                style: TextButton.styleFrom(
-                                  backgroundColor: Colors.white,
-                                  foregroundColor: const Color(0xFFFF7F50),
-                                ),
-                                onPressed:
-                                    () => Navigator.of(alertContext).pop(),
-                                child: const Text("OK"),
-                              ),
-                            ],
-                          ),
-                    );
-                  }
+                  setState(() {
+                    _enteredCode = code;
+                  });
+                  _handleSubmit();
                 },
               ),
 
@@ -124,18 +54,35 @@ class LinkAccountPage extends StatelessWidget {
                 "Enter the code shared by your parent/\nchild to connect your accounts in Closer.",
                 textAlign: TextAlign.center,
               ),
+              const SizedBox(height: 24),
+
+              if (foundUser != null) ...[
+                const Text(
+                  "User found!",
+                  style: TextStyle(
+                    color: Colors.black87,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                SizedBox(height: 16),
+                _buildProfileCard(),
+              ] else if (_enteredCode.length == 6 && foundUser == null) ...[
+                const Text(
+                  "No user found with this code.",
+                  style: TextStyle(color: Colors.red),
+                ),
+              ],
 
               const SizedBox(height: 40),
 
-              // Your custom button here
               SizedBox(
                 width: double.infinity,
                 height: 50,
                 child: CustomButton(
                   text: "Connect Account",
-                  onPressed: () {
-                    // Handle continue action
-                  },
+                  onPressed:
+                      foundUser != null ? () => context.go("/home") : null,
+                  isEnabled: foundUser != null,
                 ),
               ),
             ],
@@ -143,5 +90,58 @@ class LinkAccountPage extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Widget _buildProfileCard() {
+    final name = foundUser!['name']!;
+    final role = foundUser!['role']!;
+    final isParent = role == 'parent';
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: const Color(0xFFFFF9EC),
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.brown.withAlpha(30),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          CircleAvatar(
+            radius: 40,
+            backgroundImage: AssetImage(
+              isParent
+                  ? 'assets/images/avatars/3.png'
+                  : 'assets/images/avatars/1.png',
+            ),
+          ),
+          const SizedBox(height: 12),
+          Text(
+            name,
+            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            role[0].toUpperCase() + role.substring(1),
+            style: const TextStyle(color: Colors.grey, fontSize: 14),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _handleSubmit() {
+    // TEMPORARY MOCK - replace this with API call later
+    final result = {'name': 'John Doe', 'role': 'child'};
+
+    setState(() {
+      foundUser = result;
+    });
   }
 }
