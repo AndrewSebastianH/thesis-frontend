@@ -17,6 +17,7 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
   String _recurrenceInterval = 'daily';
 
   bool _isFormValid = false;
+  bool _assignToSelf = false;
 
   @override
   void initState() {
@@ -93,13 +94,13 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
       return;
     }
 
-    // 🔁 Replace with actual API call
     print({
       'title': title,
       'description': desc.isEmpty ? null : desc,
       'dueDate': _dueDate?.toIso8601String().split("T").first,
       'isRecurring': _isRecurring,
       'recurrenceInterval': _isRecurring ? _recurrenceInterval : null,
+      'assignTo': _assignToSelf ? 'self' : 'related',
     });
 
     Navigator.pop(context); // Close page after submission
@@ -187,7 +188,7 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               child: Column(
                 children: [
-                  if (!_isRecurring) // 🔥 Only show due date if NOT recurring
+                  if (!_isRecurring)
                     Column(
                       children: [
                         ListTile(
@@ -210,12 +211,10 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
                           ),
                           trailing: const Icon(Icons.calendar_today),
                         ),
-                        const Divider(),
                       ],
                     ),
-
-                  if (_dueDate ==
-                      null) // 🔥 Only show recurring toggle if NO due date set
+                  if (_dueDate == null && !_isRecurring) ...[const Divider()],
+                  if (_dueDate == null) ...[
                     Column(
                       children: [
                         SwitchListTile(
@@ -224,8 +223,7 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
                           onChanged: (val) {
                             setState(() {
                               _isRecurring = val;
-                              if (_isRecurring)
-                                _dueDate = null; // Just extra safety
+                              if (_isRecurring) _dueDate = null;
                             });
                           },
                           activeColor: Colors.orange,
@@ -276,11 +274,63 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
                         ],
                       ],
                     ),
+                  ],
                 ],
               ),
             ),
 
-            const SizedBox(height: 30),
+            const SizedBox(height: 20),
+
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withAlpha(20),
+                    blurRadius: 4,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        "Assign task for Yourself?",
+                        style: TextStyle(fontSize: 16, color: Colors.black87),
+                      ),
+                      Switch(
+                        value: _assignToSelf,
+                        activeColor: Colors.orange,
+                        onChanged: (val) {
+                          setState(() {
+                            _assignToSelf = val;
+                          });
+                        },
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    _assignToSelf
+                        ? "✅ Task assigned to yourself"
+                        : "📩 Task assigned to relative",
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: _assignToSelf ? Colors.green : Colors.deepOrange,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 20),
 
             SizedBox(
               width: double.infinity,
