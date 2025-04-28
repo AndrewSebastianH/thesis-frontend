@@ -13,6 +13,7 @@ class MailApiService {
           "id": "uuid-1",
           "senderId": 1,
           "receiverId": 2,
+          "subject": "Hello!",
           "message": "Hope your day is nice today ☀️",
           "isRead": false,
           "createdAt":
@@ -24,6 +25,7 @@ class MailApiService {
           "id": "uuid-2",
           "senderId": 1,
           "receiverId": 2,
+          "subject": "Good job!",
           "message": "I’m proud of you!",
           "isRead": true,
           "createdAt":
@@ -49,6 +51,7 @@ class MailApiService {
           "id": "uuid-3",
           "senderId": 2,
           "receiverId": 1,
+          "subject": "Important",
           "message": "You mean the world to me 💛",
           "isRead": false,
           "createdAt":
@@ -60,6 +63,7 @@ class MailApiService {
           "id": "uuid-4",
           "senderId": 2,
           "receiverId": 1,
+          "subject": "Reminder",
           "message": "WASH THE DISHES NNNNOOOOOOOOOOW",
           "isRead": true,
           "createdAt":
@@ -71,7 +75,8 @@ class MailApiService {
           "id": "uuid-5",
           "senderId": 2,
           "receiverId": 1,
-          "message": "Bodolah",
+          "subject": "Dor",
+          "message": "Bagi duit dong mau jajan",
           "isRead": true,
           "createdAt":
               DateTime.now()

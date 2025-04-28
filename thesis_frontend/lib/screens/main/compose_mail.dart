@@ -10,6 +10,8 @@ class ComposeMailPage extends StatefulWidget {
 
 class _ComposeMailPageState extends State<ComposeMailPage> {
   final _messageController = TextEditingController();
+  final _subjectController = TextEditingController();
+
   bool _isFormValid = false;
   static const int _maxCharacters = 300;
 
@@ -21,24 +23,32 @@ class _ComposeMailPageState extends State<ComposeMailPage> {
 
   void _validateForm() {
     setState(() {
-      _isFormValid = _messageController.text.trim().isNotEmpty;
+      _isFormValid =
+          _messageController.text.trim().isNotEmpty &&
+          _subjectController.text.trim().isNotEmpty &&
+          _messageController.text.length <= _maxCharacters;
     });
   }
 
   void _submitMail() {
     final message = _messageController.text.trim();
+    final subject = _subjectController.text.trim();
 
-    if (message.isEmpty) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text("Message cannot be empty")));
+    if (message.isEmpty || subject.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Message and subject cannot be empty")),
+      );
       return;
     }
 
     // TODO: Replace with actual send mail API
     print({'message': message});
+    print({'subject': subject});
 
-    Navigator.pop(context); // Close page after sending
+    Navigator.pop(context);
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text("Mail sent successfully!")));
   }
 
   @override
@@ -57,6 +67,36 @@ class _ComposeMailPageState extends State<ComposeMailPage> {
         padding: const EdgeInsets.all(16),
         child: ListView(
           children: [
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.09),
+                    blurRadius: 6,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: Column(
+                children: [
+                  TextField(
+                    controller: _subjectController,
+                    decoration: const InputDecoration(
+                      hintText: "Enter subject title here",
+                      hintStyle: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.grey,
+                      ),
+                      border: InputBorder.none,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 24),
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(

@@ -209,7 +209,7 @@ class _MailInboxPageState extends State<MailInboxPage> {
                               child: ListTile(
                                 onTap: () => _openMail(mail),
                                 title: Text(
-                                  mail.message,
+                                  mail.subject,
                                   maxLines: 2,
                                   overflow: TextOverflow.ellipsis,
                                 ),
