@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
+import 'package:thesis_frontend/providers/user_provider.dart';
+import 'package:thesis_frontend/services/auth_api_service.dart';
 import '../../widgets/custom_button.dart';
 
 class ChooseRoleScreen extends StatefulWidget {
@@ -11,11 +14,18 @@ class ChooseRoleScreen extends StatefulWidget {
 
 class _ChooseRoleScreenState extends State<ChooseRoleScreen> {
   int selectedIndex = -1;
+  late UserProvider userProvider;
 
   void onImageTap(int index) {
     setState(() {
       selectedIndex = index;
     });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    userProvider = Provider.of<UserProvider>(context, listen: false);
   }
 
   Widget buildCircleImage(String path, int index, double maxWidth) {
@@ -120,17 +130,29 @@ class _ChooseRoleScreenState extends State<ChooseRoleScreen> {
                     height: 50,
                     child: CustomButton(
                       text: "Continue",
-                      onPressed: () {
-                        if (selectedIndex != -1) {
-                          context.go(
-                            '/view-connection-code',
-                            extra: widget.connectionCode,
-                          );
-                        } else {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text("Please select a role")),
-                          );
-                        }
+                      onPressed: () async {
+                        // if (selectedIndex == -1) return; // No role selected
+
+                        // final chosenRole =
+                        //     selectedIndex == 0 ? 'child' : 'parent';
+
+                        // try {
+                        //   await AuthService.chooseRole(role: chosenRole);
+
+                        //   await userProvider.refreshUserInfo();
+
+                        //   if (!mounted) return;
+                        context.go('/view-connection-code');
+                        // } catch (e) {
+                        //   if (!mounted) return;
+                        //   ScaffoldMessenger.of(context).showSnackBar(
+                        //     const SnackBar(
+                        //       content: Text(
+                        //         'Failed to update role. Please try again.',
+                        //       ),
+                        //     ),
+                        //   );
+                        // }
                       },
                     ),
                   ),

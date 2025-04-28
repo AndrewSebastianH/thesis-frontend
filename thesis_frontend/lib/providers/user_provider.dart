@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:thesis_frontend/extensions/response_result_extension.dart';
 import '../models/user_mdl.dart';
+import '../services/auth_api_service.dart';
 
 class UserProvider extends ChangeNotifier {
   UserModel? _user;
@@ -23,6 +25,21 @@ class UserProvider extends ChangeNotifier {
   void clear() {
     _user = null;
     _relatedUser = null;
+    notifyListeners();
+  }
+
+  // Main function to call anytime you need the latest user info
+  Future<void> refreshUserInfo() async {
+    final data =
+        (await AuthService.getUserFullInfo())
+            .successOrThrow<Map<String, dynamic>>();
+
+    _user = UserModel.fromJson(data['user']);
+    _relatedUser =
+        data['relatedUser'] != null
+            ? UserModel.fromJson(data['relatedUser'])
+            : null;
+
     notifyListeners();
   }
 
@@ -100,7 +117,7 @@ class UserProvider extends ChangeNotifier {
       username: "Mama Bear",
       email: "b@mail.com",
       role: "parent",
-      relatedUserId: 1,
+      relatedUserId: null,
       expPoints: 0,
     );
     _relatedUser = null;

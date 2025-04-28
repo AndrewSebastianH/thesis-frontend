@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 import '../../models/tasks_mdl.dart';
 import '../../services/tasks_api_service.dart';
 import 'package:intl/intl.dart';
@@ -15,6 +16,7 @@ class _HomePageState extends State<HomePage> {
   late BuildContext safeScaffoldContext;
   List<TaskModel> tasks = [];
   String _filterType = 'All';
+  bool _isFetchingTasks = true;
 
   @override
   void initState() {
@@ -24,9 +26,14 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> _fetchTasks() async {
+    setState(() => _isFetchingTasks = true);
     final fetchedTasks = await TaskService.fetchTasks();
     if (!mounted) return;
-    setState(() => tasks = fetchedTasks);
+    setState(() {
+      tasks = fetchedTasks;
+      _isFetchingTasks = false;
+    });
+    ;
   }
 
   Future<void> _completeTask(TaskModel task) async {
@@ -57,9 +64,9 @@ class _HomePageState extends State<HomePage> {
 
   Future<void> _checkMoodScreen() async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.remove('lastMoodScreenDate');
+    // await prefs.remove('lastMoodScreenDate');
 
-    final now = DateTime.now().copyWith(hour: 16);
+    final now = DateTime.now();
     final currentDate = "${now.year}-${now.month}-${now.day}";
     final lastShownDate = prefs.getString('lastMoodScreenDate');
 
@@ -318,7 +325,7 @@ class _HomePageState extends State<HomePage> {
                         borderRadius: BorderRadius.circular(18),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.15),
+                            color: Colors.black.withAlpha(15),
                             blurRadius: 10,
                             offset: const Offset(0, 5),
                           ),
@@ -365,6 +372,73 @@ class _HomePageState extends State<HomePage> {
           ],
         );
       },
+    );
+  }
+
+  Widget _buildTaskCard(TaskModel task) {
+    return Card(
+      color: task.isCustomTask ? Colors.blue[100] : Colors.orange[100],
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      margin: const EdgeInsets.symmetric(vertical: 6),
+      child: ListTile(
+        onTap: () => _showTaskDetails(task),
+        title: Text(task.title),
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              task.isCustomTask
+                  ? 'Custom Task'
+                  : 'Repeats ${task.recurrenceInterval}',
+              style: const TextStyle(fontSize: 11, color: Colors.black38),
+            ),
+            if (task.dueDate != null) ...[
+              const SizedBox(height: 6),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 6,
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: Colors.orange.shade100),
+                ),
+                child: Wrap(
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  spacing: 6,
+                  children: [
+                    const Icon(
+                      Icons.calendar_today_rounded,
+                      size: 14,
+                      color: Colors.orange,
+                    ),
+                    Text(
+                      "Complete before ${DateFormat.yMMMd().format(task.dueDate!)}",
+                      style: const TextStyle(
+                        fontSize: 10,
+                        color: Colors.black87,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ],
+        ),
+        trailing: ElevatedButton(
+          onPressed: () => _completeTask(task),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.lightGreen[700],
+            minimumSize: const Size(48, 48),
+            padding: EdgeInsets.zero,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+          ),
+          child: const Icon(Icons.check, color: Colors.white, size: 20),
+        ),
+      ),
     );
   }
 
@@ -437,122 +511,80 @@ class _HomePageState extends State<HomePage> {
 
                   // Task cards
                   Expanded(
-                    child:
-                        filteredTasks.isEmpty
-                            ? const Center(
-                              child: Padding(
-                                padding: EdgeInsets.only(bottom: 100),
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Text("🎉", style: TextStyle(fontSize: 48)),
-                                    SizedBox(height: 12),
-                                    Text(
-                                      "You've completed all your tasks!\nGreat Job! 🎊",
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(fontSize: 16),
-                                    ),
-                                  ],
+                    child: AnimatedSwitcher(
+                      duration: const Duration(milliseconds: 300),
+                      transitionBuilder: (
+                        Widget child,
+                        Animation<double> animation,
+                      ) {
+                        return FadeTransition(opacity: animation, child: child);
+                      },
+                      child:
+                          _isFetchingTasks
+                              ? ListView.builder(
+                                key: const ValueKey('loading'),
+                                itemCount: 5,
+                                itemBuilder:
+                                    (context, index) =>
+                                        _buildSkeletonTaskList(),
+                              )
+                              : filteredTasks.isEmpty
+                              ? const Center(
+                                child: Padding(
+                                  padding: EdgeInsets.only(bottom: 100),
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        "🎉",
+                                        style: TextStyle(fontSize: 48),
+                                      ),
+                                      SizedBox(height: 12),
+                                      Text(
+                                        "You've completed all your tasks!\nGreat Job! 🎊",
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(fontSize: 16),
+                                      ),
+                                    ],
+                                  ),
                                 ),
+                              )
+                              : ListView.builder(
+                                itemCount: filteredTasks.length,
+                                itemBuilder: (context, index) {
+                                  final task = filteredTasks[index];
+                                  return _buildTaskCard(task);
+                                },
                               ),
-                            )
-                            : ListView.builder(
-                              itemCount: filteredTasks.length,
-                              itemBuilder: (context, index) {
-                                final task = filteredTasks[index];
-                                return Card(
-                                  color:
-                                      task.isCustomTask
-                                          ? Colors.blue[100]
-                                          : Colors.orange[100],
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(16),
-                                  ),
-                                  margin: const EdgeInsets.symmetric(
-                                    vertical: 6,
-                                  ),
-                                  child: ListTile(
-                                    onTap: () => _showTaskDetails(task),
-                                    title: Text(task.title),
-                                    subtitle: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          task.isCustomTask
-                                              ? 'Custom Task'
-                                              : 'Repeats ${task.recurrenceInterval}',
-                                          style: const TextStyle(
-                                            fontSize: 11,
-                                            color: Colors.black38,
-                                          ),
-                                        ),
-                                        if (task.dueDate != null) ...[
-                                          const SizedBox(height: 6),
-                                          Container(
-                                            padding: const EdgeInsets.symmetric(
-                                              horizontal: 10,
-                                              vertical: 6,
-                                            ),
-                                            decoration: BoxDecoration(
-                                              color: Colors.white,
-                                              borderRadius:
-                                                  BorderRadius.circular(10),
-                                              border: Border.all(
-                                                color: Colors.orange.shade100,
-                                              ),
-                                            ),
-                                            child: Wrap(
-                                              crossAxisAlignment:
-                                                  WrapCrossAlignment.center,
-                                              spacing: 6,
-                                              children: [
-                                                const Icon(
-                                                  Icons.calendar_today_rounded,
-                                                  size: 14,
-                                                  color: Colors.orange,
-                                                ),
-                                                Text(
-                                                  "Complete before ${DateFormat.yMMMd().format(task.dueDate!)}",
-                                                  style: const TextStyle(
-                                                    fontSize: 10,
-                                                    color: Colors.black87,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ],
-                                      ],
-                                    ),
-                                    trailing: ElevatedButton(
-                                      onPressed: () => _completeTask(task),
-                                      style: ElevatedButton.styleFrom(
-                                        backgroundColor: Colors.lightGreen[700],
-                                        minimumSize: const Size(48, 48),
-                                        padding: EdgeInsets.zero,
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(
-                                            12,
-                                          ),
-                                        ),
-                                      ),
-                                      child: const Icon(
-                                        Icons.check,
-                                        color: Colors.white,
-                                        size: 20,
-                                      ),
-                                    ),
-                                  ),
-                                );
-                              },
-                            ),
+                    ),
                   ),
                 ],
               ),
             ),
           );
         },
+      ),
+    );
+  }
+
+  Widget _buildSkeletonTaskList() {
+    return Skeletonizer(
+      child: Card(
+        margin: const EdgeInsets.symmetric(vertical: 6),
+        child: ListTile(
+          title: Container(
+            height: 16,
+            width: double.infinity,
+            color: Colors.grey[100],
+          ),
+          subtitle: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+            height: 12,
+            width: 100,
+            color: Colors.grey[100],
+          ),
+          trailing: Icon(Icons.email_outlined, color: Colors.amber[100]),
+        ),
       ),
     );
   }

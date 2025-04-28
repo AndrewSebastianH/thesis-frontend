@@ -24,8 +24,8 @@ class _MailInboxPageState extends State<MailInboxPage> {
 
   @override
   void initState() {
-    final userProvider = Provider.of<UserProvider>(context, listen: false);
-    userProvider.setMockParentUserNoRelation();
+    // final userProvider = Provider.of<UserProvider>(context, listen: false);
+    // userProvider.setMockParentUserNoRelation();
     super.initState();
 
     loadMails();

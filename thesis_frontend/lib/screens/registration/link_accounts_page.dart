@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_otp_text_field/flutter_otp_text_field.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
+import 'package:thesis_frontend/providers/user_provider.dart';
 import '../../widgets/custom_button.dart';
 
 class LinkAccountPage extends StatefulWidget {
@@ -12,7 +14,14 @@ class LinkAccountPage extends StatefulWidget {
 
 class _LinkAccountPageState extends State<LinkAccountPage> {
   String _enteredCode = '';
-  Map<String, String>? foundUser; // ✅ store the user info when found
+  late UserProvider userProvider;
+  Map<String, String>? foundUser;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    userProvider = Provider.of<UserProvider>(context, listen: false);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -81,7 +90,15 @@ class _LinkAccountPageState extends State<LinkAccountPage> {
                 child: CustomButton(
                   text: "Connect Account",
                   onPressed:
-                      foundUser != null ? () => context.go("/home") : null,
+                      foundUser != null
+                          ? () => {
+                            userProvider.clear(),
+                            userProvider.setMockParentUser(),
+
+                            context.go("/home"),
+                          }
+                          : null,
+
                   isEnabled: foundUser != null,
                 ),
               ),

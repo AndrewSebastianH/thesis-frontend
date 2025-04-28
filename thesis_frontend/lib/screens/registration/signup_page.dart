@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:thesis_frontend/providers/user_provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../widgets/custom_button.dart';
 
@@ -12,22 +13,27 @@ class SignUp extends StatelessWidget {
     final bool isSmallScreen = MediaQuery.of(context).size.width < 600;
 
     return Scaffold(
-      body: Center(
-        child:
-            isSmallScreen
-                ? Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: const [_FormContent()],
-                )
-                : Container(
-                  padding: const EdgeInsets.all(32.0),
-                  constraints: const BoxConstraints(maxWidth: 800),
-                  child: Row(
-                    children: const [
-                      Expanded(child: Center(child: _FormContent())),
-                    ],
-                  ),
-                ),
+      body: Stack(
+        fit: StackFit.expand,
+        children: [
+          Center(
+            child:
+                isSmallScreen
+                    ? Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: const [_FormContent()],
+                    )
+                    : Container(
+                      padding: const EdgeInsets.all(32.0),
+                      constraints: const BoxConstraints(maxWidth: 800),
+                      child: Row(
+                        children: const [
+                          Expanded(child: Center(child: _FormContent())),
+                        ],
+                      ),
+                    ),
+          ),
+        ],
       ),
     );
   }
@@ -44,6 +50,7 @@ class __FormContentState extends State<_FormContent> {
   final _formKey = GlobalKey<FormState>();
   bool _isFormValid = false;
   late AuthProvider controller;
+  late UserProvider userProvider;
 
   @override
   void initState() {
@@ -54,6 +61,7 @@ class __FormContentState extends State<_FormContent> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     controller = Provider.of<AuthProvider>(context, listen: false);
+    userProvider = Provider.of<UserProvider>(context, listen: false);
     controller.usernameController.addListener(_validateForm);
     controller.emailController.addListener(_validateForm);
     controller.passwordController.addListener(_validateForm);
@@ -199,9 +207,17 @@ class __FormContentState extends State<_FormContent> {
               height: 50,
               child: CustomButton(
                 text: "Signup",
-                onPressed: () {
-                  // if (_formKey.currentState?.validate() ?? false) {
+                onPressed: () async {
+                  // Send signup
+                  // final token = await controller.signup();
+                  // Save the token
+                  // await controller.saveToken(token);
 
+                  // Call refresh user info (which saves user info in provider)
+                  // await userProvider.refreshUserInfo();
+                  // go to choose role
+
+                  if (!mounted) return;
                   context.go('/choose-role');
 
                   // ScaffoldMessenger.of(context).showSnackBar(
@@ -209,12 +225,6 @@ class __FormContentState extends State<_FormContent> {
                   //     content: Text('Signup failed. Please try again.'),
                   //   ),
                   // );
-
-                  // final result = await controller.signup();
-                  // if (result) {
-                  //   final connectionCode = result['connectionCode'];
-                  // }
-                  // }
                 },
                 isEnabled: _isFormValid,
               ),

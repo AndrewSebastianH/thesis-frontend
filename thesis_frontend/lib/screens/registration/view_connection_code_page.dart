@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
+import 'package:thesis_frontend/providers/user_provider.dart';
 import '../../services/auth_api_service.dart';
 import '../../widgets/custom_button.dart';
 import '../../extensions/response_result_extension.dart';
@@ -14,6 +16,13 @@ class ConnectionCodeScreen extends StatefulWidget {
 class _ConnectionCodeScreenState extends State<ConnectionCodeScreen> {
   String? connectionCode;
   bool isLoading = true;
+  late UserProvider userProvider;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    userProvider = Provider.of<UserProvider>(context, listen: false);
+  }
 
   @override
   void initState() {
@@ -106,6 +115,8 @@ class _ConnectionCodeScreenState extends State<ConnectionCodeScreen> {
                         child: CustomButton(
                           text: "Connect later",
                           onPressed: () {
+                            userProvider.clear();
+                            userProvider.setMockParentUserNoRelation();
                             context.go("/home");
                           },
                         ),

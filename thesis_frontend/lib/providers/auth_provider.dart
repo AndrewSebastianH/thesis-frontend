@@ -1,49 +1,12 @@
-//   Future<void> signup(String username, String email, String password) async {
-//     final success = await AuthService.signup(username, email, password);
-//     if (!success) throw Exception("Signup failed");
-//   }
-
-//   Future<void> logout() async {
-//     _isLoggedIn = false;
-//     _token = null;
-//     _user = null;
-
-//     await _secureStorage.delete(key: 'auth_token');
-//     await _secureStorage.delete(key: 'user_data');
-
-//     emailController.clear();
-//     passwordController.clear();
-//     confirmPasswordController.clear();
-
-//     notifyListeners();
-//   }
-
-//   Future<void> tryAutoLogin() async {
-//     final token = await _secureStorage.read(key: 'auth_token');
-//     final userData = await _secureStorage.read(key: 'user_data');
-
-//     if (token != null && userData != null && !JwtDecoder.isExpired(token)) {
-//       _token = token;
-//       _user = UserModel.fromJson(jsonDecode(userData));
-//       _isLoggedIn = true;
-//       notifyListeners();
-//     }
-//   }
-
-//   @override
-//   void dispose() {
-//     emailController.dispose();
-//     passwordController.dispose();
-//     confirmPasswordController.dispose();
-//     super.dispose();
-//   }
-// }
-
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:thesis_frontend/extensions/response_result_extension.dart';
+import 'package:thesis_frontend/services/auth_api_service.dart';
 
 class AuthProvider extends ChangeNotifier {
   bool _isLoggedIn = false;
   bool get isLoggedIn => _isLoggedIn;
+  final _storage = const FlutterSecureStorage();
 
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
@@ -88,8 +51,33 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> saveToken(String token) async {
+    await _storage.write(key: 'auth_token', value: token);
+  }
+
+  Future<String?> getToken() async {
+    return await _storage.read(key: 'auth_token');
+  }
+
+  Future<void> clearToken() async {
+    await _storage.delete(key: 'auth_token');
+  }
+
+  Future<String> signup() async {
+    final response = await AuthService.signup(
+      username: usernameController.text,
+      email: emailController.text,
+      password: passwordController.text,
+    );
+
+    final token = response.successOrThrow<Map<String, dynamic>>()['token'];
+
+    return token;
+  }
+
+  // Mock methods
   //  Login
-  void login() {
+  void loginMock() {
     if (validateEmail(emailController.text) &&
         validatePassword(passwordController.text)) {
       _isLoggedIn = true;
@@ -98,7 +86,7 @@ class AuthProvider extends ChangeNotifier {
   }
 
   //  Signup
-  void signup() {
+  void signupMock() {
     if (validateEmail(emailController.text) &&
         validatePassword(passwordController.text) &&
         isPasswordMatching()) {
@@ -107,11 +95,12 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
-  void logout() {
+  void logout() async {
     _isLoggedIn = false;
     emailController.clear();
     passwordController.clear();
     confirmPasswordController.clear();
+    await clearToken();
     notifyListeners();
   }
 

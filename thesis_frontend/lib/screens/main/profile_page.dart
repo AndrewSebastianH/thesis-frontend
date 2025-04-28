@@ -10,7 +10,7 @@ class ProfilePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final userProvider = Provider.of<UserProvider>(context);
-    userProvider.setMockParentUserNoRelation();
+    // userProvider.setMockParentUserNoRelation();
     final user = userProvider.user;
     final relatedUser = userProvider.relatedUser;
 
@@ -74,20 +74,20 @@ class ProfilePage extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 12),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          vertical: 8,
-                          horizontal: 12,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.orange.shade100,
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Text(
-                          'EXP: $exp',
-                          style: TextStyle(fontSize: 12),
-                        ),
-                      ),
+                      // Container(
+                      //   padding: const EdgeInsets.symmetric(
+                      //     vertical: 8,
+                      //     horizontal: 12,
+                      //   ),
+                      //   decoration: BoxDecoration(
+                      //     color: Colors.orange.shade100,
+                      //     borderRadius: BorderRadius.circular(12),
+                      //   ),
+                      //   child: Text(
+                      //     'EXP: $exp',
+                      //     style: TextStyle(fontSize: 12),
+                      //   ),
+                      // ),
                     ],
                   ),
                 ),
