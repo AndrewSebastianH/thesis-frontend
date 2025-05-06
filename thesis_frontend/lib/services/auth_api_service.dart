@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:thesis_frontend/config/api_config.dart';
+import 'package:thesis_frontend/constants/api_endpoints_constants.dart';
 import 'package:thesis_frontend/models/response_result_mdl.dart';
 
 class AuthService {
@@ -9,7 +10,7 @@ class AuthService {
   }) async {
     try {
       final response = await ApiConfig.dio.post(
-        '/auth/login',
+        ApiConstants.login,
         data: {'email': email, 'password': password},
       );
       return ResponseResult(success: true, data: response.data);
@@ -29,7 +30,7 @@ class AuthService {
   }) async {
     try {
       final response = await ApiConfig.dio.post(
-        '/auth/signup',
+        ApiConstants.signup,
         data: {'username': username, 'email': email, 'password': password},
       );
       return ResponseResult(success: true, data: response.data);
@@ -44,12 +45,10 @@ class AuthService {
 
   static Future<ResponseResult> getConnectionCode() async {
     try {
-      // final response = await ApiConfig.dio.get('/auth/user/connection-code');
-      return ResponseResult(
-        success: true,
-        // data: response.data['code'],
-        data: {'code': '123456'}, // Mocked data for testing
+      final response = await ApiConfig.dio.get(
+        ApiConstants.getUserConnectionCode,
       );
+      return ResponseResult(success: true, data: response.data);
     } on DioException catch (e) {
       print("Error fetching connection code: ${e.response?.data}");
       return ResponseResult(
@@ -61,7 +60,7 @@ class AuthService {
 
   static Future<ResponseResult> getUserFullInfo() async {
     try {
-      final response = await ApiConfig.dio.get('/auth/user/full-info');
+      final response = await ApiConfig.dio.get(ApiConstants.getUserFullInfo);
       return ResponseResult(success: true, data: response.data);
     } on DioException catch (e) {
       print("Error fetching user info: ${e.response?.data}");
@@ -75,7 +74,7 @@ class AuthService {
   static Future<ResponseResult> chooseRole({required String role}) async {
     try {
       final response = await ApiConfig.dio.post(
-        '/auth/role',
+        ApiConstants.chooseRole,
         data: {'role': role},
       );
       return ResponseResult(success: true, message: response.data);
@@ -91,7 +90,7 @@ class AuthService {
   static Future<ResponseResult> linkAccounts({required String code}) async {
     try {
       final response = await ApiConfig.dio.post(
-        '/auth/connect-users',
+        ApiConstants.connectUser,
         data: {'connectionCode': code},
       );
       return ResponseResult(success: true, message: response.data);
