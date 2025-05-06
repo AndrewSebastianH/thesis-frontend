@@ -206,7 +206,7 @@ class __FormContentState extends State<_FormContent> {
                   _autoLogin = value;
                 });
               },
-              title: const Text('Auto-login next time'),
+              title: const Text('Remember me'),
               controlAffinity: ListTileControlAffinity.leading,
               dense: true,
               activeColor: Colors.orange,

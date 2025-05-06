@@ -5,14 +5,14 @@ import 'package:thesis_frontend/providers/user_provider.dart';
 import 'package:thesis_frontend/services/auth_api_service.dart';
 import 'package:thesis_frontend/widgets/custom_button.dart';
 
-class LinkAccountScreen extends StatefulWidget {
-  const LinkAccountScreen({super.key});
+class LinkAccountPage extends StatefulWidget {
+  const LinkAccountPage({super.key});
 
   @override
-  State<LinkAccountScreen> createState() => _LinkAccountScreenState();
+  State<LinkAccountPage> createState() => _LinkAccountPageState();
 }
 
-class _LinkAccountScreenState extends State<LinkAccountScreen> {
+class _LinkAccountPageState extends State<LinkAccountPage> {
   final _codeController = TextEditingController();
   bool _isLoading = false;
   String? _errorMessage;

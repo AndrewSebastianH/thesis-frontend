@@ -32,7 +32,11 @@ class _EmotionCalendarPageState extends State<EmotionCalendarPage> {
   }
 
   Future<void> loadEmotionLogs() async {
-    final logs = await EmotionService.fetchEmotionLogs();
+    final now = DateTime.now();
+    final logs = await EmotionService.fetchEmotionLogs(
+      startDate: DateTime(now.year, now.month, 1),
+      endDate: DateTime(now.year, now.month + 1, 0),
+    );
 
     final Map<DateTime, List<EmotionLog>> eventMap = {};
 
