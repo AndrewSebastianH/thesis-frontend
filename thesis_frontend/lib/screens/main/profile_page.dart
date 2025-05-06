@@ -137,17 +137,11 @@ class ProfilePage extends StatelessWidget {
                 borderRadius: BorderRadius.circular(12),
               ),
               child: IconButton(
-                icon: const Icon(Icons.edit, color: Colors.orange),
+                icon: const Icon(Icons.settings, color: Colors.orange),
                 onPressed: () {
-                  showDialog(
-                    context: context,
-                    builder:
-                        (context) => EditProfileDialog(
-                          initialAvatarAsset: userProvider.userAvatarAsset,
-                          initialUsername: user?.username ?? '',
-                        ),
-                  );
+                  _showSettingsModal(context, userProvider);
                 },
+                tooltip: 'Settings',
               ),
             ),
           ),
@@ -187,6 +181,112 @@ class ProfilePage extends StatelessWidget {
               ),
     );
   }
+}
+
+void _showSettingsModal(BuildContext context, UserProvider userProvider) {
+  showGeneralDialog(
+    context: context,
+    barrierDismissible: true,
+    barrierLabel: 'Settings',
+    barrierColor: Colors.black.withAlpha(200),
+    useRootNavigator: true,
+    transitionDuration: const Duration(milliseconds: 300),
+    pageBuilder: (_, __, ___) {
+      return Scaffold(
+        backgroundColor: Colors.black.withAlpha(105),
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text(
+                  'Settings',
+                  style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+                const SizedBox(height: 32),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ElevatedButton.icon(
+                      onPressed: () {
+                        Navigator.of(context, rootNavigator: true).pop();
+
+                        Future.delayed(Duration.zero, () {
+                          showDialog(
+                            context: context,
+                            useRootNavigator: true,
+                            builder:
+                                (_) => EditProfileDialog(
+                                  initialAvatarAsset:
+                                      userProvider.userAvatarAsset,
+                                  initialUsername:
+                                      userProvider.user?.username ?? '',
+                                ),
+                          );
+                        });
+                      },
+                      icon: const Icon(Icons.edit),
+                      label: const Text("Edit Profile"),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.orange,
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 24,
+                          vertical: 22,
+                        ),
+                        textStyle: const TextStyle(fontSize: 14),
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    ElevatedButton.icon(
+                      onPressed: () {
+                        Navigator.of(context, rootNavigator: true).pop(); // ✅
+                        Future.delayed(Duration.zero, () {
+                          userProvider.clear();
+                          context.go('/signin');
+                        });
+                      },
+                      icon: const Icon(Icons.logout),
+                      label: const Text("Log Out"),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.redAccent,
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 24,
+                          vertical: 22,
+                        ),
+                        textStyle: const TextStyle(fontSize: 16),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    },
+    transitionBuilder: (_, animation, __, child) {
+      return FadeTransition(
+        opacity: animation,
+        child: ScaleTransition(
+          scale: CurvedAnimation(parent: animation, curve: Curves.easeOutBack),
+          child: child,
+        ),
+      );
+    },
+  );
 }
 
 class EditProfileDialog extends StatefulWidget {
@@ -239,19 +339,72 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
   }
 
   void _selectAvatar() {
-    // For now, just a simple toggle (mock). Later you can open a proper avatar picker.
-    setState(() {
-      _selectedAvatar =
-          _selectedAvatar == 'assets/images/avatars/1.png'
-              ? 'assets/images/bear_girl.png'
-              : 'assets/images/bear_boy.png';
-    });
+    showDialog(
+      context: context,
+      builder: (context) {
+        final List<String> avatars = List.generate(
+          4,
+          (index) => 'assets/images/avatars/${index + 1}.png',
+        );
+
+        return Dialog(
+          backgroundColor: Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text(
+                  'Choose your Avatar',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                ),
+                const SizedBox(height: 20),
+                GridView.count(
+                  shrinkWrap: true,
+                  crossAxisCount: 2,
+                  mainAxisSpacing: 16,
+                  crossAxisSpacing: 16,
+                  children:
+                      avatars.map((avatar) {
+                        return GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              _selectedAvatar = avatar;
+                            });
+                            Navigator.of(context).pop();
+                          },
+                          child: CircleAvatar(
+                            radius: 40,
+                            backgroundImage: AssetImage(avatar),
+                            backgroundColor: Colors.orange[50],
+                          ),
+                        );
+                      }).toList(),
+                ),
+                const SizedBox(height: 12),
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: const Text(
+                    'Cancel',
+                    style: TextStyle(color: Colors.deepOrange),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Dialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      backgroundColor: Colors.white,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
