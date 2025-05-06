@@ -195,42 +195,103 @@ class _MailInboxPageState extends State<MailInboxPage> {
                           itemCount: mails.length,
                           itemBuilder: (context, index) {
                             final mail = mails[index];
-                            return Card(
-                              color:
-                                  mail.isRead
-                                      ? Colors.brown.shade100
-                                      : !showInbox && !mail.isRead
-                                      ? Colors.lightGreen.shade100
-                                      : Colors.orange[100],
-                              margin: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                                vertical: 6,
+                            return Dismissible(
+                              key: ValueKey(mail.id),
+                              direction:
+                                  DismissDirection.endToStart, // swipe left
+                              background: Container(
+                                alignment: Alignment.centerRight,
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 20,
+                                ),
+                                color: Colors.redAccent,
+                                child: const Icon(
+                                  Icons.delete,
+                                  color: Colors.white,
+                                ),
                               ),
-                              child: ListTile(
-                                onTap: () => _openMail(mail),
-                                title: Text(
-                                  mail.subject,
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                                subtitle: Text(
-                                  DateFormat.yMMMd().format(mail.createdAt),
-                                ),
-                                trailing:
-                                    showInbox && !mail.isRead
-                                        ? const Icon(
-                                          Icons.mark_email_unread,
-                                          color: Colors.red,
-                                        )
-                                        : !showInbox && !mail.isRead
-                                        ? const Icon(
-                                          Icons.check_circle,
-                                          color: Colors.green,
-                                        )
-                                        : const Icon(
-                                          Icons.mark_email_read,
-                                          color: Colors.black,
+                              confirmDismiss: (direction) async {
+                                return await showDialog(
+                                  context: context,
+                                  builder:
+                                      (context) => AlertDialog(
+                                        title: const Text('Delete Mail?'),
+                                        content: const Text(
+                                          'Are you sure you want to delete this mail?',
                                         ),
+                                        actions: [
+                                          TextButton(
+                                            onPressed:
+                                                () => Navigator.of(
+                                                  context,
+                                                ).pop(false),
+                                            child: const Text('Cancel'),
+                                          ),
+                                          TextButton(
+                                            onPressed:
+                                                () => Navigator.of(
+                                                  context,
+                                                ).pop(true),
+                                            child: const Text(
+                                              'Delete',
+                                              style: TextStyle(
+                                                color: Colors.red,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                );
+                              },
+                              onDismissed: (direction) async {
+                                await MailApiService.deleteMail(
+                                  mail.id,
+                                ); // Call your API
+                                setState(() {
+                                  mails.removeAt(index);
+                                });
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(content: Text('Mail deleted')),
+                                );
+                              },
+                              child: Card(
+                                // ← your existing mail card design
+                                color:
+                                    mail.isRead
+                                        ? Colors.brown.shade100
+                                        : !showInbox && !mail.isRead
+                                        ? Colors.lightGreen.shade100
+                                        : Colors.orange[100],
+                                margin: const EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                  vertical: 6,
+                                ),
+                                child: ListTile(
+                                  onTap: () => _openMail(mail),
+                                  title: Text(
+                                    mail.subject,
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                  subtitle: Text(
+                                    DateFormat.yMMMd().format(mail.createdAt),
+                                  ),
+                                  trailing:
+                                      showInbox && !mail.isRead
+                                          ? const Icon(
+                                            Icons.mark_email_unread,
+                                            color: Colors.red,
+                                          )
+                                          : !showInbox && !mail.isRead
+                                          ? const Icon(
+                                            Icons.check_circle,
+                                            color: Colors.green,
+                                          )
+                                          : const Icon(
+                                            Icons.mark_email_read,
+                                            color: Colors.black,
+                                          ),
+                                ),
                               ),
                             );
                           },
