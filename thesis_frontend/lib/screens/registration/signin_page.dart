@@ -1,14 +1,34 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:thesis_frontend/providers/user_provider.dart';
 import '../../providers/auth_provider.dart';
 import '../../widgets/custom_button.dart';
 
 class SignIn extends StatelessWidget {
   const SignIn({Key? key}) : super(key: key);
 
+  static Future<void> tryAutoLogin(BuildContext context) async {
+    final prefs = await SharedPreferences.getInstance();
+    final autoLogin = prefs.getBool('auto_login') ?? false;
+
+    if (!autoLogin) return;
+
+    final controller = Provider.of<AuthProvider>(context, listen: false);
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    final token = await controller.getToken();
+
+    if (token != null && token.isNotEmpty) {
+      await userProvider.refreshUserInfo();
+      if (context.mounted) context.go('/home');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    tryAutoLogin(context);
+
     final bool isSmallScreen = MediaQuery.of(context).size.width < 600;
 
     return Scaffold(
@@ -16,9 +36,7 @@ class SignIn extends StatelessWidget {
         fit: StackFit.expand,
         children: [
           Image.asset('assets/images/backgrounds/1.png', fit: BoxFit.cover),
-
           Container(color: Colors.white.withAlpha(150)),
-
           Center(
             child:
                 isSmallScreen
@@ -81,7 +99,7 @@ class _FormContent extends StatefulWidget {
 class __FormContentState extends State<_FormContent> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   bool _isFormValid = false;
-  bool _rememberMe = false;
+  bool _autoLogin = false;
 
   late AuthProvider controller;
 
@@ -108,6 +126,11 @@ class __FormContentState extends State<_FormContent> {
         _isFormValid = isValid;
       });
     }
+  }
+
+  Future<void> _storeAutoLoginPreference(bool value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('auto_login', value);
   }
 
   @override
@@ -148,7 +171,6 @@ class __FormContentState extends State<_FormContent> {
                 if (value == null || value.isEmpty) {
                   return 'Please enter your password';
                 }
-
                 if (value.length < 6) {
                   return 'Password must be at least 6 characters';
                 }
@@ -177,14 +199,14 @@ class __FormContentState extends State<_FormContent> {
             ),
             _gap(height: 8),
             CheckboxListTile(
-              value: _rememberMe,
+              value: _autoLogin,
               onChanged: (value) {
                 if (value == null) return;
                 setState(() {
-                  _rememberMe = value;
+                  _autoLogin = value;
                 });
               },
-              title: const Text('Remember me'),
+              title: const Text('Auto-login next time'),
               controlAffinity: ListTileControlAffinity.leading,
               dense: true,
               activeColor: Colors.orange,
@@ -196,9 +218,32 @@ class __FormContentState extends State<_FormContent> {
               height: 50,
               child: CustomButton(
                 text: "Login",
-                onPressed: () {
-                  if (_formKey.currentState?.validate() ?? false) {
+                onPressed: () async {
+                  if (!(_formKey.currentState?.validate() ?? false)) return;
+
+                  final result = await controller.login();
+
+                  if (!mounted) return;
+
+                  if (result.success && result.data['token'] != null) {
+                    await controller.saveToken(result.data['token']);
+                    await _storeAutoLoginPreference(_autoLogin);
+
+                    final userProvider = Provider.of<UserProvider>(
+                      context,
+                      listen: false,
+                    );
+                    await userProvider.refreshUserInfo();
+
                     context.go('/home');
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          result.message ?? 'Login failed. Please try again.',
+                        ),
+                      ),
+                    );
                   }
                 },
                 isEnabled: _isFormValid,

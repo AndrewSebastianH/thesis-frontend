@@ -208,24 +208,26 @@ class __FormContentState extends State<_FormContent> {
               child: CustomButton(
                 text: "Signup",
                 onPressed: () async {
-                  // Send signup
-                  // final token = await controller.signup();
-                  // Save the token
-                  // await controller.saveToken(token);
+                  if (!_formKey.currentState!.validate()) return;
 
-                  // Call refresh user info (which saves user info in provider)
-                  // await userProvider.refreshUserInfo();
-                  // go to choose role
+                  final result = await controller.signup();
 
                   if (!mounted) return;
-                  context.go('/choose-role');
 
-                  // ScaffoldMessenger.of(context).showSnackBar(
-                  //   const SnackBar(
-                  //     content: Text('Signup failed. Please try again.'),
-                  //   ),
-                  // );
+                  if (result.success && result.data?['token'] != null) {
+                    await controller.saveToken(result.data['token']);
+                    await userProvider.refreshUserInfo();
+                    context.go('/choose-role');
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(result.message ?? 'Signup failed.'),
+                        backgroundColor: Colors.redAccent,
+                      ),
+                    );
+                  }
                 },
+
                 isEnabled: _isFormValid,
               ),
             ),

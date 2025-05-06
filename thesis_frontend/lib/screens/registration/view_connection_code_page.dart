@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:thesis_frontend/providers/user_provider.dart';
@@ -75,14 +76,30 @@ class _ConnectionCodeScreenState extends State<ConnectionCodeScreen> {
                         textAlign: TextAlign.center,
                       ),
                       const SizedBox(height: 24),
-                      Text(
-                        connectionCode ?? "ERROR",
-                        style: const TextStyle(
-                          fontSize: 40,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFFFF7F50),
+                      GestureDetector(
+                        onTap: () {
+                          if (connectionCode != null) {
+                            Clipboard.setData(
+                              ClipboardData(text: connectionCode ?? ""),
+                            );
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text("Copied to clipboard!"),
+                              ),
+                            );
+                          }
+                        },
+                        child: Text(
+                          connectionCode ?? "ERROR",
+                          style: const TextStyle(
+                            fontSize: 40,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFFFF7F50),
+                            decoration: TextDecoration.underline,
+                          ),
                         ),
                       ),
+
                       const SizedBox(height: 24),
                       const Text(
                         "Give this code to your parent or child so they can link their account to yours in Closer!",
@@ -115,8 +132,8 @@ class _ConnectionCodeScreenState extends State<ConnectionCodeScreen> {
                         child: CustomButton(
                           text: "Connect later",
                           onPressed: () {
-                            userProvider.clear();
-                            userProvider.setMockParentUserNoRelation();
+                            // userProvider.clear();
+                            // userProvider.setMockParentUserNoRelation();
                             context.go("/home");
                           },
                         ),

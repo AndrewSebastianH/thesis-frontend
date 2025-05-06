@@ -58,6 +58,24 @@ class AuthService {
     }
   }
 
+  static Future<ResponseResult> findUserByConnectionCode({
+    required String connectionCode,
+  }) async {
+    try {
+      final response = await ApiConfig.dio.post(
+        ApiConstants.findUser,
+        data: {'connectionCode': connectionCode},
+      );
+      return ResponseResult(success: true, message: response.data);
+    } on DioException catch (e) {
+      print("Finding user failed: ${e.response?.data}");
+      return ResponseResult(
+        success: false,
+        message: e.response?.data['message'] ?? 'Logout failed',
+      );
+    }
+  }
+
   static Future<ResponseResult> getUserFullInfo() async {
     try {
       final response = await ApiConfig.dio.get(ApiConstants.getUserFullInfo);

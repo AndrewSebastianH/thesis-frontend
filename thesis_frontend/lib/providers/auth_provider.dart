@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:thesis_frontend/extensions/response_result_extension.dart';
 import 'package:thesis_frontend/services/auth_api_service.dart';
+import 'package:thesis_frontend/models/response_result_mdl.dart';
 
 class AuthProvider extends ChangeNotifier {
   bool _isLoggedIn = false;
@@ -19,10 +20,10 @@ class AuthProvider extends ChangeNotifier {
 
   // Username Validation
   bool validateUsername(String? value) {
-    return value != null;
+    return value != null && value.trim().isNotEmpty;
   }
 
-  //  Email Validation
+  // Email Validation
   bool validateEmail(String? value) {
     if (value == null || value.isEmpty) return false;
     return RegExp(
@@ -30,17 +31,17 @@ class AuthProvider extends ChangeNotifier {
     ).hasMatch(value);
   }
 
-  //  Password Validation
+  // Password Validation
   bool validatePassword(String? value) {
     return value != null && value.length >= 6;
   }
 
-  //  Confirm Password Validation
+  // Confirm Password Validation
   bool isPasswordMatching() {
     return passwordController.text == confirmPasswordController.text;
   }
 
-  //  Toggle Visibility
+  // Toggle Visibility
   void togglePasswordVisibility() {
     isPasswordVisible = !isPasswordVisible;
     notifyListeners();
@@ -63,20 +64,23 @@ class AuthProvider extends ChangeNotifier {
     await _storage.delete(key: 'auth_token');
   }
 
-  Future<String> signup() async {
+  Future<ResponseResult> signup() async {
     final response = await AuthService.signup(
       username: usernameController.text,
       email: emailController.text,
       password: passwordController.text,
     );
+    return response;
+  }
 
-    final token = response.successOrThrow<Map<String, dynamic>>()['token'];
-
-    return token;
+  Future<ResponseResult> login() async {
+    return await AuthService.login(
+      email: emailController.text,
+      password: passwordController.text,
+    );
   }
 
   // Mock methods
-  //  Login
   void loginMock() {
     if (validateEmail(emailController.text) &&
         validatePassword(passwordController.text)) {
@@ -85,7 +89,6 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
-  //  Signup
   void signupMock() {
     if (validateEmail(emailController.text) &&
         validatePassword(passwordController.text) &&
@@ -100,6 +103,7 @@ class AuthProvider extends ChangeNotifier {
     emailController.clear();
     passwordController.clear();
     confirmPasswordController.clear();
+    usernameController.clear();
     await clearToken();
     notifyListeners();
   }
@@ -109,6 +113,7 @@ class AuthProvider extends ChangeNotifier {
     emailController.dispose();
     passwordController.dispose();
     confirmPasswordController.dispose();
+    usernameController.dispose();
     super.dispose();
   }
 }

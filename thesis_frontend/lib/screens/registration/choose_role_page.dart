@@ -131,28 +131,43 @@ class _ChooseRoleScreenState extends State<ChooseRoleScreen> {
                     child: CustomButton(
                       text: "Continue",
                       onPressed: () async {
-                        // if (selectedIndex == -1) return; // No role selected
+                        if (selectedIndex == -1) return; // No role selected
 
-                        // final chosenRole =
-                        //     selectedIndex == 0 ? 'child' : 'parent';
+                        final chosenRole =
+                            selectedIndex == 0 ? 'parent' : 'child';
 
-                        // try {
-                        //   await AuthService.chooseRole(role: chosenRole);
+                        try {
+                          final result = await AuthService.chooseRole(
+                            role: chosenRole,
+                          );
 
-                        //   await userProvider.refreshUserInfo();
+                          if (!result.success) {
+                            if (!mounted) return;
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  result.message ?? 'Failed to choose role',
+                                ),
+                              ),
+                            );
+                            return;
+                          }
 
-                        //   if (!mounted) return;
-                        context.go('/view-connection-code');
-                        // } catch (e) {
-                        //   if (!mounted) return;
-                        //   ScaffoldMessenger.of(context).showSnackBar(
-                        //     const SnackBar(
-                        //       content: Text(
-                        //         'Failed to update role. Please try again.',
-                        //       ),
-                        //     ),
-                        //   );
-                        // }
+                          await userProvider.refreshUserInfo();
+
+                          if (!mounted) return;
+                          context.go('/view-connection-code');
+                        } catch (e) {
+                          if (!mounted) return;
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text(
+                                'Something went wrong. Please try again.',
+                              ),
+                              backgroundColor: Colors.redAccent,
+                            ),
+                          );
+                        }
                       },
                     ),
                   ),

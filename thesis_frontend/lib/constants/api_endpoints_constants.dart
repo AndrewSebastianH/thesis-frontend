@@ -5,6 +5,7 @@ class ApiConstants {
   static String get login => '${ApiConfig.baseUrl}/auth/login';
   static String get signup => '${ApiConfig.baseUrl}/auth/signup';
   static String get chooseRole => '${ApiConfig.baseUrl}/auth/role';
+  static String get findUser => '${ApiConfig.baseUrl}/auth/find-user';
   static String get connectUser => '${ApiConfig.baseUrl}/auth/connect-user';
   static String get getUserFullInfo =>
       '${ApiConfig.baseUrl}/auth/user/full-info';
