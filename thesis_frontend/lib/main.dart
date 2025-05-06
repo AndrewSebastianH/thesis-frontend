@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:thesis_frontend/config/api_config.dart';
 import 'package:thesis_frontend/screens/main/insights_page.dart';
 import 'package:thesis_frontend/screens/main/mail_page.dart';
 // Providers
@@ -30,8 +31,9 @@ import './widgets/transitions/slide_transition.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await ApiConfig.init();
 
-  await dotenv.load(fileName: ".env");
+  // await dotenv.load(fileName: ".env");
 
   runApp(
     MultiProvider(
@@ -53,7 +55,7 @@ class MyApp extends StatelessWidget {
     final authProvider = Provider.of<AuthProvider>(context);
 
     final router = GoRouter(
-      initialLocation: '/home',
+      initialLocation: '/signin',
       redirect: (context, state) {
         final isLoggedIn = authProvider.isLoggedIn;
         final isAuthRoute = state.path == '/signin' || state.path == '/signup';
