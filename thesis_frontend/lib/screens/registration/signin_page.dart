@@ -239,6 +239,7 @@ class __FormContentState extends State<_FormContent> {
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
+                        backgroundColor: Colors.red,
                         content: Text(
                           result.message ?? 'Login failed. Please try again.',
                         ),

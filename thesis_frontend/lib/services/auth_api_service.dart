@@ -13,7 +13,11 @@ class AuthService {
         ApiConstants.login,
         data: {'email': email, 'password': password},
       );
-      return ResponseResult(success: true, data: response.data);
+      return ResponseResult(
+        success: true,
+        data: response.data,
+        message: response.data['message'] ?? 'Login successful',
+      );
     } on DioException catch (e) {
       print("Login failed: ${e.response?.data}");
       return ResponseResult(

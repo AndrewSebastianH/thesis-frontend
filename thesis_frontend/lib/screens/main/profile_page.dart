@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:thesis_frontend/providers/auth_provider.dart';
 import 'package:thesis_frontend/widgets/connect_prompt_card.dart';
 import '../../providers/user_provider.dart';
 
@@ -10,6 +11,7 @@ class ProfilePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final userProvider = Provider.of<UserProvider>(context);
+    final authProvider = Provider.of<AuthProvider>(context);
     // userProvider.setMockParentUserNoRelation();
     final user = userProvider.user;
     final relatedUser = userProvider.relatedUser;
@@ -148,7 +150,7 @@ class ProfilePage extends StatelessWidget {
               child: IconButton(
                 icon: const Icon(Icons.settings, color: Colors.orange),
                 onPressed: () {
-                  _showSettingsModal(context, userProvider);
+                  _showSettingsModal(context, userProvider, authProvider);
                 },
                 tooltip: 'Settings',
               ),
@@ -194,7 +196,11 @@ class ProfilePage extends StatelessWidget {
   }
 }
 
-void _showSettingsModal(BuildContext context, UserProvider userProvider) {
+void _showSettingsModal(
+  BuildContext context,
+  UserProvider userProvider,
+  AuthProvider authProvider,
+) {
   showGeneralDialog(
     context: context,
     barrierDismissible: true,
@@ -259,9 +265,10 @@ void _showSettingsModal(BuildContext context, UserProvider userProvider) {
                     const SizedBox(width: 16),
                     ElevatedButton.icon(
                       onPressed: () {
-                        Navigator.of(context, rootNavigator: true).pop(); // ✅
+                        Navigator.of(context, rootNavigator: true).pop();
                         Future.delayed(Duration.zero, () {
                           userProvider.clear();
+                          authProvider.logout();
                           context.go('/signin');
                         });
                       },

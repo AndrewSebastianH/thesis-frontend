@@ -100,10 +100,6 @@ class AuthProvider extends ChangeNotifier {
 
   void logout() async {
     _isLoggedIn = false;
-    emailController.clear();
-    passwordController.clear();
-    confirmPasswordController.clear();
-    usernameController.clear();
     await clearToken();
     notifyListeners();
   }
