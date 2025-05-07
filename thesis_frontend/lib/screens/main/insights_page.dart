@@ -41,11 +41,16 @@ class _InsightsPageState extends State<InsightsPage> {
   }
 
   Future<void> loadInsight() async {
-    setState(() => isLoading = true);
+    setState(() {
+      isLoading = true;
+      insightData = null;
+    });
+
     final fetchedInsight = await InsightApiService.fetchInsight(
       showSelf ? 'self' : 'related',
       selectedRange,
     );
+
     setState(() {
       insightData = fetchedInsight;
       isLoading = false;
@@ -118,15 +123,24 @@ class _InsightsPageState extends State<InsightsPage> {
                 duration: const Duration(milliseconds: 300),
                 child:
                     isLoading
-                        ? _buildSkeletonLoader()
+                        ? KeyedSubtree(
+                          key: const ValueKey('loading'),
+                          child: _buildSkeletonLoader(),
+                        )
                         : !showSelf && !userProvider.hasConnection
-                        ? ConnectPromptCard(
+                        ? const ConnectPromptCard(
+                          key: ValueKey('connectPrompt'),
                           text: "Connect with a relative to share insights!",
                         )
                         : insightData == null
-                        ? const Center(child: Text("No insights found."))
+                        ? const Center(
+                          key: ValueKey('noInsights'),
+                          child: Text("No insights found."),
+                        )
                         : ListView(
-                          key: ValueKey(showSelf),
+                          key: ValueKey(
+                            'insightList_${showSelf ? 'self' : 'related'}',
+                          ),
                           children: [
                             _buildCard(child: _buildEmotionSummary()),
                             const SizedBox(height: 20),

@@ -95,7 +95,6 @@ class _ConnectionCodeScreenState extends State<ConnectionCodeScreen> {
                             fontSize: 40,
                             fontWeight: FontWeight.bold,
                             color: Color(0xFFFF7F50),
-                            decoration: TextDecoration.underline,
                           ),
                         ),
                       ),
@@ -118,7 +117,10 @@ class _ConnectionCodeScreenState extends State<ConnectionCodeScreen> {
                         child: CustomButton(
                           text: "Enter Connection Code",
                           onPressed: () {
-                            context.push("/link-account");
+                            context.push(
+                              "/link-account",
+                              extra: "Link Account",
+                            );
                           },
                           isOutlined: true,
                         ),

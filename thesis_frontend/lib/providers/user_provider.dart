@@ -28,7 +28,7 @@ class UserProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // Main function to call anytime you need the latest user info
+  // Main function to call for latest user info
   Future<void> refreshUserInfo() async {
     final data =
         (await AuthService.getUserFullInfo())

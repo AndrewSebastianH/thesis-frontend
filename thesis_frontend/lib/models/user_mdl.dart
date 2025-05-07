@@ -2,7 +2,7 @@ class UserModel {
   final int id;
   final String username;
   final String email;
-  final String role;
+  final String? role;
   final int? relatedUserId;
   final int expPoints;
   final int? avatar;
@@ -11,7 +11,7 @@ class UserModel {
     required this.id,
     required this.username,
     required this.email,
-    required this.role,
+    this.role,
     this.relatedUserId,
     required this.expPoints,
     this.avatar,
@@ -20,12 +20,12 @@ class UserModel {
   factory UserModel.fromJwt(Map<String, dynamic> jwt) {
     return UserModel(
       id: jwt['id'],
-      username: jwt['username'],
-      email: jwt['email'],
+      username: '',
+      email: '',
       role: jwt['role'],
       relatedUserId: jwt['relatedUserId'],
-      expPoints: jwt['expPoints'],
-      avatar: jwt['avatar'],
+      expPoints: 0,
+      avatar: null,
     );
   }
 
@@ -43,9 +43,9 @@ class UserModel {
     id: json['id'],
     username: json['username'],
     email: json['email'],
-    role: json['role'],
+    role: json['role'] as String?,
     relatedUserId: json['relatedUserId'],
-    expPoints: json['expPoints'],
+    expPoints: json['expPoints'] ?? 0,
     avatar: json['avatar'],
   );
 }
