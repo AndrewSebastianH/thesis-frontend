@@ -51,7 +51,7 @@ class TaskService {
     }
   }
 
-  static Future<bool> completeCustomTask(int taskId) async {
+  static Future<bool> completeCustomTask(String taskId) async {
     try {
       await ApiConfig.dio.patch(
         ApiConstants.completeCustomTask(taskId.toString()),
@@ -63,7 +63,7 @@ class TaskService {
     }
   }
 
-  static Future<bool> completeSystemTask(int taskId) async {
+  static Future<bool> completeSystemTask(String taskId) async {
     try {
       await ApiConfig.dio.patch(
         ApiConstants.completeSystemTask(taskId.toString()),

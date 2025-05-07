@@ -243,73 +243,83 @@ class _HomePageState extends State<HomePage> {
           children: [
             Positioned(
               bottom: 175,
-              left: MediaQuery.of(context).size.width / 2 - 180,
+              left: 0,
+              right: 0,
 
-              child: Dialog(
-                backgroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(24, 28, 24, 28),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        task.title,
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      if (task.description != null &&
-                          task.description!.trim().isNotEmpty)
-                        Text(
-                          task.description!,
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(fontSize: 14),
-                        ),
-                      const SizedBox(height: 12),
-
-                      if (task.dueDate != null)
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 10,
-                            vertical: 6,
-                          ),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(10),
-                            border: Border.all(color: Colors.orange.shade100),
-                          ),
-                          child: Row(
-                            children: [
-                              const Icon(
-                                Icons.calendar_today_rounded,
-                                size: 14,
-                                color: Colors.orange,
+              child: Center(
+                child: Container(
+                  width: MediaQuery.of(context).size.width * 1,
+                  child: Dialog(
+                    backgroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(24, 28, 24, 28),
+                      child: SizedBox(
+                        width: MediaQuery.of(context).size.width * 0.65,
+                        child: Column(
+                          children: [
+                            Text(
+                              task.title,
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
                               ),
-                              const SizedBox(width: 6),
+                            ),
+                            const SizedBox(height: 12),
+                            if (task.description != null &&
+                                task.description!.trim().isNotEmpty)
                               Text(
-                                "Complete before ${DateFormat.yMMMd().format(task.dueDate!)}",
-                                style: const TextStyle(
-                                  fontSize: 11,
-                                  color: Colors.black87,
+                                task.description!,
+                                textAlign: TextAlign.center,
+                                style: const TextStyle(fontSize: 14),
+                              ),
+                            const SizedBox(height: 12),
+
+                            if (task.dueDate != null)
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                  vertical: 6,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(10),
+                                  border: Border.all(
+                                    color: Colors.orange.shade100,
+                                  ),
+                                ),
+                                child: Row(
+                                  children: [
+                                    const Icon(
+                                      Icons.calendar_today_rounded,
+                                      size: 14,
+                                      color: Colors.orange,
+                                    ),
+                                    const SizedBox(width: 6),
+                                    Text(
+                                      "Complete before ${DateFormat.yMMMd().format(task.dueDate!)}",
+                                      style: const TextStyle(
+                                        fontSize: 11,
+                                        color: Colors.black87,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
-                            ],
-                          ),
+                          ],
                         ),
-                    ],
+                      ),
+                    ),
                   ),
                 ),
               ),
             ),
             Positioned(
               bottom: 100,
-              left: MediaQuery.of(context).size.width / 2 - 36,
+              left: MediaQuery.of(context).size.width / 2 - 35,
               child: GestureDetector(
                 onTap: () {
                   Navigator.pop(context);
