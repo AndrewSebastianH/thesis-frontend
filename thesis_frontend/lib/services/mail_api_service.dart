@@ -53,7 +53,7 @@ class MailApiService {
     }
   }
 
-  static Future<bool> readMail(String mailId) async {
+  static Future<bool> readMail(int mailId) async {
     try {
       await ApiConfig.dio.patch(ApiConstants.readMail(mailId));
       return true;
@@ -63,7 +63,7 @@ class MailApiService {
     }
   }
 
-  static Future<bool> deleteMail(String mailId) async {
+  static Future<bool> deleteMail(int mailId) async {
     try {
       await ApiConfig.dio.delete(ApiConstants.deleteMail(mailId));
       return true;

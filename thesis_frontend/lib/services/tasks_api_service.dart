@@ -18,7 +18,7 @@ class TaskService {
               .map((json) => TaskModel.fromJson(json))
               .toList();
 
-      return [...systemTasks, ...customTasks];
+      return [...customTasks, ...systemTasks];
     } on DioException catch (e) {
       print("Error fetching tasks: ${e.response?.data}");
       return [];
@@ -51,11 +51,9 @@ class TaskService {
     }
   }
 
-  static Future<bool> completeCustomTask(String taskId) async {
+  static Future<bool> completeCustomTask(int taskId) async {
     try {
-      await ApiConfig.dio.patch(
-        ApiConstants.completeCustomTask(taskId.toString()),
-      );
+      await ApiConfig.dio.patch(ApiConstants.completeCustomTask(taskId));
       return true;
     } on DioException catch (e) {
       print("Error completing custom task: ${e.response?.data}");
@@ -63,11 +61,9 @@ class TaskService {
     }
   }
 
-  static Future<bool> completeSystemTask(String taskId) async {
+  static Future<bool> completeSystemTask(int taskId) async {
     try {
-      await ApiConfig.dio.patch(
-        ApiConstants.completeSystemTask(taskId.toString()),
-      );
+      await ApiConfig.dio.patch(ApiConstants.completeSystemTask(taskId));
       return true;
     } on DioException catch (e) {
       print("Error completing system task: ${e.response?.data}");

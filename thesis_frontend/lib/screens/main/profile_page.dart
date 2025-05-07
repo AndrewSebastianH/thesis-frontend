@@ -19,6 +19,7 @@ class ProfilePage extends StatelessWidget {
       String asset,
       String name,
       String email,
+      String role,
       int exp,
       bool isSelf,
     ) {
@@ -68,6 +69,14 @@ class ProfilePage extends StatelessWidget {
                       const SizedBox(height: 4),
                       Text(
                         email,
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: Colors.grey,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        role,
                         style: const TextStyle(
                           fontSize: 14,
                           color: Colors.grey,
@@ -162,6 +171,7 @@ class ProfilePage extends StatelessWidget {
                       userProvider.userAvatarAsset,
                       user.username,
                       user.email,
+                      user.role ?? '',
                       user.expPoints,
                       true,
                     ),
@@ -171,6 +181,7 @@ class ProfilePage extends StatelessWidget {
                         userProvider.relatedUserAvatarAsset,
                         relatedUser.username,
                         relatedUser.email,
+                        relatedUser.role ?? '',
                         relatedUser.expPoints,
                         false,
                       ),

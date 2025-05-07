@@ -23,10 +23,9 @@ class ApiConstants {
   static String get postMail => '${ApiConfig.baseUrl}/mail/';
   static String get getReceivedMails => '${ApiConfig.baseUrl}/mail/received';
   static String get getSentMails => '${ApiConfig.baseUrl}/mail/sent';
-  static String readMail(String mailId) =>
+  static String readMail(int mailId) =>
       '${ApiConfig.baseUrl}/mail/$mailId/read';
-  static String deleteMail(String mailId) =>
-      '${ApiConfig.baseUrl}/mail/$mailId';
+  static String deleteMail(int mailId) => '${ApiConfig.baseUrl}/mail/$mailId';
   static String get deleteAllMail => '${ApiConfig.baseUrl}/mail/all';
 
   // Insights
@@ -35,8 +34,8 @@ class ApiConstants {
   // Tasks
   static String get createCustomTask => '${ApiConfig.baseUrl}/task/user/create';
   static String get getUserTasks => '${ApiConfig.baseUrl}/task/user';
-  static String completeCustomTask(String taskId) =>
+  static String completeCustomTask(int taskId) =>
       '${ApiConfig.baseUrl}/task/complete/custom/$taskId';
-  static String completeSystemTask(String taskId) =>
+  static String completeSystemTask(int taskId) =>
       '${ApiConfig.baseUrl}/task/complete/system/$taskId';
 }

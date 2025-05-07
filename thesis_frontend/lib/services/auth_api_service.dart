@@ -123,6 +123,7 @@ class AuthService {
       );
       return ResponseResult(
         success: true,
+        data: response.data,
         message: response.data['message'] ?? 'Role updated successfully',
       );
     } on DioException catch (e) {

@@ -1,5 +1,5 @@
 class MailModel {
-  final String id;
+  final int id;
   final int senderId;
   final int receiverId;
   final String subject;
