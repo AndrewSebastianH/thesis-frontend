@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:intl/intl.dart';
 import 'package:thesis_frontend/config/api_config.dart';
 import 'package:thesis_frontend/constants/api_endpoints_constants.dart';
+import 'package:thesis_frontend/models/response_result_mdl.dart';
 import 'package:thesis_frontend/models/tasks_mdl.dart';
 
 class TaskService {
@@ -25,29 +26,43 @@ class TaskService {
     }
   }
 
-  static Future<bool> createCustomTask({
+  static Future<ResponseResult> createCustomTask({
     required String title,
     String? description,
-    required DateTime dueDate,
+    DateTime? dueDate,
     bool isRecurring = false,
     String recurrenceInterval = '',
+    bool assignToSelf = false,
   }) async {
     try {
-      final formattedDueDate = DateFormat('yyyy-MM-dd').format(dueDate);
-      await ApiConfig.dio.post(
+      final formattedDueDate =
+          dueDate != null ? DateFormat('yyyy-MM-dd').format(dueDate) : null;
+
+      final data = {
+        'title': title,
+        if (description != null) 'description': description,
+        if (!isRecurring) 'dueDate': formattedDueDate,
+        'isRecurring': isRecurring,
+        if (isRecurring) 'recurrenceInterval': recurrenceInterval,
+        'assignToSelf': assignToSelf,
+      };
+
+      final response = await ApiConfig.dio.post(
         ApiConstants.createCustomTask,
-        data: {
-          'title': title,
-          'description': description,
-          'dueDate': formattedDueDate,
-          'isRecurring': isRecurring,
-          'recurrenceInterval': recurrenceInterval,
-        },
+        data: data,
       );
-      return true;
+
+      return ResponseResult(
+        success: true,
+        message: response.data['message'] ?? 'Task created successfully',
+        data: response.data,
+      );
     } on DioException catch (e) {
       print("Error creating custom task: ${e.response?.data}");
-      return false;
+      return ResponseResult(
+        success: false,
+        message: e.response?.data['message'] ?? 'Failed to create task',
+      );
     }
   }
 

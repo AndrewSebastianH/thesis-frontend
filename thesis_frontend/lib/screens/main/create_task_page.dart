@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:thesis_frontend/providers/user_provider.dart';
+import 'package:thesis_frontend/services/tasks_api_service.dart';
 import 'package:thesis_frontend/widgets/custom_button.dart';
 
 class CreateTaskPage extends StatefulWidget {
@@ -99,7 +101,7 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
     );
   }
 
-  void _submitTask() {
+  void _submitTask() async {
     final title = _titleController.text.trim();
     final desc = _descController.text.trim();
 
@@ -110,19 +112,24 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
       return;
     }
 
-    print({
-      'title': title,
-      'description': desc.isEmpty ? null : desc,
-      'dueDate': _dueDate?.toIso8601String().split("T").first,
-      'isRecurring': _isRecurring,
-      'recurrenceInterval': _isRecurring ? _recurrenceInterval : null,
-      'assignTo': _assignToSelf ? 'self' : 'related',
-    });
+    final response = await TaskService.createCustomTask(
+      title: title,
+      description: desc.isEmpty ? null : desc,
+      dueDate: _dueDate,
+      isRecurring: _isRecurring,
+      recurrenceInterval: _isRecurring ? _recurrenceInterval : '',
+      assignToSelf: _assignToSelf,
+    );
 
-    Navigator.pop(context); // Close page after submission
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(const SnackBar(content: Text("Task created successfully!")));
+    if (!mounted) return;
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(response.message ?? "Failed to create task")),
+    );
+
+    if (response.success) {
+      context.go('/home?refresh=true');
+    }
   }
 
   @override

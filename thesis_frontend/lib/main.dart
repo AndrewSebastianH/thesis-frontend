@@ -130,8 +130,16 @@ class MyApp extends StatelessWidget {
             GoRoute(path: '/', builder: (context, state) => const Loading()),
             GoRoute(
               path: '/home',
-              builder: (context, state) => const HomePage(),
+              builder: (context, state) {
+                final refreshKey =
+                    state.uri.queryParameters['refresh'] == 'true'
+                        ? const ValueKey('refresh')
+                        : const ValueKey('no-refresh');
+
+                return KeyedSubtree(key: refreshKey, child: const HomePage());
+              },
             ),
+
             GoRoute(
               path: '/calendar',
               builder: (context, state) => const EmotionCalendarPage(),

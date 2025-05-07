@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import '../../models/tasks_mdl.dart';
@@ -22,7 +23,18 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     _checkMoodScreen();
-    _fetchTasks();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final uri = GoRouterState.of(context).uri;
+      final shouldRefresh = uri.queryParameters['refresh'] == 'true';
+
+      if (shouldRefresh) {
+        _fetchTasks();
+        GoRouter.of(context).go('/home'); // Clean URL after refresh
+      } else {
+        _fetchTasks();
+      }
+    });
   }
 
   Future<void> _fetchTasks() async {
