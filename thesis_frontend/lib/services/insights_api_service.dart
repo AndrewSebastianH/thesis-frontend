@@ -9,7 +9,7 @@ class InsightApiService {
     required String range,
   }) async {
     try {
-      print("Fetching insights with type: $type, range: $range");
+      // print("Fetching insights with type: $type, range: $range");
       final response = await ApiConfig.dio.get(
         ApiConstants.getInsights,
         queryParameters: {'type': type, 'range': range},

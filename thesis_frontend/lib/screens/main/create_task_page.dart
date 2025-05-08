@@ -239,65 +239,65 @@ class _CreateTaskPageState extends State<CreateTaskPage> {
                         ),
                       ],
                     ),
-                  if (_dueDate == null && !_isRecurring) ...[const Divider()],
+                  // if (_dueDate == null && !_isRecurring) ...[const Divider()],
                   if (_dueDate == null) ...[
                     Column(
                       children: [
-                        SwitchListTile(
-                          contentPadding: EdgeInsets.zero,
-                          value: _isRecurring,
-                          onChanged: (val) {
-                            setState(() {
-                              _isRecurring = val;
-                              if (_isRecurring) _dueDate = null;
-                            });
-                          },
-                          activeColor: Colors.orange,
-                          title: Text(
-                            "Repeat this task?",
-                            style: TextStyle(
-                              color:
-                                  _isRecurring ? Colors.black87 : Colors.grey,
-                            ),
-                          ),
-                        ),
+                        // SwitchListTile(
+                        //   contentPadding: EdgeInsets.zero,
+                        //   value: _isRecurring,
+                        //   onChanged: (val) {
+                        //     setState(() {
+                        //       _isRecurring = val;
+                        //       if (_isRecurring) _dueDate = null;
+                        //     });
+                        //   },
+                        //   activeColor: Colors.orange,
+                        //   title: Text(
+                        //     "Repeat this task?",
+                        //     style: TextStyle(
+                        //       color:
+                        //           _isRecurring ? Colors.black87 : Colors.grey,
+                        //     ),
+                        //   ),
+                        // ),
 
-                        if (_isRecurring) ...[
-                          const SizedBox(height: 8),
-                          Row(
-                            children: [
-                              const Text(
-                                "Repeat: ",
-                                style: TextStyle(color: Colors.grey),
-                              ),
-                              const SizedBox(width: 8),
-                              DropdownButton<String>(
-                                value: _recurrenceInterval,
-                                items: const [
-                                  DropdownMenuItem(
-                                    value: 'daily',
-                                    child: Text(
-                                      "Daily",
-                                      style: TextStyle(color: Colors.black87),
-                                    ),
-                                  ),
-                                  DropdownMenuItem(
-                                    value: 'weekly',
-                                    child: Text(
-                                      "Weekly",
-                                      style: TextStyle(color: Colors.black87),
-                                    ),
-                                  ),
-                                ],
-                                onChanged: (val) {
-                                  if (val != null) {
-                                    setState(() => _recurrenceInterval = val);
-                                  }
-                                },
-                              ),
-                            ],
-                          ),
-                        ],
+                        // if (_isRecurring) ...[
+                        //   const SizedBox(height: 8),
+                        //   Row(
+                        //     children: [
+                        //       const Text(
+                        //         "Repeat: ",
+                        //         style: TextStyle(color: Colors.grey),
+                        //       ),
+                        //       const SizedBox(width: 8),
+                        //       DropdownButton<String>(
+                        //         value: _recurrenceInterval,
+                        //         items: const [
+                        //           DropdownMenuItem(
+                        //             value: 'daily',
+                        //             child: Text(
+                        //               "Daily",
+                        //               style: TextStyle(color: Colors.black87),
+                        //             ),
+                        //           ),
+                        //           DropdownMenuItem(
+                        //             value: 'weekly',
+                        //             child: Text(
+                        //               "Weekly",
+                        //               style: TextStyle(color: Colors.black87),
+                        //             ),
+                        //           ),
+                        //         ],
+                        //         onChanged: (val) {
+                        //           if (val != null) {
+                        //             setState(() => _recurrenceInterval = val);
+                        //           }
+                        //         },
+                        //       ),
+                        //     ],
+                        //   ),
+                        // ],
                       ],
                     ),
                   ],

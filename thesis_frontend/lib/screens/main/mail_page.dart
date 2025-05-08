@@ -31,7 +31,6 @@ class _MailInboxPageState extends State<MailInboxPage> {
 
   @override
   void initState() {
-    print('[DEBUG] MailInboxPage initState called');
     // final userProvider = Provider.of<UserProvider>(context, listen: false);
     super.initState();
     _scrollController = ScrollController()..addListener(_scrollListener);
