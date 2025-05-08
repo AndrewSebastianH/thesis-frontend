@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:thesis_frontend/providers/auth_provider.dart';
+import 'package:thesis_frontend/services/auth_api_service.dart';
 import 'package:thesis_frontend/widgets/connect_prompt_card.dart';
 import '../../providers/user_provider.dart';
 
@@ -16,9 +17,11 @@ class ProfilePage extends StatelessWidget {
     final user = userProvider.user;
     final relatedUser = userProvider.relatedUser;
 
+    final scaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
+
     Widget buildProfileCard(
       String title,
-      String asset,
+      int asset,
       String name,
       String email,
       String role,
@@ -55,7 +58,12 @@ class ProfilePage extends StatelessWidget {
             const SizedBox(height: 6),
             Row(
               children: [
-                CircleAvatar(radius: 40, backgroundImage: AssetImage(asset)),
+                CircleAvatar(
+                  radius: 40,
+                  backgroundImage: AssetImage(
+                    "assets/images/avatars/$asset.png",
+                  ),
+                ),
                 const SizedBox(width: 16),
                 Expanded(
                   child: Column(
@@ -150,7 +158,12 @@ class ProfilePage extends StatelessWidget {
               child: IconButton(
                 icon: const Icon(Icons.settings, color: Colors.orange),
                 onPressed: () {
-                  _showSettingsModal(context, userProvider, authProvider);
+                  _showSettingsModal(
+                    context,
+                    userProvider,
+                    authProvider,
+                    scaffoldMessengerKey,
+                  );
                 },
                 tooltip: 'Settings',
               ),
@@ -170,7 +183,7 @@ class ProfilePage extends StatelessWidget {
                   children: [
                     buildProfileCard(
                       'You',
-                      userProvider.userAvatarAsset,
+                      user.avatar ?? 1,
                       user.username,
                       user.email,
                       user.role ?? '',
@@ -180,7 +193,7 @@ class ProfilePage extends StatelessWidget {
                     if (relatedUser != null) ...[
                       buildProfileCard(
                         'Connected User',
-                        userProvider.relatedUserAvatarAsset,
+                        relatedUser.avatar ?? 1,
                         relatedUser.username,
                         relatedUser.email,
                         relatedUser.role ?? '',
@@ -200,20 +213,22 @@ void _showSettingsModal(
   BuildContext context,
   UserProvider userProvider,
   AuthProvider authProvider,
+  GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey,
 ) {
-  showGeneralDialog(
+  showDialog(
     context: context,
     barrierDismissible: true,
-    barrierLabel: 'Settings',
     barrierColor: Colors.black.withAlpha(200),
-    useRootNavigator: true,
-    transitionDuration: const Duration(milliseconds: 300),
-    pageBuilder: (_, __, ___) {
-      return Scaffold(
-        backgroundColor: Colors.black.withAlpha(105),
-        body: Center(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24),
+    builder: (dialogContext) {
+      return Center(
+        child: Material(
+          color: Colors.transparent,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+            decoration: BoxDecoration(
+              color: Colors.transparent,
+              borderRadius: BorderRadius.circular(20),
+            ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -231,16 +246,14 @@ void _showSettingsModal(
                   children: [
                     ElevatedButton.icon(
                       onPressed: () {
-                        Navigator.of(context, rootNavigator: true).pop();
-
+                        Navigator.of(dialogContext).pop(); // closes settings
                         Future.delayed(Duration.zero, () {
                           showDialog(
                             context: context,
-                            useRootNavigator: true,
                             builder:
                                 (_) => EditProfileDialog(
                                   initialAvatarAsset:
-                                      userProvider.userAvatarAsset,
+                                      "assets/images/avatars/${userProvider.user?.avatar ?? 1}.png",
                                   initialUsername:
                                       userProvider.user?.username ?? '',
                                 ),
@@ -265,7 +278,7 @@ void _showSettingsModal(
                     const SizedBox(width: 16),
                     ElevatedButton.icon(
                       onPressed: () {
-                        Navigator.of(context, rootNavigator: true).pop();
+                        Navigator.of(dialogContext).pop(); // closes settings
                         Future.delayed(Duration.zero, () {
                           userProvider.clear();
                           authProvider.logout();
@@ -295,15 +308,6 @@ void _showSettingsModal(
         ),
       );
     },
-    transitionBuilder: (_, animation, __, child) {
-      return FadeTransition(
-        opacity: animation,
-        child: ScaleTransition(
-          scale: CurvedAnimation(parent: animation, curve: Curves.easeOutBack),
-          child: child,
-        ),
-      );
-    },
   );
 }
 
@@ -324,10 +328,12 @@ class EditProfileDialog extends StatefulWidget {
 class _EditProfileDialogState extends State<EditProfileDialog> {
   late TextEditingController _usernameController;
   late String _selectedAvatar;
+  late UserProvider userProvider;
 
   @override
   void initState() {
     super.initState();
+    userProvider = Provider.of<UserProvider>(context, listen: false);
     _usernameController = TextEditingController(text: widget.initialUsername);
     _selectedAvatar = widget.initialAvatarAsset;
   }
@@ -338,7 +344,16 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
     super.dispose();
   }
 
-  void _saveChanges() {
+  int _extractAvatarId(String path) {
+    final match = RegExp(r'avatars/(\d+)\.png').firstMatch(path);
+    if (match != null) {
+      return int.parse(match.group(1)!);
+    } else {
+      throw Exception('Invalid avatar path: $path');
+    }
+  }
+
+  void _saveChanges() async {
     final updatedUsername = _usernameController.text.trim();
     final updatedAvatar = _selectedAvatar;
 
@@ -349,11 +364,32 @@ class _EditProfileDialogState extends State<EditProfileDialog> {
       return;
     }
 
-    // TODO: Send updatedUsername and updatedAvatar to backend
-    print("New Username: $updatedUsername");
-    print("New Avatar: $updatedAvatar");
+    final isUsernameChanged = updatedUsername != widget.initialUsername;
+    final isAvatarChanged = updatedAvatar != widget.initialAvatarAsset;
 
-    Navigator.of(context).pop(); // Close the dialog
+    if (!isUsernameChanged && !isAvatarChanged) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text("No changes made.")));
+      Navigator.of(context).pop();
+      return;
+    }
+
+    final int updatedAvatarId = _extractAvatarId(updatedAvatar);
+
+    final response = await AuthService.updateProfile(
+      newAvatar: updatedAvatarId,
+      newUsername: updatedUsername,
+    );
+
+    if (response.success) {
+      await userProvider.refreshUserInfo();
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text("Updated profile")));
+      Navigator.of(context).pop();
+    }
   }
 
   void _selectAvatar() {

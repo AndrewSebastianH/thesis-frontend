@@ -158,4 +158,26 @@ class AuthService {
       );
     }
   }
+
+  static Future<ResponseResult> updateProfile({
+    required int newAvatar,
+    required String newUsername,
+  }) async {
+    try {
+      final response = await ApiConfig.dio.patch(
+        ApiConstants.patchUserProfile,
+        data: {'newAvatar': newAvatar, 'newUsername': newUsername},
+      );
+      return ResponseResult(
+        success: true,
+        message: response.data['message'] ?? 'Profile updated.',
+      );
+    } on DioException catch (e) {
+      print("Profile update failed: ${e.response?.data}");
+      return ResponseResult(
+        success: false,
+        message: e.response?.data['message'] ?? 'Update profile failed',
+      );
+    }
+  }
 }
