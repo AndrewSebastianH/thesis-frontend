@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:thesis_frontend/providers/auth_provider.dart';
 import 'package:thesis_frontend/providers/user_provider.dart';
 import '../../services/auth_api_service.dart';
 import '../../widgets/custom_button.dart';
@@ -18,17 +21,39 @@ class _ConnectionCodeScreenState extends State<ConnectionCodeScreen> {
   String? connectionCode;
   bool isLoading = true;
   late UserProvider userProvider;
+  late AuthProvider authProvider;
+  Timer? _pollingTimer;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     userProvider = Provider.of<UserProvider>(context, listen: false);
+    authProvider = Provider.of<AuthProvider>(context, listen: false);
   }
 
   @override
   void initState() {
     super.initState();
     fetchConnectionCode();
+    startPollingForConnection();
+  }
+
+  void startPollingForConnection() {
+    _pollingTimer = Timer.periodic(const Duration(seconds: 3), (_) async {
+      try {
+        await userProvider.refreshUserInfo();
+        final relatedUser = userProvider.relatedUser;
+
+        if (relatedUser != null) {
+          if (mounted) {
+            _pollingTimer?.cancel();
+            context.go("/home");
+          }
+        }
+      } catch (_) {
+        // optionally handle error silently
+      }
+    });
   }
 
   Future<void> fetchConnectionCode() async {
@@ -139,6 +164,12 @@ class _ConnectionCodeScreenState extends State<ConnectionCodeScreen> {
                             context.go("/home");
                           },
                         ),
+                      ),
+
+                      const SizedBox(height: 6),
+                      const Text(
+                        "Please stay in this page if you are on the process of connecting.",
+                        textAlign: TextAlign.center,
                       ),
                     ],
                   ),
