@@ -2,19 +2,30 @@ import 'package:thesis_frontend/config/api_config.dart';
 import 'package:thesis_frontend/constants/api_endpoints_constants.dart';
 import 'package:thesis_frontend/models/emotion_log_mdl.dart';
 import 'package:dio/dio.dart';
+import 'package:thesis_frontend/models/response_result_mdl.dart';
 
 class EmotionService {
-  static Future<bool> submitEmotion(String emotion, String detail) async {
+  static Future<ResponseResult> submitEmotion({
+    required String emotion,
+    String? detail,
+    required String date,
+  }) async {
     try {
       final response = await ApiConfig.dio.post(
         ApiConstants.postEmotionLog,
-        data: {'emotion': emotion, 'detail': detail},
+        data: {'date': date, 'emotion': emotion, 'detail': detail},
       );
 
-      return response.statusCode == 200;
+      return ResponseResult(
+        success: true,
+        message: response.data['message'] ?? 'Emotion logged successfully',
+      );
     } on DioException catch (e) {
       print("Error logging emotion: ${e.response?.data}");
-      return false;
+      return ResponseResult(
+        success: false,
+        message: e.response?.data['message'] ?? 'Failed to log emotion',
+      );
     }
   }
 

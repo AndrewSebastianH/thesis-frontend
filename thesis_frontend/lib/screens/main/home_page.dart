@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+import 'package:thesis_frontend/services/emotion_api_service.dart';
 import '../../models/tasks_mdl.dart';
 import '../../services/tasks_api_service.dart';
 import 'package:intl/intl.dart';
@@ -30,7 +31,7 @@ class _HomePageState extends State<HomePage> {
 
       if (shouldRefresh) {
         _fetchTasks();
-        GoRouter.of(context).go('/home'); // Clean URL after refresh
+        GoRouter.of(context).go('/home');
       } else {
         _fetchTasks();
       }
@@ -79,6 +80,7 @@ class _HomePageState extends State<HomePage> {
     // await prefs.remove('lastMoodScreenDate');
 
     final now = DateTime.now();
+    // .copyWith(hour: 16, minute: 0, second: 0);
     final currentDate = "${now.year}-${now.month}-${now.day}";
     final lastShownDate = prefs.getString('lastMoodScreenDate');
 
@@ -232,14 +234,27 @@ class _HomePageState extends State<HomePage> {
 
     if (!mounted) return;
 
+    final result = await EmotionService.submitEmotion(
+      date: currentDate,
+      emotion: mood,
+      detail: detail,
+    );
+
+    final defaultMessage = switch (mood) {
+      "sad" => "Hope things feel better soon. 💛",
+      "neutral" => "Thanks for checking in! 💪",
+      "happy" => "Good to hear! 💖",
+      _ => "Mood submitted.",
+    };
+
     ScaffoldMessenger.of(safeScaffoldContext).showSnackBar(
       SnackBar(
-        content: Text(switch (mood) {
-          "sad" => "Hope things feel better soon. 💛",
-          "neutral" => "Thanks for checking in! 💪",
-          "happy" => "Good to hear! 💖",
-          _ => "Mood submitted.",
-        }),
+        content: Text(
+          result.success
+              ? defaultMessage
+              : (result.message ?? "Failed to log mood"),
+        ),
+        backgroundColor: result.success ? null : Colors.redAccent,
       ),
     );
   }
