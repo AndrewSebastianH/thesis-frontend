@@ -45,7 +45,7 @@ class MailApiService {
   }
 
   static Future<ResponseResult> sendMail({
-    required String subject,
+    String? subject,
     required String message,
   }) async {
     try {

@@ -26,19 +26,21 @@ class _ComposeMailPageState extends State<ComposeMailPage> {
     setState(() {
       _isFormValid =
           _messageController.text.trim().isNotEmpty &&
-          _subjectController.text.trim().isNotEmpty &&
           _messageController.text.length <= _maxCharacters;
     });
   }
 
   void _submitMail() async {
     final message = _messageController.text.trim();
-    final subject = _subjectController.text.trim();
+    final subject =
+        _subjectController.text.trim().isEmpty
+            ? null
+            : _subjectController.text.trim();
 
-    if (message.isEmpty || subject.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Message and subject cannot be empty")),
-      );
+    if (message.isEmpty) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text("Message cannot be empty")));
       return;
     }
 
