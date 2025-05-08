@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_otp_text_field/flutter_otp_text_field.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:thesis_frontend/providers/auth_provider.dart';
 import 'package:thesis_frontend/providers/user_provider.dart';
 import 'package:thesis_frontend/services/auth_api_service.dart';
 import 'package:thesis_frontend/widgets/custom_button.dart';
@@ -19,11 +20,13 @@ class _LinkAccountPageState extends State<LinkAccountPage> {
   String? _errorMessage;
   Map<String, dynamic>? _codeOwner;
   late UserProvider userProvider;
+  late AuthProvider authProvider;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     userProvider = Provider.of<UserProvider>(context, listen: false);
+    authProvider = Provider.of<AuthProvider>(context, listen: false);
   }
 
   Future<void> _verifyCode() async {
@@ -65,8 +68,7 @@ class _LinkAccountPageState extends State<LinkAccountPage> {
 
     if (result.success) {
       await userProvider.refreshUserInfo();
-      print('User JSON: ${userProvider.user}');
-      print('Related User JSON: ${userProvider.relatedUser}');
+      await authProvider.saveToken(result.data['token']);
 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Account linked successfully')),

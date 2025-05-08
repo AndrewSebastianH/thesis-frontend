@@ -16,7 +16,7 @@ class ChooseRoleScreen extends StatefulWidget {
 class _ChooseRoleScreenState extends State<ChooseRoleScreen> {
   int selectedIndex = -1;
   late UserProvider userProvider;
-  late AuthProvider controller;
+  late AuthProvider authProvider;
 
   void onImageTap(int index) {
     setState(() {
@@ -28,7 +28,7 @@ class _ChooseRoleScreenState extends State<ChooseRoleScreen> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     userProvider = Provider.of<UserProvider>(context, listen: false);
-    controller = Provider.of<AuthProvider>(context, listen: false);
+    authProvider = Provider.of<AuthProvider>(context, listen: false);
   }
 
   Widget buildCircleImage(String path, int index, double maxWidth) {
@@ -145,7 +145,7 @@ class _ChooseRoleScreenState extends State<ChooseRoleScreen> {
                           );
 
                           if (result.success) {
-                            await controller.saveToken(result.data['token']);
+                            await authProvider.saveToken(result.data['token']);
                           }
 
                           if (!result.success) {
