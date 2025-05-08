@@ -47,8 +47,8 @@ class _InsightsPageState extends State<InsightsPage> {
     });
 
     final fetchedInsight = await InsightApiService.fetchInsight(
-      showSelf ? 'self' : 'related',
-      selectedRange,
+      type: showSelf ? 'self' : 'related',
+      range: selectedRange,
     );
 
     setState(() {
