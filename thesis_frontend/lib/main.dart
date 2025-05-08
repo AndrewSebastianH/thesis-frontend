@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:thesis_frontend/config/api_config.dart';
 import 'package:thesis_frontend/screens/main/insights_page.dart';
 import 'package:thesis_frontend/screens/main/mail_page.dart';
@@ -32,8 +31,6 @@ import './widgets/transitions/slide_transition.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await ApiConfig.init();
-
-  // await dotenv.load(fileName: ".env");
 
   runApp(
     MultiProvider(

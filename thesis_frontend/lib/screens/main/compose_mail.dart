@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:thesis_frontend/services/mail_api_service.dart';
 import 'package:thesis_frontend/widgets/custom_button.dart';
 
 class ComposeMailPage extends StatefulWidget {
@@ -30,7 +31,7 @@ class _ComposeMailPageState extends State<ComposeMailPage> {
     });
   }
 
-  void _submitMail() {
+  void _submitMail() async {
     final message = _messageController.text.trim();
     final subject = _subjectController.text.trim();
 
@@ -41,14 +42,23 @@ class _ComposeMailPageState extends State<ComposeMailPage> {
       return;
     }
 
-    // TODO: Replace with actual send mail API
-    print({'message': message});
-    print({'subject': subject});
+    final response = await MailApiService.sendMail(
+      subject: subject,
+      message: message,
+    );
 
-    Navigator.pop(context);
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(const SnackBar(content: Text("Mail sent successfully!")));
+    if (!mounted) return;
+
+    if (response.success) {
+      Navigator.pop(context);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(response.message ?? "Mail sent successfully!")),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(response.message ?? "Failed to send mail")),
+      );
+    }
   }
 
   @override

@@ -22,26 +22,77 @@ class _MailInboxPageState extends State<MailInboxPage> {
   List<MailModel> sentMails = [];
   bool isLoading = true;
 
+  // Variables for infinitescroll
+  int offset = 0;
+  final int limit = 10;
+  bool isFetchingMore = false;
+  bool hasMoreMails = true;
+  late ScrollController _scrollController;
+
   @override
   void initState() {
+    print('[DEBUG] MailInboxPage initState called');
     // final userProvider = Provider.of<UserProvider>(context, listen: false);
-    // userProvider.setMockParentUserNoRelation();
     super.initState();
-
-    loadMails();
+    _scrollController = ScrollController()..addListener(_scrollListener);
+    loadMails(reset: true);
   }
 
-  Future<void> loadMails() async {
-    setState(() => isLoading = true);
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
 
-    if (showInbox) {
-      inboxMails = await MailApiService.fetchReceivedMails();
-    } else {
-      sentMails = await MailApiService.fetchSentMails();
+  Future<void> loadMails({bool reset = false}) async {
+    if (reset) {
+      setState(() {
+        isLoading = true;
+        offset = 0;
+        hasMoreMails = true;
+      });
     }
 
-    if (mounted) {
-      setState(() => isLoading = false);
+    if (isFetchingMore || !hasMoreMails) return;
+
+    setState(() => isFetchingMore = true);
+
+    final newMails =
+        showInbox
+            ? await MailApiService.fetchReceivedMails(
+              offset: offset,
+              limit: limit,
+            )
+            : await MailApiService.fetchSentMails(offset: offset, limit: limit);
+
+    setState(() {
+      if (reset) {
+        if (showInbox) {
+          inboxMails = newMails;
+        } else {
+          sentMails = newMails;
+        }
+      } else {
+        if (showInbox) {
+          inboxMails.addAll(newMails);
+        } else {
+          sentMails.addAll(newMails);
+        }
+      }
+
+      offset += newMails.length;
+      hasMoreMails = newMails.length == limit;
+      isLoading = false;
+      isFetchingMore = false;
+    });
+  }
+
+  void _scrollListener() {
+    if (_scrollController.position.pixels >=
+            _scrollController.position.maxScrollExtent - 100 &&
+        !isFetchingMore &&
+        hasMoreMails) {
+      loadMails();
     }
   }
 
@@ -110,8 +161,10 @@ class _MailInboxPageState extends State<MailInboxPage> {
                                   if (!showInbox) {
                                     setState(() {
                                       showInbox = true;
+                                      offset = 0;
+                                      hasMoreMails = true;
                                     });
-                                    loadMails();
+                                    loadMails(reset: true);
                                   }
                                 },
                                 child: Container(
@@ -140,8 +193,10 @@ class _MailInboxPageState extends State<MailInboxPage> {
                                   if (showInbox) {
                                     setState(() {
                                       showInbox = false;
+                                      offset = 0;
+                                      hasMoreMails = true;
                                     });
-                                    loadMails();
+                                    loadMails(reset: true);
                                   }
                                 },
                                 child: Container(
@@ -192,8 +247,17 @@ class _MailInboxPageState extends State<MailInboxPage> {
                         )
                         : ListView.builder(
                           key: ValueKey(showInbox),
-                          itemCount: mails.length,
+                          controller: _scrollController,
+                          itemCount: mails.length + (hasMoreMails ? 1 : 0),
                           itemBuilder: (context, index) {
+                            if (index == mails.length) {
+                              return const Padding(
+                                padding: EdgeInsets.symmetric(vertical: 16),
+                                child: Center(
+                                  child: CircularProgressIndicator(),
+                                ),
+                              );
+                            }
                             final mail = mails[index];
                             return Dismissible(
                               key: ValueKey(mail.id),
@@ -244,15 +308,29 @@ class _MailInboxPageState extends State<MailInboxPage> {
                                 );
                               },
                               onDismissed: (direction) async {
-                                await MailApiService.deleteMail(
+                                final res = await MailApiService.deleteMail(
                                   mail.id,
-                                ); // Call your API
-                                setState(() {
-                                  mails.removeAt(index);
-                                });
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(content: Text('Mail deleted')),
                                 );
+                                if (res.success) {
+                                  setState(() {
+                                    mails.removeAt(index);
+                                  });
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text(
+                                        res.message ?? 'Mail deleted',
+                                      ),
+                                    ),
+                                  );
+                                } else {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text(
+                                        res.message ?? 'Failed to delete mail',
+                                      ),
+                                    ),
+                                  );
+                                }
                               },
                               child: Card(
                                 // ← your existing mail card design
@@ -462,9 +540,12 @@ class _MailInboxPageState extends State<MailInboxPage> {
     );
 
     if (!mail.isRead && mail.senderId != currentUser?.id) {
-      MailApiService.readMail(mail.id);
-      setState(() {
-        mail.isRead = true;
+      MailApiService.readMail(mail.id).then((res) {
+        if (res.success) {
+          setState(() {
+            mail.isRead = true;
+          });
+        }
       });
     }
   }
