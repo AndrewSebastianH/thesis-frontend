@@ -20,7 +20,9 @@ class AuthProvider extends ChangeNotifier {
 
   // Username Validation
   bool validateUsername(String? value) {
-    return value != null && value.trim().isNotEmpty;
+    return value != null &&
+        value.trim().isNotEmpty &&
+        RegExp(r"^[A-Za-z\s]+$").hasMatch(value.trim());
   }
 
   // Email Validation

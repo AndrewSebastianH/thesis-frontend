@@ -113,11 +113,12 @@ class __FormContentState extends State<_FormContent> {
             _gap(height: 40),
             TextFormField(
               controller: controller.usernameController,
+              autovalidateMode: AutovalidateMode.onUserInteraction,
               validator:
                   (value) =>
                       controller.validateUsername(value)
                           ? null
-                          : 'Please enter a valid name',
+                          : 'No symbols or numbers allowed',
 
               decoration: const InputDecoration(
                 labelText: 'Name',
@@ -129,6 +130,7 @@ class __FormContentState extends State<_FormContent> {
             _gap(),
             TextFormField(
               controller: controller.emailController,
+              autovalidateMode: AutovalidateMode.onUserInteraction,
               validator:
                   (value) =>
                       controller.validateEmail(value)
@@ -145,6 +147,7 @@ class __FormContentState extends State<_FormContent> {
             _gap(),
             TextFormField(
               controller: controller.passwordController,
+              autovalidateMode: AutovalidateMode.onUserInteraction,
               validator:
                   (value) =>
                       controller.validatePassword(value)
@@ -174,6 +177,7 @@ class __FormContentState extends State<_FormContent> {
             _gap(),
             TextFormField(
               controller: controller.confirmPasswordController,
+              autovalidateMode: AutovalidateMode.onUserInteraction,
               validator: (value) {
                 if (!controller.isPasswordMatching()) {
                   return 'Passwords do not match';
