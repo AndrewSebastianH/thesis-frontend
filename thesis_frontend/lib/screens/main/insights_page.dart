@@ -273,7 +273,17 @@ class _InsightsPageState extends State<InsightsPage> {
 
   Widget _buildTaskSection(String title, List<TaskInsight> tasks) {
     if (tasks.isEmpty) {
-      return const Text("No data yet.");
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+          ),
+          const SizedBox(height: 10),
+          const Text("No data yet."),
+        ],
+      );
     }
 
     return Column(

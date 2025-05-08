@@ -26,7 +26,7 @@ class InsightModel {
 }
 
 class TaskInsight {
-  final String taskId;
+  final int taskId;
   final String title;
   final int completedTimes;
 
