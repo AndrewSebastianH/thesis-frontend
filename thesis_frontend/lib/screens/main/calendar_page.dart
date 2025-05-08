@@ -27,15 +27,32 @@ class _EmotionCalendarPageState extends State<EmotionCalendarPage> {
     super.initState();
     // final userProvider = Provider.of<UserProvider>(context, listen: false);
     // userProvider.setMockParentUser();
-
-    loadEmotionLogs();
+    final range = getVisibleDays(_focusedDay);
+    loadEmotionLogs(range[0], range[1]);
   }
 
-  Future<void> loadEmotionLogs() async {
-    final now = DateTime.now();
+  List<DateTime> getVisibleDays(DateTime focusedDay) {
+    final firstOfMonth = DateTime(focusedDay.year, focusedDay.month, 1);
+    final lastOfMonth = DateTime(focusedDay.year, focusedDay.month + 1, 0);
+
+    // Adjust to the beginning of the week (Sunday)
+    final firstVisible = firstOfMonth.subtract(
+      Duration(days: firstOfMonth.weekday % 7),
+    );
+
+    // Adjust to the end of the week (Saturday)
+    final lastVisible = lastOfMonth.add(
+      Duration(days: 6 - (lastOfMonth.weekday % 7)),
+    );
+
+    return [firstVisible, lastVisible];
+  }
+
+  Future<void> loadEmotionLogs(DateTime startDate, DateTime endDate) async {
+    // print("Loading logs from $startDate to $endDate");
     final logs = await EmotionService.fetchEmotionLogs(
-      startDate: DateTime(now.year, now.month, 1),
-      endDate: DateTime(now.year, now.month + 1, 0),
+      startDate: startDate,
+      endDate: endDate,
     );
 
     final Map<DateTime, List<EmotionLog>> eventMap = {};
@@ -46,11 +63,7 @@ class _EmotionCalendarPageState extends State<EmotionCalendarPage> {
         log.date.month,
         log.date.day,
       );
-      if (eventMap[normalizedDate] == null) {
-        eventMap[normalizedDate] = [log];
-      } else {
-        eventMap[normalizedDate]!.add(log);
-      }
+      eventMap.putIfAbsent(normalizedDate, () => []).add(log);
     }
 
     if (!mounted) return;
@@ -229,6 +242,11 @@ class _EmotionCalendarPageState extends State<EmotionCalendarPage> {
                 _selectedEvents = _getEventsForDay(selectedDay);
               });
             },
+            onPageChanged: (focusedDay) {
+              setState(() => _focusedDay = focusedDay);
+              final range = getVisibleDays(focusedDay);
+              loadEmotionLogs(range[0], range[1]);
+            },
 
             calendarStyle: const CalendarStyle(
               selectedDecoration: BoxDecoration(
@@ -265,7 +283,6 @@ class _EmotionCalendarPageState extends State<EmotionCalendarPage> {
                   );
                 }
 
-                // Default day display
                 return null;
               },
               markerBuilder: (context, date, events) {
