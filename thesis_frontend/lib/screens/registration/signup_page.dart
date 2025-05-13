@@ -51,6 +51,7 @@ class __FormContentState extends State<_FormContent> {
   bool _isFormValid = false;
   late AuthProvider controller;
   late UserProvider userProvider;
+  bool _isLoading = false;
 
   @override
   void initState() {
@@ -211,28 +212,36 @@ class __FormContentState extends State<_FormContent> {
               height: 50,
               child: CustomButton(
                 text: "Signup",
-                onPressed: () async {
-                  if (!_formKey.currentState!.validate()) return;
+                onPressed:
+                    _isFormValid && !_isLoading
+                        ? () async {
+                          setState(() => _isLoading = true);
 
-                  final result = await controller.signup();
+                          if (!_formKey.currentState!.validate()) return;
 
-                  if (!mounted) return;
+                          final result = await controller.signup();
 
-                  if (result.success && result.data?['token'] != null) {
-                    await controller.saveToken(result.data['token']);
-                    await userProvider.refreshUserInfo();
-                    context.go('/choose-role');
-                  } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(result.message ?? 'Signup failed.'),
-                        backgroundColor: Colors.redAccent,
-                      ),
-                    );
-                  }
-                },
+                          if (!mounted) return;
 
-                isEnabled: _isFormValid,
+                          if (result.success && result.data?['token'] != null) {
+                            await controller.saveToken(result.data['token']);
+                            await userProvider.refreshUserInfo();
+                            context.go('/choose-role');
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  result.message ?? 'Signup failed.',
+                                ),
+                                backgroundColor: Colors.redAccent,
+                              ),
+                            );
+                          }
+                          if (mounted) setState(() => _isLoading = false);
+                        }
+                        : null,
+                isLoading: _isLoading,
+                isEnabled: _isFormValid && !_isLoading,
               ),
             ),
           ],

@@ -6,6 +6,7 @@ class CustomButton extends StatelessWidget {
   final bool isOutlined;
   final Color? color;
   final bool isEnabled;
+  final bool isLoading;
 
   const CustomButton({
     Key? key,
@@ -14,6 +15,7 @@ class CustomButton extends StatelessWidget {
     this.isOutlined = false,
     this.color,
     this.isEnabled = true,
+    this.isLoading = false,
   }) : super(key: key);
 
   @override
@@ -32,9 +34,37 @@ class CustomButton extends StatelessWidget {
               borderRadius: BorderRadius.circular(8),
             ),
           ),
-          child: Text(
-            text,
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (isLoading) ...[
+                SizedBox(
+                  width: 16,
+                  height: 16,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                      isOutlined ? (color ?? Color(0xFFFF7F50)) : Colors.white,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+              ],
+              Text(
+                text,
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color:
+                      isOutlined
+                          ? (isEnabled
+                              ? (color ?? Color(0xFFFF7F50))
+                              : Colors.black38)
+                          : (isEnabled ? Colors.white : Colors.black38),
+                ),
+              ),
+            ],
           ),
         )
         : ElevatedButton(
@@ -47,13 +77,30 @@ class CustomButton extends StatelessWidget {
               borderRadius: BorderRadius.circular(8),
             ),
           ),
-          child: Text(
-            text,
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-              color: isEnabled ? Colors.white : Colors.black38,
-            ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (isLoading) ...[
+                const SizedBox(
+                  width: 16,
+                  height: 16,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                  ),
+                ),
+                const SizedBox(width: 8),
+              ],
+              Text(
+                text,
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: isEnabled ? Colors.white : Colors.black38,
+                ),
+              ),
+            ],
           ),
         );
   }

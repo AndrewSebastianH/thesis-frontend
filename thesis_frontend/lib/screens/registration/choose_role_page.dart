@@ -17,6 +17,7 @@ class _ChooseRoleScreenState extends State<ChooseRoleScreen> {
   int selectedIndex = -1;
   late UserProvider userProvider;
   late AuthProvider authProvider;
+  bool _isLoading = false;
 
   void onImageTap(int index) {
     setState(() {
@@ -133,7 +134,10 @@ class _ChooseRoleScreenState extends State<ChooseRoleScreen> {
                     height: 50,
                     child: CustomButton(
                       text: "Continue",
+                      isLoading: _isLoading,
+                      isEnabled: !_isLoading && selectedIndex != -1,
                       onPressed: () async {
+                        setState(() => _isLoading = true);
                         if (selectedIndex == -1) return; // No role selected
 
                         final chosenRole =
@@ -175,6 +179,7 @@ class _ChooseRoleScreenState extends State<ChooseRoleScreen> {
                             ),
                           );
                         }
+                        if (mounted) setState(() => _isLoading = false);
                       },
                     ),
                   ),

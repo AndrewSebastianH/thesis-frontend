@@ -19,7 +19,10 @@ class AuthService {
         message: response.data['message'] ?? 'Login successful',
       );
     } on DioException catch (e) {
-      print("Login failed: ${e.response?.data}");
+      print('❌ DioException: $e');
+      print('🛰️ Response: ${e.response}');
+      print('📡 Request: ${e.requestOptions}');
+      print('🚨 Error type: ${e.type}'); // VERY important!
       return ResponseResult(
         success: false,
         message: e.response?.data['message'] ?? 'Login failed',

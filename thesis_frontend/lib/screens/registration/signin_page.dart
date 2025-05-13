@@ -140,6 +140,8 @@ class __FormContentState extends State<_FormContent> {
     super.dispose();
   }
 
+  bool _isLoading = false;
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -218,36 +220,43 @@ class __FormContentState extends State<_FormContent> {
               height: 50,
               child: CustomButton(
                 text: "Login",
-                onPressed: () async {
-                  if (!(_formKey.currentState?.validate() ?? false)) return;
+                onPressed:
+                    _isFormValid && !_isLoading
+                        ? () async {
+                          setState(() => _isLoading = true);
 
-                  final result = await controller.login();
+                          final result = await controller.login();
 
-                  if (!mounted) return;
+                          if (!mounted) return;
 
-                  if (result.success && result.data['token'] != null) {
-                    await controller.saveToken(result.data['token']);
-                    await _storeAutoLoginPreference(_autoLogin);
+                          if (result.success && result.data['token'] != null) {
+                            await controller.saveToken(result.data['token']);
+                            await _storeAutoLoginPreference(_autoLogin);
 
-                    final userProvider = Provider.of<UserProvider>(
-                      context,
-                      listen: false,
-                    );
-                    await userProvider.refreshUserInfo();
+                            final userProvider = Provider.of<UserProvider>(
+                              context,
+                              listen: false,
+                            );
+                            await userProvider.refreshUserInfo();
 
-                    context.go('/home');
-                  } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        backgroundColor: Colors.red,
-                        content: Text(
-                          result.message ?? 'Login failed. Please try again.',
-                        ),
-                      ),
-                    );
-                  }
-                },
-                isEnabled: _isFormValid,
+                            if (mounted) context.go('/home');
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                backgroundColor: Colors.red,
+                                content: Text(
+                                  result.message ??
+                                      'Login failed. Please try again.',
+                                ),
+                              ),
+                            );
+                          }
+
+                          if (mounted) setState(() => _isLoading = false);
+                        }
+                        : null,
+                isEnabled: _isFormValid && !_isLoading,
+                isLoading: _isLoading,
               ),
             ),
             _gap(),

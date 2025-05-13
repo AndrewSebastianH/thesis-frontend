@@ -79,6 +79,7 @@ class _LinkAccountPageState extends State<LinkAccountPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(result.message ?? 'Failed to link account')),
       );
+      setState(() => _isLoading = false);
     }
   }
 
@@ -88,75 +89,65 @@ class _LinkAccountPageState extends State<LinkAccountPage> {
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24.0),
         child: Center(
-          child:
-              _isLoading
-                  ? const CircularProgressIndicator()
-                  : Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Text(
-                        "Enter Connection Code",
-                        style: TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 40),
-                      OtpTextField(
-                        numberOfFields: 6,
-                        borderColor: const Color(0xFFFF7F50),
-                        focusedBorderColor: const Color(0xFFFF7F50),
-                        showFieldAsBox: false,
-                        borderWidth: 4.0,
-                        onCodeChanged: (code) {
-                          setState(() {
-                            _enteredCode = code;
-                            _errorMessage = null;
-                          });
-                        },
-                        onSubmit: (code) {
-                          setState(() => _enteredCode = code);
-                          _verifyCode();
-                        },
-                      ),
-                      if (_errorMessage != null) ...[
-                        const SizedBox(height: 12),
-                        Text(
-                          _errorMessage!,
-                          style: const TextStyle(color: Colors.red),
-                        ),
-                      ],
-                      const SizedBox(height: 24),
-                      const Text(
-                        "Enter the code shared by your parent/\nchild to connect your accounts in Closer.",
-                        textAlign: TextAlign.center,
-                      ),
-                      const SizedBox(height: 24),
-                      if (_codeOwner != null) ...[
-                        const Text(
-                          "User found!",
-                          style: TextStyle(
-                            color: Colors.black87,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        _buildProfileCard(_codeOwner!),
-                      ],
-                      const SizedBox(height: 40),
-                      SizedBox(
-                        width: double.infinity,
-                        height: 50,
-                        child: CustomButton(
-                          text:
-                              _codeOwner != null ? "Connect Account" : "Verify",
-                          onPressed:
-                              _codeOwner != null ? _linkAccount : _verifyCode,
-                          isEnabled: _enteredCode.length == 6,
-                        ),
-                      ),
-                    ],
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text(
+                "Enter Connection Code",
+                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 40),
+              OtpTextField(
+                numberOfFields: 6,
+                borderColor: const Color(0xFFFF7F50),
+                focusedBorderColor: const Color(0xFFFF7F50),
+                showFieldAsBox: false,
+                borderWidth: 4.0,
+                onCodeChanged: (code) {
+                  setState(() {
+                    _enteredCode = code;
+                    _errorMessage = null;
+                  });
+                },
+                onSubmit: (code) {
+                  setState(() => _enteredCode = code);
+                  _verifyCode();
+                },
+              ),
+              if (_errorMessage != null) ...[
+                const SizedBox(height: 12),
+                Text(_errorMessage!, style: const TextStyle(color: Colors.red)),
+              ],
+              const SizedBox(height: 24),
+              const Text(
+                "Enter the code shared by your parent/\nchild to connect your accounts in Closer.",
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 24),
+              if (_codeOwner != null) ...[
+                const Text(
+                  "User found!",
+                  style: TextStyle(
+                    color: Colors.black87,
+                    fontWeight: FontWeight.bold,
                   ),
+                ),
+                const SizedBox(height: 16),
+                _buildProfileCard(_codeOwner!),
+              ],
+              const SizedBox(height: 40),
+              SizedBox(
+                width: double.infinity,
+                height: 50,
+                child: CustomButton(
+                  text: _codeOwner != null ? "Connect Account" : "Verify",
+                  onPressed: _codeOwner != null ? _linkAccount : _verifyCode,
+                  isEnabled: _enteredCode.length == 6 && !_isLoading,
+                  isLoading: _isLoading,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
