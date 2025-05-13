@@ -7,7 +7,9 @@ class ApiConfig {
 
   static Future<void> init() async {
     await dotenv.load();
-    baseUrl = dotenv.env['BASE_URL'] ?? '';
+    baseUrl =
+        dotenv.env['BASE_URL'] ??
+        'https://thesis-backend-production-12af.up.railway.app';
     if (baseUrl.isEmpty) {
       throw Exception('BASE_URL not found in env.');
     }
