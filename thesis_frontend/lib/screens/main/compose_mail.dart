@@ -27,6 +27,12 @@ class _ComposeMailPageState extends State<ComposeMailPage> {
       "message":
           "Just wanted to let you know how much I appreciate everything you’ve done. It really means a lot to me. ❤️",
     },
+    "🕊️ Forgiveness": {
+      "subject": "Let’s make peace",
+      "message":
+          "I’ve been thinking about things, and I hope we can put the past behind us. I really value our relationship.",
+    },
+
     "🙋 Request": {
       "subject": "Can I ask for your help?",
       "message":
@@ -41,6 +47,21 @@ class _ComposeMailPageState extends State<ComposeMailPage> {
       "subject": "Feeling Grateful",
       "message":
           "I’ve been thinking lately how grateful I am to have you in my life. Thank you for everything you do.",
+    },
+    "✨ Motivation": {
+      "subject": "Keep going!",
+      "message":
+          "I know things might feel tough sometimes, but you’ve got this! I believe in you — one step at a time. 💪",
+    },
+    "🧸 Comfort": {
+      "subject": "Here for you",
+      "message":
+          "If you’re having a hard day, I’m always here if you want to talk or need someone to listen. 🤗",
+    },
+    "🎉 Congratulations": {
+      "subject": "Congrats to you!",
+      "message":
+          "Wow, congratulations on your achievement! I’m so happy for you and proud of everything you’ve done. 🎉",
     },
   };
 
