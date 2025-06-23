@@ -260,15 +260,6 @@ class __FormContentState extends State<_FormContent> {
               ),
             ),
             _gap(),
-            TextButton(
-              onPressed: () {
-                context.push('/forgot-password');
-              },
-              child: const Text(
-                'Forgot password',
-                style: TextStyle(color: Colors.deepOrange),
-              ),
-            ),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [

@@ -22,7 +22,7 @@ class AuthService {
       print('❌ DioException: $e');
       print('🛰️ Response: ${e.response}');
       print('📡 Request: ${e.requestOptions}');
-      print('🚨 Error type: ${e.type}'); // VERY important!
+      print('🚨 Error type: ${e.type}');
       return ResponseResult(
         success: false,
         message: e.response?.data['message'] ?? 'Login failed',

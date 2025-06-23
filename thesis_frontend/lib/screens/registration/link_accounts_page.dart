@@ -98,6 +98,7 @@ class _LinkAccountPageState extends State<LinkAccountPage> {
               ),
               const SizedBox(height: 40),
               OtpTextField(
+                keyboardType: TextInputType.visiblePassword,
                 numberOfFields: 6,
                 borderColor: const Color(0xFFFF7F50),
                 focusedBorderColor: const Color(0xFFFF7F50),
