@@ -16,6 +16,34 @@ class _ComposeMailPageState extends State<ComposeMailPage> {
   bool _isFormValid = false;
   static const int _maxCharacters = 300;
 
+  final Map<String, Map<String, String>> _templateMap = {
+    "🙏 Apology": {
+      "subject": "I'm sorry",
+      "message":
+          "Hi, I just wanted to sincerely apologize for what happened. It wasn’t my intention and I hope we can talk about it soon.",
+    },
+    "💖 Appreciation": {
+      "subject": "Thank you so much!",
+      "message":
+          "Just wanted to let you know how much I appreciate everything you’ve done. It really means a lot to me. ❤️",
+    },
+    "🙋 Request": {
+      "subject": "Can I ask for your help?",
+      "message":
+          "Hi, I would like to ask if you could help me with something. Let me know if it’s possible. Thank you!",
+    },
+    "🌟 Encouragement": {
+      "subject": "You’re doing great!",
+      "message":
+          "Hey! Just a little message to tell you that you’re doing amazing and I’m really proud of you. Keep going!",
+    },
+    "🎁 Gratitude": {
+      "subject": "Feeling Grateful",
+      "message":
+          "I’ve been thinking lately how grateful I am to have you in my life. Thank you for everything you do.",
+    },
+  };
+
   @override
   void initState() {
     super.initState();
@@ -63,6 +91,16 @@ class _ComposeMailPageState extends State<ComposeMailPage> {
     }
   }
 
+  void _applyTemplate(String templateKey) {
+    final template = _templateMap[templateKey];
+    if (template != null) {
+      setState(() {
+        _subjectController.text = template['subject']!;
+        _messageController.text = template['message']!;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -79,6 +117,7 @@ class _ComposeMailPageState extends State<ComposeMailPage> {
         padding: const EdgeInsets.all(16),
         child: ListView(
           children: [
+            // Subject Field
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
@@ -86,7 +125,7 @@ class _ComposeMailPageState extends State<ComposeMailPage> {
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.09),
+                    color: Colors.black.withAlpha(20),
                     blurRadius: 6,
                     offset: const Offset(0, 2),
                   ),
@@ -109,6 +148,7 @@ class _ComposeMailPageState extends State<ComposeMailPage> {
               ),
             ),
             const SizedBox(height: 24),
+            // Message Field
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
@@ -166,6 +206,44 @@ class _ComposeMailPageState extends State<ComposeMailPage> {
               ),
             ),
             const SizedBox(height: 30),
+            // Topic Templates Section
+            const SizedBox(height: 8),
+            Text(
+              "Ideas",
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: Colors.orange,
+              ),
+            ),
+            const SizedBox(height: 8),
+            SizedBox(
+              height: 40,
+              child: ListView(
+                scrollDirection: Axis.horizontal,
+                children:
+                    _templateMap.keys.map((templateKey) {
+                      return Padding(
+                        padding: const EdgeInsets.only(right: 8),
+                        child: ChoiceChip(
+                          label: Text(templateKey),
+                          selected: false,
+                          onSelected: (_) {
+                            _applyTemplate(templateKey);
+                          },
+                          labelStyle: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
+                          backgroundColor: Colors.orange[100],
+                          selectedColor: Colors.orange[300],
+                        ),
+                      );
+                    }).toList(),
+              ),
+            ),
+            const SizedBox(height: 16),
+
+            // Send Button
             SizedBox(
               width: double.infinity,
               height: 50,

@@ -169,7 +169,7 @@ class MyApp extends StatelessWidget {
         ),
       ),
       routerConfig: router,
-      debugShowCheckedModeBanner: true,
+      debugShowCheckedModeBanner: false,
     );
   }
 }
